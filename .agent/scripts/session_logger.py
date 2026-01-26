@@ -23,6 +23,7 @@ class Session(NamedTuple):
     end: str
     duration_minutes: int
     activities: List[str]
+    agent_source: str = "antigravity"  # default para backward compatibility
 
 
 def parse_duration(duration_str: str) -> int:
@@ -39,6 +40,18 @@ def format_duration(minutes: int) -> str:
     hours = minutes // 60
     mins = minutes % 60
     return f"{hours:02d}:{mins:02d}"
+
+
+def detect_agent_source() -> str:
+    """Detecta qual agente está executando a sessão."""
+    import os
+    if os.environ.get('CLAUDE_CODE_SESSION'):
+        return 'claude_code'
+    elif os.environ.get('GEMINI_SESSION'):
+        return 'antigravity'
+    elif os.environ.get('AGENT_SOURCE'):
+        return os.environ.get('AGENT_SOURCE')
+    return 'antigravity'  # default
 
 
 def find_logs_dir() -> Path | None:
@@ -69,17 +82,18 @@ def parse_log_file(filepath: Path) -> List[Session]:
     project = project_match.group(1).strip() if project_match else "Desconhecido"
     
     sessions = []
-    
-    # Regex para sessões: N. HH:MM — HH:MM (HH:MM)
+
+    # Regex para sessões: N. HH:MM — HH:MM (HH:MM) [🤖 agent_name] (campo agent opcional)
     session_pattern = re.compile(
-        r"^\d+\.\s+(\d{1,2}:\d{2})\s*[—–-]\s*(\d{1,2}:\d{2})\s*\((\d{1,2}:\d{2})\)",
-        re.MULTILINE
+        r"^\d+\.\s+(\d{1,2}:\d{2})\s*[—–-]\s*(\d{1,2}:\d{2})\s*\((\d{1,2}:\d{2})\)\s*(?:\[.*?([a-z_]+)\])?",
+        re.MULTILINE | re.IGNORECASE
     )
-    
+
     for match in session_pattern.finditer(content):
         start = match.group(1)
         end = match.group(2)
         duration = parse_duration(match.group(3))
+        agent = match.group(4) if match.group(4) else "antigravity"  # default se não especificado
         
         # Extrair atividades após essa sessão
         start_pos = match.end()
@@ -88,14 +102,15 @@ def parse_log_file(filepath: Path) -> List[Session]:
         
         section = content[start_pos:end_pos]
         activities = re.findall(r"^\s+-\s+(.+)$", section, re.MULTILINE)
-        
+
         sessions.append(Session(
             date=date,
             project=project,
             start=start,
             end=end,
             duration_minutes=duration,
-            activities=activities
+            activities=activities,
+            agent_source=agent
         ))
     
     return sessions
@@ -120,6 +135,50 @@ def get_logs_in_range(logs_dir: Path, start_date: datetime, end_date: datetime) 
                 all_sessions.extend(sessions)
     
     return sorted(all_sessions, key=lambda s: (s.date, s.start))
+
+
+def get_last_activity_by_agent(logs_dir: Path, days_back: int = 7) -> Dict[str, dict]:
+    """
+    Retorna última atividade de cada agente nos últimos N dias.
+
+    Returns:
+        Dict com chave = agent_source e valor = {
+            'last_session': Session,
+            'last_activity': str,
+            'total_time_week': int (minutos),
+            'sessions_count': int
+        }
+    """
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days_back)
+
+    sessions = get_logs_in_range(logs_dir, start_date, end_date)
+
+    agent_stats: Dict[str, dict] = {}
+
+    for session in sessions:
+        agent = session.agent_source
+
+        if agent not in agent_stats:
+            agent_stats[agent] = {
+                'last_session': session,
+                'last_activity': session.activities[-1] if session.activities else 'Nenhuma atividade registrada',
+                'total_time_week': 0,
+                'sessions_count': 0
+            }
+
+        # Atualiza se esta sessão é mais recente
+        if session.date > agent_stats[agent]['last_session'].date or \
+           (session.date == agent_stats[agent]['last_session'].date and
+            session.start > agent_stats[agent]['last_session'].start):
+            agent_stats[agent]['last_session'] = session
+            agent_stats[agent]['last_activity'] = session.activities[-1] if session.activities else 'Nenhuma atividade registrada'
+
+        # Acumula tempo e sessões
+        agent_stats[agent]['total_time_week'] += session.duration_minutes
+        agent_stats[agent]['sessions_count'] += 1
+
+    return agent_stats
 
 
 def extract_key_metrics(sessions: List[Session]) -> dict:

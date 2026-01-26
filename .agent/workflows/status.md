@@ -1,87 +1,114 @@
 ---
-description: Exibe um dashboard consolidado do progresso do projeto, sessões recentes e logs de atividade.
+description: Exibe dashboard consolidado com progresso, sessões e métricas do projeto.
 ---
 
 # Workflow: /status
 
-> **Propósito:** Substituir o status genérico por um painel centralizado que combina progresso real (do backlog) e atividades recentes (dos logs).
+> **Propósito:** Painel centralizado que combina progresso real (backlog), sessões ativas, estatísticas semanais e sync status (dual-agent).
 
 ## Fluxo de Execução
 
-Este workflow executa sequencialmente os scripts de rastreamento e log para montar um dashboard completo.
+### Passo 1: Exibir Dashboard Unificado
 
-### Passo 1: Atualizar Progresso
-Executa o `progress_tracker.py` para garantir que `docs/progress-bar.md` esteja atualizado com base no Backlog.
-
-```bash
-python .agent/scripts/progress_tracker.py
-```
-
-### Passo 2: Gerar Resumo da Semana
-Executa o `session_logger.py` para obter dados das sessões recentes.
+Executa o dashboard consolidado que integra todas as fontes de dados:
 
 ```bash
-python .agent/scripts/session_logger.py summary --week
+python .agent/scripts/dashboard.py
 ```
 
-### Passo 3: Exibir Dashboard Consolidado
+**O dashboard automaticamente:**
+- ✅ Carrega progresso do BACKLOG.md
+- ✅ Detecta sessão ativa (se houver)
+- ✅ Calcula estatísticas semanais dos logs
+- ✅ Verifica sync status (locks ativos, múltiplos agentes)
+- ✅ Lista próximas tarefas prioritárias
+- ✅ Salva output em `docs/dashboard.md`
 
-O agente deve ler os outputs dos passos anteriores e exibir um resumo formatado no terminal:
+---
+
+## Exemplo de Output
 
 ```markdown
-# 📊 Dashboard de Projeto
+# 📊 Dashboard - 2026-01-26 16:30
 
-**Atualizado em:** AAAA-MM-DD HH:MM
+## 🎯 Progresso do Projeto
+
+██████████████░░░░░░ 74.47%
+Tarefas: 35/47
+
+## ⏱️ Sessão Atual
+
+🟢 Ativa desde 14:30 (2h 00m decorridos)
+   🤖 Agente: antigravity
+   📁 Projeto: inove-ai-framework
+
+## 📅 Esta Semana (últimos 7 dias)
+
+- Tempo total: 25h 30m
+- Sessões: 13
+- Média/dia: 3h 38m
+
+## 🔄 Sync Status (Dual-Agent)
+
+| Agente | Última Atividade | Tempo (7 dias) | Sessões |
+|--------|------------------|----------------|---------|
+| 🤖 antigravity | 2026-01-26 10:30<br/>*Implementação Epic 2* | 15h 30m | 8 |
+| 🔵 claude_code | 2026-01-25 14:00<br/>*Refatoração código* | 10h 00m | 5 |
+
+**Conflitos:** Nenhum ✅
+
+## 🔥 Próximas Tarefas
+
+1. Conexão com WhatsApp [🤖 antigravity]
+2. Gestão de Contatos
+3. Dashboard de Campanhas
 
 ---
 
-## 🚀 Progresso Geral
-(Copiar barra visual do output do progress_tracker)
-**Status:** XX% Concluído (X/Y tarefas)
-
----
-
-## 📅 Esta Semana
-(Resumo do output do session_logger)
-- **Tempo Total:** HH:MM
-- **Sessões:** N
-- **Foco Principal:** [Listar projetos/épicos trabalhados]
-
-## 🎯 Próximo Foco Prioritário
-(Extraído do "Próximo Foco" do progress-bar.md)
-- **Epic:** [Nome]
-- **Tarefas:** [Listar primeiras 3 tarefas pendentes deste épico]
-
----
-
-## ⚡ Comandos Rápidos
-- `/log start` - Iniciar nova sessão
-- `/log end` - Registrar atividades
-- `/track` - Atualizar progresso após marcar tarefas
+**Comandos disponíveis:**
+- `python .agent/scripts/auto_session.py start` - Iniciar sessão
+- `python .agent/scripts/auto_session.py end` - Encerrar sessão
+- `python .agent/scripts/finish_task.py <id>` - Marcar tarefa
+- `python .agent/scripts/auto_finish.py --suggest` - Sugerir conclusões
+- `python .agent/scripts/metrics.py weekly` - Gerar insights
+- `python .agent/scripts/notifier.py test` - Testar notificações
 ```
 
 ---
 
-## Exemplo de Output Real
+## Comandos Adicionais
 
-```
-# 📊 Dashboard: Inove AI Zap
+Além do dashboard principal, você pode usar:
 
-## 🚀 Progresso
-████████████░░░░░░░░ 60%
-Concluídas: 30/50
+### Gestão de Sessões
+- `python .agent/scripts/auto_session.py start` - Iniciar sessão
+- `python .agent/scripts/auto_session.py status` - Ver sessão atual
+- `python .agent/scripts/auto_session.py end` - Encerrar sessão
 
-## 📅 Semana Atual
-- Tempo: 12h 30m
-- Sessões: 5
-- Destaques:
-  - Epic 1: Autenticação (Concluído)
-  - Epic 2: API (Em andamento)
+### Tracking de Tarefas
+- `python .agent/scripts/finish_task.py 3.1` - Marcar Story 3.1 completa
+- `python .agent/scripts/auto_finish.py --suggest` - Ver candidatas
+- `python .agent/scripts/auto_finish.py --check-context` - Auto-detectar
 
-## 🎯 Próximo Foco: API
-- [ ] Story 2.1: Endpoint de Login
-- [ ] Story 2.2: Middleware de Auth
+### Métricas e Analytics
+- `python .agent/scripts/metrics.py collect` - Coletar métricas
+- `python .agent/scripts/metrics.py weekly` - Relatório semanal
+- `python .agent/scripts/metrics.py insights` - Ver insights
+
+### Lembretes
+- `python .agent/scripts/reminder_system.py check` - Verificar lembretes
+- `python .agent/scripts/reminder_system.py end-of-day` - Lembrete de fim de dia
+
+### Notificações
+- `python .agent/scripts/notifier.py test` - Testar notificações
+- `python .agent/scripts/notifier.py session-start` - Notificar início
+- `python .agent/scripts/notifier.py task-complete 3.1` - Notificar conclusão
+
+### Sync e Locks
+- `python .agent/scripts/sync_tracker.py` - Ver sync status
+- `python .agent/scripts/sync_tracker.py --check-conflicts` - Ver conflitos
+- `python .agent/scripts/lock_manager.py list` - Locks ativos
 
 ---
-*Execute /log start para começar a trabalhar.*
-```
+
+*Gerado automaticamente pelo sistema Dual-Agent*

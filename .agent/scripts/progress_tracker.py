@@ -23,6 +23,7 @@ class Epic(NamedTuple):
     name: str
     total: int
     done: int
+    owner: str = None  # Agente responsável pelo Epic
 
     @property
     def percent(self) -> float:
@@ -46,37 +47,41 @@ def find_backlog() -> Path | None:
 def parse_backlog(content: str) -> list[Epic]:
     """
     Analisa o conteúdo do backlog e extrai Epics com suas tarefas.
-    
+
     Formato esperado:
-        ## Epic N: Nome do Epic
+        ## Epic N: Nome do Epic [OWNER: agent_name]
         - [x] **Story N.N:** Título
         - [ ] **Story N.N:** Título
     """
     epics: list[Epic] = []
-    
-    # Regex para encontrar Epics
-    epic_pattern = re.compile(r"^##\s+Epic\s+\d+:\s+(.+?)(?:\s*[✅🔴⏳].*)?$", re.MULTILINE)
-    
+
+    # Regex para encontrar Epics com ownership opcional
+    # Captura: nome do epic e owner (se existir)
+    epic_pattern = re.compile(
+        r"^##\s+Epic\s+\d+:\s+(.+?)\s*(?:\[OWNER:\s*(.+?)\])?\s*(?:[✅🔴⏳].*)?$",
+        re.MULTILINE
+    )
+
     # Divide o conteúdo por Epics
-    parts = epic_pattern.split(content)
-    
-    # parts[0] é o conteúdo antes do primeiro Epic (ignorar)
-    # Depois alterna: nome, conteúdo, nome, conteúdo...
-    for i in range(1, len(parts), 2):
-        if i + 1 >= len(parts):
-            break
-            
-        epic_name = parts[i].strip()
-        epic_content = parts[i + 1]
-        
+    epic_matches = list(epic_pattern.finditer(content))
+
+    for idx, match in enumerate(epic_matches):
+        epic_name = match.group(1).strip()
+        epic_owner = match.group(2).strip() if match.group(2) else None
+
+        # Extrai o conteúdo do Epic (até o próximo Epic ou fim do documento)
+        start_pos = match.end()
+        end_pos = epic_matches[idx + 1].start() if idx + 1 < len(epic_matches) else len(content)
+        epic_content = content[start_pos:end_pos]
+
         # Conta tarefas (Stories e Subtarefas)
         done = len(re.findall(r"^\s*-\s*\[x\]", epic_content, re.MULTILINE | re.IGNORECASE))
         pending = len(re.findall(r"^\s*-\s*\[\s\]", epic_content, re.MULTILINE))
         total = done + pending
-        
+
         if total > 0:
-            epics.append(Epic(name=epic_name, total=total, done=done))
-    
+            epics.append(Epic(name=epic_name, total=total, done=done, owner=epic_owner))
+
     return epics
 
 
@@ -125,14 +130,20 @@ def generate_progress_report(epics: list[Epic]) -> str:
         "",
         "## Progresso por Epic",
         "",
-        "| Epic | Progresso | Visual |",
-        "|------|-----------|--------|",
+        "| Epic | Owner | Progresso | Visual |",
+        "|------|-------|-----------|--------|",
     ]
-    
+
     for epic in epics:
         bar = generate_bar(epic.percent)
         status = "✅" if epic.percent == 100 else ""
-        lines.append(f"| {epic.name} {status} | {epic.percent:.0f}% | {bar} |")
+        owner_emoji = ""
+        if epic.owner:
+            owner_emoji = "🤖" if epic.owner == "antigravity" else "🔵"
+            owner_display = f"{owner_emoji} {epic.owner}"
+        else:
+            owner_display = "—"
+        lines.append(f"| {epic.name} {status} | {owner_display} | {epic.percent:.0f}% | {bar} |")
     
     lines.extend([
         "",
@@ -200,7 +211,11 @@ def main():
     print("Por Epic:")
     for epic in epics:
         status = "✅" if epic.percent == 100 else "🔄"
-        print(f"  {status} {epic.name}: {epic.percent:.0f}% ({epic.done}/{epic.total})")
+        owner_text = ""
+        if epic.owner:
+            owner_emoji = "🤖" if epic.owner == "antigravity" else "🔵"
+            owner_text = f" [{owner_emoji} {epic.owner}]"
+        print(f"  {status} {epic.name}{owner_text}: {epic.percent:.0f}% ({epic.done}/{epic.total})")
     print()
     print(f"✅ Arquivo gerado: {output_path}")
 

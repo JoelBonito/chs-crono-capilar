@@ -3,3 +3,7 @@ node_modules/
 .temp_ag_kit/
 antigravity-doc
 tests
+
+# Agent locks (temporários, não versionar)
+.agent/locks/*.lock
+.agent/.session_state.json
