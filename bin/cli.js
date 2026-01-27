@@ -13,6 +13,10 @@ const TARGET_DIR = process.cwd();
 const AGENT_SRC = path.join(PACKAGE_ROOT, '.agent');
 const AGENT_DEST = path.join(TARGET_DIR, '.agent');
 
+// Instruction files to copy to project root
+// Note: GEMINI.md is inside .agent/rules/ and copied with the .agent folder
+const INSTRUCTION_FILES = ['CLAUDE.md'];
+
 function copyDir(src, dest) {
     if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
@@ -49,6 +53,42 @@ function init() {
     } catch (error) {
         console.error('❌ Error copying files:', error.message);
         process.exit(1);
+    }
+
+    // 1.5 Copy instruction files (CLAUDE.md, GEMINI.md)
+    console.log('📝 Copying AI instruction files...');
+    for (const file of INSTRUCTION_FILES) {
+        const srcFile = path.join(PACKAGE_ROOT, file);
+        const destFile = path.join(TARGET_DIR, file);
+
+        if (fs.existsSync(srcFile)) {
+            try {
+                fs.copyFileSync(srcFile, destFile);
+                console.log(`   ✅ ${file} copied.`);
+            } catch (error) {
+                console.warn(`   ⚠️ Warning: Could not copy ${file}: ${error.message}`);
+            }
+        } else {
+            console.warn(`   ⚠️ Warning: ${file} not found in package.`);
+        }
+    }
+
+    // 1.6 Setup .claude folder with project_instructions
+    const claudeDir = path.join(TARGET_DIR, '.claude');
+    const projectInstructionsSrc = path.join(PACKAGE_ROOT, '.claude', 'project_instructions.md');
+    const projectInstructionsDest = path.join(claudeDir, 'project_instructions.md');
+
+    if (fs.existsSync(projectInstructionsSrc)) {
+        console.log('🔧 Setting up .claude folder...');
+        try {
+            if (!fs.existsSync(claudeDir)) {
+                fs.mkdirSync(claudeDir, { recursive: true });
+            }
+            fs.copyFileSync(projectInstructionsSrc, projectInstructionsDest);
+            console.log('   ✅ .claude/project_instructions.md copied.');
+        } catch (error) {
+            console.warn(`   ⚠️ Warning: Could not setup .claude folder: ${error.message}`);
+        }
     }
 
     // 2. Install Git Hooks

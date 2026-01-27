@@ -1,5 +1,5 @@
 {
-  "name": "@joelbonito/inove-ai-framework",
+  "name": "@inove-ai/inove-ai-framework",
   "version": "1.0.0",
   "description": "Inove AI Framework - Dual-Agent AI Development Kit",
   "bin": {
@@ -7,7 +7,9 @@
   },
   "files": [
     ".agent",
-    "bin"
+    ".claude",
+    "bin",
+    "CLAUDE.md"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
