@@ -8,7 +8,15 @@ $ARGUMENTS
 
 ---
 
-## Task
+## Regras Críticas
+
+1. **ANÁLISE PRIMEIRO** — Sempre entender o pedido do usuário antes de gerar código.
+2. **APROVAÇÃO OBRIGATÓRIA** — Apresentar o plano ao usuário e aguardar confirmação antes de construir.
+3. **AGENTES ESPECIALIZADOS** — Delegar para agentes corretos (database-architect, backend-specialist, frontend-specialist).
+4. **PREVIEW AUTOMÁTICO** — Ao finalizar, iniciar preview para o usuário validar visualmente.
+5. **PADRÕES DO PROJETO** — Respeitar tech stack e convenções definidas no projeto.
+
+## Fluxo de Execução
 
 This command starts a new application creation process.
 

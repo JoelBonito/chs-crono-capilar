@@ -24,7 +24,7 @@ import sys
 import subprocess
 import argparse
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List
 
 # ANSI colors for terminal output
 class Colors:
@@ -55,60 +55,49 @@ def print_error(text: str):
     print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
 
 # Define priority-ordered checks
+# Each check is (name, command_list, required)
+# command_list: list of args for subprocess.run OR a script path string
 CORE_CHECKS = [
-    ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-    ("Lint Check", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
-    ("Schema Validation", ".agent/skills/database-design/scripts/schema_validator.py", False),
-    ("Test Runner", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
-    ("UX Audit", ".agent/skills/frontend-design/scripts/ux_audit.py", False),
-    ("SEO Check", ".agent/skills/seo-fundamentals/scripts/seo_checker.py", False),
+    ("Framework Validation", ".agent/scripts/validate_installation.py", True),
+    ("Traceability Check", ".agent/scripts/validate_traceability.py", False),
 ]
 
-PERFORMANCE_CHECKS = [
-    ("Lighthouse Audit", ".agent/skills/performance-profiling/scripts/lighthouse_audit.py", True),
-    ("Playwright E2E", ".agent/skills/webapp-testing/scripts/playwright_runner.py", False),
+PERFORMANCE_CHECKS = []
+
+# Web-specific checks (run if web/ directory exists)
+WEB_CHECKS = [
+    ("TypeScript Check", ["npx", "tsc", "--noEmit"], True),
+    ("Lint Check", ["npm", "run", "lint"], False),
+    ("Build Check", ["npm", "run", "build"], False),
 ]
 
-def check_script_exists(script_path: Path) -> bool:
-    """Check if script file exists"""
-    return script_path.exists() and script_path.is_file()
-
-def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
+def run_check(name: str, cmd: list, cwd: str) -> dict:
     """
-    Run a validation script and capture results
-    
+    Run a validation command and capture results
+
     Returns:
         dict with keys: name, passed, output, skipped
     """
-    if not check_script_exists(script_path):
-        print_warning(f"{name}: Script not found, skipping")
-        return {"name": name, "passed": True, "output": "", "skipped": True}
-    
     print_step(f"Running: {name}")
-    
-    # Build command
-    cmd = ["python", str(script_path), project_path]
-    if url and ("lighthouse" in script_path.name.lower() or "playwright" in script_path.name.lower()):
-        cmd.append(url)
-    
-    # Run script
+
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300  # 5 minute timeout
+            timeout=300,  # 5 minute timeout
+            cwd=cwd
         )
-        
+
         passed = result.returncode == 0
-        
+
         if passed:
             print_success(f"{name}: PASSED")
         else:
             print_error(f"{name}: FAILED")
             if result.stderr:
                 print(f"  Error: {result.stderr[:200]}")
-        
+
         return {
             "name": name,
             "passed": passed,
@@ -116,11 +105,11 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
             "error": result.stderr,
             "skipped": False
         }
-    
+
     except subprocess.TimeoutExpired:
         print_error(f"{name}: TIMEOUT (>5 minutes)")
         return {"name": name, "passed": False, "output": "", "error": "Timeout", "skipped": False}
-    
+
     except Exception as e:
         print_error(f"{name}: ERROR - {str(e)}")
         return {"name": name, "passed": False, "output": "", "error": str(e), "skipped": False}
@@ -186,27 +175,36 @@ Examples:
     print(f"URL: {args.url if args.url else 'Not provided (performance checks skipped)'}")
     
     results = []
-    
-    # Run core checks
+
+    # Run core checks (Python scripts)
     print_header("📋 CORE CHECKS")
     for name, script_path, required in CORE_CHECKS:
         script = project_path / script_path
-        result = run_script(name, script, str(project_path))
+        if not script.exists():
+            print_warning(f"{name}: Script not found, skipping")
+            results.append({"name": name, "passed": True, "output": "", "skipped": True})
+            continue
+        cmd = [sys.executable, str(script)]
+        result = run_check(name, cmd, str(project_path))
         results.append(result)
-        
-        # If required check fails, stop
-        if required and not result["passed"] and not result.get("skipped"):
+
+        if required and not result["passed"]:
             print_error(f"CRITICAL: {name} failed. Stopping checklist.")
             print_summary(results)
             sys.exit(1)
-    
-    # Run performance checks if URL provided
-    if args.url and not args.skip_performance:
-        print_header("⚡ PERFORMANCE CHECKS")
-        for name, script_path, required in PERFORMANCE_CHECKS:
-            script = project_path / script_path
-            result = run_script(name, script, str(project_path), args.url)
+
+    # Run web checks if web/ directory exists
+    web_dir = project_path / "web"
+    if web_dir.exists() and (web_dir / "package.json").exists():
+        print_header("🌐 WEB CHECKS")
+        for name, cmd, required in WEB_CHECKS:
+            result = run_check(name, cmd, str(web_dir))
             results.append(result)
+
+            if required and not result["passed"]:
+                print_error(f"CRITICAL: {name} failed. Stopping checklist.")
+                print_summary(results)
+                sys.exit(1)
     
     # Print summary
     all_passed = print_summary(results)

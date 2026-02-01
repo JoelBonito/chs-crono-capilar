@@ -8,7 +8,15 @@ $ARGUMENTS
 
 ---
 
-## Task
+## Regras Críticas
+
+1. **ESTADO ATUAL PRIMEIRO** — Sempre carregar e entender o estado atual do projeto antes de modificar.
+2. **APROVAÇÃO PARA MUDANÇAS GRANDES** — Apresentar plano ao usuário para alterações que afetam muitos arquivos.
+3. **CONFLITOS ALERTADOS** — Avisar quando o pedido conflita com tecnologias existentes no projeto.
+4. **COMMIT POR MUDANÇA** — Registrar cada alteração com git para rastreabilidade.
+5. **PREVIEW ATUALIZADO** — Garantir que o preview reflita as mudanças após aplicação.
+
+## Fluxo de Execução
 
 This command adds features or makes updates to existing application.
 

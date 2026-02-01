@@ -26,7 +26,17 @@ This command handles production deployment with pre-flight checks, deployment ex
 
 ---
 
-## Pre-Deployment Checklist
+## Regras Críticas
+
+1. **CHECKLIST OBRIGATÓRIO** — Nunca fazer deploy sem passar pelo pre-flight checklist completo.
+2. **ZERO ERROS** — TypeScript, ESLint e testes devem estar passando antes do deploy.
+3. **SEM SEGREDOS NO CÓDIGO** — Verificar que não há secrets hardcoded antes de publicar.
+4. **HEALTH CHECK PÓS-DEPLOY** — Sempre verificar saúde da aplicação após o deploy.
+5. **ROLLBACK DISPONÍVEL** — Manter versão anterior acessível para rollback imediato se necessário.
+
+## Fluxo de Execução
+
+### Pre-Deployment Checklist
 
 Before any deployment:
 

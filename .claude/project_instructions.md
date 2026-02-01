@@ -6,7 +6,7 @@
 
 **Inove AI Framework** é um kit de desenvolvimento AI com sistema dual-agent (Claude Code + Antigravity/Gemini) que fornece:
 
-- **19 Agentes Especializados** para diferentes domínios
+- **20 Agentes Especializados** para diferentes domínios
 - **36 Skills Modulares** carregadas sob demanda
 - **18 Workflows** (slash commands) para processos estruturados
 - **Sistema Dual-Agent** com sincronização de locks e ownership
@@ -17,7 +17,7 @@
 
 ```
 .agent/
-├── agents/           # 19 agentes especializados
+├── agents/           # 20 agentes especializados
 ├── skills/           # 36 módulos de conhecimento
 ├── workflows/        # 18 workflows (slash commands)
 ├── scripts/          # Automação Python
@@ -40,6 +40,7 @@
 | "bug", "erro", "não funciona", "debug" | Debug | `debugger` |
 | "teste", "E2E", "CI/CD" | Testing | `qa-automation-engineer` |
 | "deploy", "docker", "infraestrutura" | DevOps | `devops-engineer` |
+| "requisitos", "user story", "backlog", "MVP" | Product | `product-owner` |
 
 ### 2. Ativação de Agente (OBRIGATÓRIO)
 
@@ -188,7 +189,7 @@ Toda conversa começa com:
 ```
 ✅ Project Instructions carregadas
 ✅ Protocolo Inove AI Framework ativo
-✅ 19 agentes disponíveis
+✅ 20 agentes disponíveis
 ✅ 36 skills disponíveis
 ✅ 18 workflows disponíveis
 ✅ Roteamento inteligente habilitado
@@ -220,6 +221,7 @@ Toda conversa começa com:
 | `seo-specialist` | `.agent/agents/seo-specialist.md` | SEO, visibilidade |
 | `penetration-tester` | `.agent/agents/penetration-tester.md` | Security testing |
 | `game-developer` | `.agent/agents/game-developer.md` | Game logic |
+| `product-owner` | `.agent/agents/product-owner.md` | Requisitos, backlog, MVP |
 | `explorer-agent` | `.agent/agents/explorer-agent.md` | Análise de codebase |
 
 ---

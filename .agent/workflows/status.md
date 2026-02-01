@@ -6,6 +6,12 @@ description: Exibe dashboard consolidado com progresso, sessões e métricas do 
 
 > **Propósito:** Painel centralizado que combina progresso real (backlog), sessões ativas, estatísticas semanais e sync status (dual-agent).
 
+## Regras Críticas
+
+1. **SOMENTE LEITURA** — Este workflow apenas lê dados e gera relatórios, nunca modifica o backlog.
+2. **DASHBOARD CONSOLIDADO** — Sempre usar `dashboard.py` para visão unificada de todas as fontes.
+3. **ARQUIVO SALVO** — O output é salvo automaticamente em `docs/dashboard.md`.
+
 ## Fluxo de Execução
 
 ### Passo 1: Exibir Dashboard Unificado

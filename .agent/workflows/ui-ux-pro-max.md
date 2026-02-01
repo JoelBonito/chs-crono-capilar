@@ -37,7 +37,15 @@ winget install Python.Python.3.12
 
 ---
 
-## How to Use This Workflow
+## Regras Críticas
+
+1. **SEM EMOJIS COMO ÍCONES** — Usar SVG icons (Heroicons, Lucide, Simple Icons), nunca emojis na UI.
+2. **DESIGN SYSTEM OBRIGATÓRIO** — Sempre gerar design system com `--design-system` antes de implementar.
+3. **CONTRASTE VERIFICADO** — Texto deve ter contraste mínimo de 4.5:1 em ambos os modos (light/dark).
+4. **CURSOR POINTER** — Todos os elementos clicáveis devem ter `cursor-pointer`.
+5. **RESPONSIVO TESTADO** — Verificar em 375px, 768px, 1024px e 1440px antes de entregar.
+
+## Fluxo de Execução
 
 When user requests UI/UX work (design, build, create, implement, review, fix, improve), follow this workflow:
 

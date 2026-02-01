@@ -11,6 +11,14 @@ $ARGUMENTS
 
 ---
 
+## Regras Críticas
+
+1. **MÍNIMO 3 AGENTES** — Orquestração exige no mínimo 3 agentes diferentes; menos que isso é delegação simples.
+2. **2 FASES OBRIGATÓRIAS** — Fase 1 (Planejamento) deve ser concluída e aprovada antes da Fase 2 (Implementação).
+3. **APROVAÇÃO DO USUÁRIO** — Nunca prosseguir para implementação sem aprovação explícita do plano.
+4. **CONTEXTO COMPLETO** — Ao invocar sub-agentes, passar contexto completo (pedido original, decisões, trabalho anterior).
+5. **VERIFICAÇÃO FINAL** — O último agente deve executar scripts de verificação (security_scan, lint_runner).
+
 ## 🔴 CRITICAL: Minimum Agent Requirement
 
 > ⚠️ **ORCHESTRATION = MINIMUM 3 DIFFERENT AGENTS**
@@ -105,7 +113,9 @@ Onaylıyor musunuz? (Y/N)
 
 ---
 
-## Orchestration Protocol
+## Fluxo de Execução
+
+### Orchestration Protocol
 
 ### Step 1: Analyze Task Domains
 Identify ALL domains this task touches:

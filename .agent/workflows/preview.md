@@ -8,7 +8,14 @@ $ARGUMENTS
 
 ---
 
-## Task
+## Regras Críticas
+
+1. **PORTA VERIFICADA** — Sempre verificar se a porta está livre antes de iniciar o servidor.
+2. **HEALTH CHECK** — Confirmar que o servidor está respondendo antes de informar sucesso.
+3. **CONFLITO TRATADO** — Se a porta estiver em uso, oferecer alternativas ao usuário.
+4. **SCRIPT OFICIAL** — Usar `auto_preview.py` para gerenciar o servidor de preview.
+
+## Fluxo de Execução
 
 Manage preview server: start, stop, status check.
 

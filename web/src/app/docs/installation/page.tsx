@@ -68,7 +68,7 @@ export default function InstallationPage() {
                     What Gets Installed
                 </h2>
                 <p className="text-base text-zinc-600 dark:text-zinc-400 mb-6">
-                    After running the installation command, you'll have the following structure:
+                    After running the installation command, you&apos;ll have the following structure:
                 </p>
 
                 <CodeBlock code={`.agent/

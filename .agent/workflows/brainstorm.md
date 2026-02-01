@@ -14,7 +14,7 @@ This command activates BRAINSTORM mode for structured idea exploration. Use when
 
 ---
 
-## Behavior
+## Fluxo de Execução
 
 When `/brainstorm` is triggered:
 
@@ -104,6 +104,13 @@ What direction would you like to explore?
 ```
 
 ---
+
+## Regras Críticas
+
+1. **SEM CÓDIGO** — Este workflow é sobre ideias e exploração, não implementação.
+2. **MÍNIMO 3 OPÇÕES** — Sempre apresentar pelo menos 3 abordagens diferentes.
+3. **TRADEOFFS HONESTOS** — Não esconder complexidade; apresentar prós e contras reais.
+4. **DECISÃO DO USUÁRIO** — Apresentar opções e deixar o usuário decidir a direção.
 
 ## Key Principles
 

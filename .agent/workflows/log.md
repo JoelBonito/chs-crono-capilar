@@ -6,6 +6,13 @@ description: Gerencia logs de sessão de trabalho. Sub-comandos: start, end, sho
 
 > **Propósito:** Registrar sessões de trabalho de forma manual e consistente, criando relatórios diários estruturados.
 
+## Regras Críticas
+
+1. **FUSO HORÁRIO** — Sempre usar America/Sao_Paulo para registro de horários.
+2. **AGUARDAR RESPOSTA** — No `/log end`, perguntar atividades e aguardar resposta do usuário antes de fechar.
+3. **ESTRUTURA CONSISTENTE** — Manter o formato padrão de log diário (data, sessões, resumo).
+4. **ARQUIVO POR DIA** — Um único arquivo por dia no formato `AAAA-MM-DD.md`.
+
 ## Sub-comandos
 
 | Comando | Descrição |

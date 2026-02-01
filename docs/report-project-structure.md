@@ -4,7 +4,7 @@ Este relatório detalha a análise da documentação do projeto, catalogando a f
 
 ---
 
-## 1. 🤖 Agentes Especialistas (19)
+## 1. 🤖 Agentes Especialistas (20)
 
 Os agentes são personas de IA especializadas com regras, ferramentas e contextos específicos para atuar em diferentes domínios do desenvolvimento.
 
@@ -29,6 +29,7 @@ Os agentes são personas de IA especializadas com regras, ferramentas e contexto
 | **`explorer-agent`** | **Discovery**. Mapeamento de codebase, análise de arquitetura e dependências. | Auditoria inicial, "map codebase", entender projeto desconhecido. |
 | **`documentation-writer`** | **Documentação**. Criação de README, API docs e guias técnicos. **Só atua sob demanda explícita.** | "Write docs", README, documentação de API. |
 | **`product-manager`** | **Produto**. Definição de requisitos, User Stories, critérios de aceite e priorização (PRD). | Requisitos, user stories, escopo, funcionalidades. |
+| **`product-owner`** | **Estratégia de Produto**. Priorização de backlog, MVP, requisitos de negócio e roadmap. | Backlog, MVP, PRD, stakeholder, priorização. |
 
 ---
 
@@ -39,10 +40,10 @@ Módulos de conhecimento que fornecem instruções e princípios específicos pa
 ### Frontend & Design
 - **`frontend-design`**: Princípios de design, layouts e estética (sem templates prontos).
 - **`mobile-design`**: UX/UI específico para toque e telas pequenas.
-- **`react-patterns`**: Hooks, composição e performance em React.
+- **`react-best-practices`**: React/Next.js performance (57 regras Vercel Engineering).
 - **`tailwind-patterns`**: Uso avançado de Tailwind CSS v4.
 - **`ui-ux-pro-max`**: Design system generativo com 50+ estilos.
-- **`nextjs-best-practices`**: App Router, Server Components.
+- **`web-design-guidelines`**: Audit de UI contra Web Interface Guidelines.
 
 ### Backend & Dados
 - **`api-patterns`**: Design REST, GraphQL, tRPC.

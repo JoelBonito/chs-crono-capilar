@@ -43,6 +43,16 @@ RULES:
 
 ---
 
+## Fluxo de Execução
+
+1. **Receber pedido** — Capturar o `$ARGUMENTS` do usuário.
+2. **Socratic Gate** — Fazer perguntas de clarificação (Phase 0 do project-planner).
+3. **Gerar slug** — Extrair 2-3 palavras-chave para nomear o arquivo do plano.
+4. **Criar PLAN.md** — Usar o agente `project-planner` para gerar o plano completo.
+5. **Reportar** — Informar ao usuário o arquivo criado e os próximos passos.
+
+---
+
 ## Expected Output
 
 | Deliverable | Location |

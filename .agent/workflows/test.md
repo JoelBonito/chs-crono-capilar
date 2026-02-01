@@ -25,7 +25,15 @@ This command generates tests, runs existing tests, or checks test coverage.
 
 ---
 
-## Behavior
+## Regras Críticas
+
+1. **TESTAR COMPORTAMENTO** — Testar o comportamento esperado, não a implementação interna.
+2. **PADRÃO AAA** — Seguir Arrange-Act-Assert em todos os testes.
+3. **MOCKS EXTERNOS** — Sempre mockar dependências externas (banco, APIs, serviços).
+4. **NOMES DESCRITIVOS** — Cada teste deve ter nome que descreve o cenário testado.
+5. **COBERTURA DE EDGE CASES** — Incluir happy path, error cases e edge cases.
+
+## Fluxo de Execução
 
 ### Generate Tests
 

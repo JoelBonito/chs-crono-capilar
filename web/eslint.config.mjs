@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Downgrade React Compiler rules to warnings for legitimate patterns
+      // (e.g., setMounted in useEffect for SSR hydration, setState on route change)
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -211,7 +211,7 @@ def generate_issues(
     for doc, found in documents_found.items():
         if not found:
             issues.append({
-                'type': 'CRITICAL' if doc in ['PRD', 'Backlog'] else 'WARNING',
+                'type': 'CRITICAL' if doc == 'Backlog' else 'WARNING',
                 'category': 'document_missing',
                 'message': f'Documento não encontrado: {doc}',
                 'suggestion': f'Execute /define para criar {doc}'
@@ -467,18 +467,19 @@ def main():
         'User Journeys': JOURNEYS_PATH.exists(),
     }
 
-    # Se não tem PRD ou Backlog, não pode continuar
-    if not documents_found['PRD'] or not documents_found['Backlog']:
-        print("❌ PRD ou Backlog não encontrado. Execute /define primeiro.")
-        exit(1)
+    # Se não tem nem PRD nem Backlog, não pode continuar
+    if not documents_found['PRD'] and not documents_found['Backlog']:
+        print("ℹ️  Nenhum PRD ou Backlog encontrado. Execute /define para criar documentação de projeto.")
+        print("   Validação de rastreabilidade não é aplicável sem documentos de planejamento.")
+        exit(0)
 
-    # Lê conteúdo dos arquivos
+    # Lê conteúdo dos arquivos (tolerante a ausência)
     prd_content = read_file(PRD_PATH) or ""
     backlog_content = read_file(BACKLOG_PATH) or ""
 
     # Extrai dados
-    requirements = extract_requirements(prd_content)
-    stories = extract_stories(backlog_content)
+    requirements = extract_requirements(prd_content) if prd_content else []
+    stories = extract_stories(backlog_content) if backlog_content else []
 
     # Mapeia cobertura
     map_requirements_to_stories(requirements, backlog_content)

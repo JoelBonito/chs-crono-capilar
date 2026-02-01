@@ -171,10 +171,11 @@ def calculate_time_per_epic(sessions: List[dict]) -> Dict[str, int]:
 
                     # Divide tempo da sessão entre Epics mencionados
                     # (simplificado: assume distribuição igual)
+                    epic_pattern = re.compile(r'^(\d+)')
                     unique_epics = len(set(
-                        f"Epic {re.match(r'^(\d+)', sid).group(1)}"
+                        "Epic " + epic_pattern.match(sid).group(1)
                         for sid in story_ids
-                        if re.match(r'^(\d+)', sid)
+                        if epic_pattern.match(sid)
                     ))
 
                     if unique_epics > 0:

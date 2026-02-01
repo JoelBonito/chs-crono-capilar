@@ -10,7 +10,7 @@ interface CodeBlockProps {
     className?: string;
 }
 
-export function CodeBlock({ code, language = 'bash', showLineNumbers = false, className }: CodeBlockProps) {
+export function CodeBlock({ code, language: _language = 'bash', showLineNumbers = false, className }: CodeBlockProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = async () => {

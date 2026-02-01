@@ -14,7 +14,15 @@ This command activates DEBUG mode for systematic investigation of issues, errors
 
 ---
 
-## Behavior
+## Regras Críticas
+
+1. **PERGUNTAR ANTES DE ASSUMIR** — Coletar contexto completo do erro antes de investigar.
+2. **HIPÓTESES ORDENADAS** — Listar causas possíveis por ordem de probabilidade.
+3. **MÉTODO ELIMINATÓRIO** — Testar cada hipótese sistematicamente, nunca adivinhar.
+4. **EXPLICAR A CAUSA RAIZ** — Não apenas corrigir, mas explicar o porquê do problema.
+5. **PREVENIR RECORRÊNCIA** — Adicionar testes ou validações para evitar o mesmo bug no futuro.
+
+## Fluxo de Execução
 
 When `/debug` is triggered:
 

@@ -26,7 +26,7 @@ import sys
 import subprocess
 import argparse
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List
 from datetime import datetime
 
 # ANSI colors
@@ -58,96 +58,45 @@ def print_error(text: str):
     print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
 
 # Complete verification suite
+# Checks use either:
+#   - A script path string (Python script relative to project root)
+#   - A list of command args (run directly in project or web dir)
 VERIFICATION_SUITE = [
-    # P0: Security (CRITICAL)
+    # P0: Framework Integrity (CRITICAL)
     {
-        "category": "Security",
+        "category": "Framework Integrity",
         "checks": [
-            ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-            ("Dependency Analysis", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
+            ("Installation Validation", ".agent/scripts/validate_installation.py", True),
         ]
     },
-    
-    # P1: Code Quality (CRITICAL)
+
+    # P1: Code Quality
     {
         "category": "Code Quality",
-        "checks": [
-            ("Lint Check", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
-            ("Type Coverage", ".agent/skills/lint-and-validate/scripts/type_coverage.py", False),
+        "web_checks": [
+            ("TypeScript Check", ["npx", "tsc", "--noEmit"], True),
+            ("Lint Check", ["npm", "run", "lint"], False),
         ]
     },
-    
-    # P2: Data Layer
+
+    # P2: Build
     {
-        "category": "Data Layer",
-        "checks": [
-            ("Schema Validation", ".agent/skills/database-design/scripts/schema_validator.py", False),
+        "category": "Build",
+        "web_checks": [
+            ("Build Check", ["npm", "run", "build"], True),
         ]
     },
-    
-    # P3: Testing
+
+    # P3: Traceability
     {
-        "category": "Testing",
+        "category": "Traceability",
         "checks": [
-            ("Test Suite", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
-        ]
-    },
-    
-    # P4: UX & Accessibility
-    {
-        "category": "UX & Accessibility",
-        "checks": [
-            ("UX Audit", ".agent/skills/frontend-design/scripts/ux_audit.py", False),
-            ("Accessibility Check", ".agent/skills/frontend-design/scripts/accessibility_checker.py", False),
-        ]
-    },
-    
-    # P5: SEO & Content
-    {
-        "category": "SEO & Content",
-        "checks": [
-            ("SEO Check", ".agent/skills/seo-fundamentals/scripts/seo_checker.py", False),
-            ("GEO Check", ".agent/skills/geo-fundamentals/scripts/geo_checker.py", False),
-        ]
-    },
-    
-    # P6: Performance (requires URL)
-    {
-        "category": "Performance",
-        "requires_url": True,
-        "checks": [
-            ("Lighthouse Audit", ".agent/skills/performance-profiling/scripts/lighthouse_audit.py", True),
-            ("Bundle Analysis", ".agent/skills/performance-profiling/scripts/bundle_analyzer.py", False),
-        ]
-    },
-    
-    # P7: E2E Testing (requires URL)
-    {
-        "category": "E2E Testing",
-        "requires_url": True,
-        "checks": [
-            ("Playwright E2E", ".agent/skills/webapp-testing/scripts/playwright_runner.py", False),
-        ]
-    },
-    
-    # P8: Mobile (if applicable)
-    {
-        "category": "Mobile",
-        "checks": [
-            ("Mobile Audit", ".agent/skills/mobile-design/scripts/mobile_audit.py", False),
-        ]
-    },
-    
-    # P9: Internationalization
-    {
-        "category": "Internationalization",
-        "checks": [
-            ("i18n Check", ".agent/skills/i18n-localization/scripts/i18n_checker.py", False),
+            ("Traceability Validation", ".agent/scripts/validate_traceability.py", False),
         ]
     },
 ]
 
-def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
+def run_script(name: str, script_path: Path, project_path: str) -> dict:
     """Run validation script"""
     if not script_path.exists():
         print_warning(f"{name}: Script not found, skipping")
@@ -157,17 +106,16 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
     start_time = datetime.now()
     
     # Build command
-    cmd = ["python", str(script_path), project_path]
-    if url and ("lighthouse" in script_path.name.lower() or "playwright" in script_path.name.lower()):
-        cmd.append(url)
-    
+    cmd = [sys.executable, str(script_path)]
+
     # Run
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=600  # 10 minute timeout for slow checks
+            timeout=600,  # 10 minute timeout for slow checks
+            cwd=project_path
         )
         
         duration = (datetime.now() - start_time).total_seconds()
@@ -271,7 +219,7 @@ Examples:
         """
     )
     parser.add_argument("project", help="Project path to validate")
-    parser.add_argument("--url", required=True, help="URL for performance & E2E checks")
+    parser.add_argument("--url", help="URL for performance & E2E checks (optional)")
     parser.add_argument("--no-e2e", action="store_true", help="Skip E2E tests")
     parser.add_argument("--stop-on-fail", action="store_true", help="Stop on first failure")
     
@@ -291,32 +239,57 @@ Examples:
     start_time = datetime.now()
     results = []
     
+    web_dir = project_path / "web"
+    has_web = web_dir.exists() and (web_dir / "package.json").exists()
+
     # Run all verification categories
     for suite in VERIFICATION_SUITE:
         category = suite["category"]
-        requires_url = suite.get("requires_url", False)
-        
-        # Skip if requires URL and not provided
-        if requires_url and not args.url:
-            continue
-        
-        # Skip E2E if flag set
-        if args.no_e2e and category == "E2E Testing":
-            continue
-        
+
         print_header(f"📋 {category.upper()}")
-        
-        for name, script_path, required in suite["checks"]:
+
+        # Run Python script checks
+        for name, script_path, required in suite.get("checks", []):
             script = project_path / script_path
-            result = run_script(name, script, str(project_path), args.url)
+            if not script.exists():
+                print_warning(f"{name}: Script not found, skipping")
+                results.append({"name": name, "passed": True, "skipped": True, "duration": 0, "category": category})
+                continue
+            result = run_script(name, script, str(project_path))
             result["category"] = category
             results.append(result)
-            
-            # Stop on critical failure if flag set
+
             if args.stop_on_fail and required and not result["passed"] and not result.get("skipped"):
                 print_error(f"CRITICAL: {name} failed. Stopping verification.")
                 print_final_report(results, start_time)
                 sys.exit(1)
+
+        # Run web checks (npm/npx commands in web/ dir)
+        if has_web:
+            for name, cmd, required in suite.get("web_checks", []):
+                print_step(f"Running: {name}")
+                try:
+                    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300, cwd=str(web_dir))
+                    passed = proc.returncode == 0
+                    duration = 0
+                    if passed:
+                        print_success(f"{name}: PASSED")
+                    else:
+                        print_error(f"{name}: FAILED")
+                        if proc.stderr:
+                            print(f"  {proc.stderr[:200]}")
+                    result = {"name": name, "passed": passed, "skipped": False, "duration": duration,
+                              "output": proc.stdout, "error": proc.stderr, "category": category}
+                except Exception as e:
+                    print_error(f"{name}: ERROR - {e}")
+                    result = {"name": name, "passed": False, "skipped": False, "duration": 0,
+                              "error": str(e), "category": category}
+                results.append(result)
+
+                if args.stop_on_fail and required and not result["passed"]:
+                    print_error(f"CRITICAL: {name} failed. Stopping verification.")
+                    print_final_report(results, start_time)
+                    sys.exit(1)
     
     # Print final report
     all_passed = print_final_report(results, start_time)

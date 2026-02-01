@@ -10,7 +10,13 @@ description: Marca uma tarefa do backlog como concluída. Uso: /finish {ID}
 
 - `task_id`: O identificador da tarefa (ex: "3.1", "Epic 2").
 
-## Execução
+## Regras Críticas
+
+1. **ID OBRIGATÓRIO** — O `task_id` deve ser fornecido; não inferir automaticamente.
+2. **IDEMPOTENTE** — Marcar a mesma tarefa múltiplas vezes não causa erro.
+3. **PROGRESSO ATUALIZADO** — Sempre executar o progress_tracker após marcar a tarefa.
+
+## Fluxo de Execução
 
 // turbo
 1. Executar o script de atualização
