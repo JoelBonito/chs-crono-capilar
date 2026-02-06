@@ -27,6 +27,7 @@ class Epic(NamedTuple):
     total: int
     done: int
     owner: str = None  # Agente responsável pelo Epic
+    model: str = None  # Modelo AI preferencial (opus-4-5, sonnet, etc)
 
     @property
     def percent(self) -> float:
@@ -38,16 +39,16 @@ def parse_backlog(content: str) -> list[Epic]:
     Analisa o conteúdo do backlog e extrai Epics com suas tarefas.
 
     Formato esperado:
-        ## Epic N: Nome do Epic [OWNER: agent_name]
+        ## Epic N: Nome do Epic [OWNER: agent_name] [MODEL: opus-4-5]
         - [x] **Story N.N:** Título
         - [ ] **Story N.N:** Título
     """
     epics: list[Epic] = []
 
-    # Regex para encontrar Epics com ownership opcional
-    # Captura: nome do epic e owner (se existir)
+    # Regex para encontrar Epics com ownership e model opcionais
+    # Captura: nome do epic, owner (se existir) e model (se existir)
     epic_pattern = re.compile(
-        r"^##\s+Epic\s+\d+:\s+(.+?)\s*(?:\[OWNER:\s*(.+?)\])?\s*(?:[✅🔴⏳].*)?$",
+        r"^##\s+Epic\s+\d+:\s+(.+?)\s*(?:\[OWNER:\s*(.+?)\])?\s*(?:\[MODEL:\s*(.+?)\])?\s*(?:[✅🔴⏳].*)?$",
         re.MULTILINE
     )
 
@@ -57,6 +58,7 @@ def parse_backlog(content: str) -> list[Epic]:
     for idx, match in enumerate(epic_matches):
         epic_name = match.group(1).strip()
         epic_owner = match.group(2).strip() if match.group(2) else None
+        epic_model = match.group(3).strip() if match.group(3) else None
 
         # Extrai o conteúdo do Epic (até o próximo Epic ou fim do documento)
         start_pos = match.end()
@@ -69,7 +71,7 @@ def parse_backlog(content: str) -> list[Epic]:
         total = done + pending
 
         if total > 0:
-            epics.append(Epic(name=epic_name, total=total, done=done, owner=epic_owner))
+            epics.append(Epic(name=epic_name, total=total, done=done, owner=epic_owner, model=epic_model))
 
     return epics
 
@@ -119,8 +121,8 @@ def generate_progress_report(epics: list[Epic]) -> str:
         "",
         "## Progresso por Epic",
         "",
-        "| Epic | Owner | Progresso | Visual |",
-        "|------|-------|-----------|--------|",
+        "| Epic | Owner | Model | Progresso | Visual |",
+        "|------|-------|-------|-----------|--------|",
     ]
 
     for epic in epics:
@@ -132,7 +134,8 @@ def generate_progress_report(epics: list[Epic]) -> str:
             owner_display = f"{owner_emoji} {epic.owner}"
         else:
             owner_display = "—"
-        lines.append(f"| {epic.name} {status} | {owner_display} | {epic.percent:.0f}% | {bar} |")
+        model_display = epic.model if epic.model else "—"
+        lines.append(f"| {epic.name} {status} | {owner_display} | {model_display} | {epic.percent:.0f}% | {bar} |")
     
     lines.extend([
         "",
@@ -200,11 +203,13 @@ def main():
     print("Por Epic:")
     for epic in epics:
         status = "✅" if epic.percent == 100 else "🔄"
-        owner_text = ""
+        meta_text = ""
         if epic.owner:
             owner_emoji = "🤖" if epic.owner == "antigravity" else "🔵"
-            owner_text = f" [{owner_emoji} {epic.owner}]"
-        print(f"  {status} {epic.name}{owner_text}: {epic.percent:.0f}% ({epic.done}/{epic.total})")
+            meta_text = f" [{owner_emoji} {epic.owner}]"
+        if epic.model:
+            meta_text += f" [🧠 {epic.model}]"
+        print(f"  {status} {epic.name}{meta_text}: {epic.percent:.0f}% ({epic.done}/{epic.total})")
     print()
     print(f"✅ Arquivo gerado: {output_path}")
 

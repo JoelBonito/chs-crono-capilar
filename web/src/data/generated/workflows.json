@@ -84,10 +84,28 @@
     "file": ".agents/workflows/readiness.md"
   },
   {
+    "cmd": "/release",
+    "name": "release",
+    "description": "Finaliza projeto e gera release. Valida conclusao, gera changelog e prepara artefatos de lancamento.",
+    "file": ".agents/workflows/release.md"
+  },
+  {
+    "cmd": "/review",
+    "name": "review",
+    "description": "Revisao de codigo pos-sprint. Aplica checklist de qualidade, seguranca e boas praticas ao codigo implementado.",
+    "file": ".agents/workflows/review.md"
+  },
+  {
     "cmd": "/status",
     "name": "status",
     "description": "Exibe dashboard consolidado com progresso, sessões e métricas do projeto.",
     "file": ".agents/workflows/status.md"
+  },
+  {
+    "cmd": "/test-book",
+    "name": "test-book",
+    "description": "Gera ou atualiza o Caderno de Testes a partir do backlog e codigo implementado. Cria cenarios de teste para validacao de MVP/producao.",
+    "file": ".agents/workflows/test-book.md"
   },
   {
     "cmd": "/test",

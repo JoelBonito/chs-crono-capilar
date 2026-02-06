@@ -1,7 +1,7 @@
 {
   "agents_count": 21,
   "skills_count": 51,
-  "workflows_count": 18,
+  "workflows_count": 21,
   "agent_names": [
     "backend-specialist",
     "code-archaeologist",
@@ -93,7 +93,10 @@
     "/plan",
     "/preview",
     "/readiness",
+    "/release",
+    "/review",
     "/status",
+    "/test-book",
     "/test",
     "/track",
     "/ui-ux-pro-max"

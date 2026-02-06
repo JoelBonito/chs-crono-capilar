@@ -9,7 +9,7 @@
 
 - **21 Agentes Especializados** para diferentes domínios
 - **40 Skills Modulares** carregadas sob demanda
-- **18 Workflows** (slash commands) para processos estruturados
+- **21 Workflows** (slash commands) para processos estruturados
 - **Sistema Multi-Agent** com sincronização de locks e ownership
 
 ---
@@ -20,7 +20,7 @@
 .agents/
 ├── agents/           # 21 agentes especializados
 ├── skills/           # 40 módulos de conhecimento
-├── workflows/        # 18 workflows (slash commands)
+├── workflows/        # 21 workflows (slash commands)
 ├── scripts/          # Automação Python
 ├── config/           # Configurações por plataforma
 └── ARCHITECTURE.md   # Documentação técnica
@@ -82,6 +82,9 @@ Quando um domínio for detectado:
 | `/plan` | Planejamento rápido de tarefas | Plano leve (alternativa ao /define) |
 | `/preview` | Gerenciar servidor de preview | Start/stop/restart do dev server |
 | `/ui-ux-pro-max` | Design system avançado com base de dados | UI/UX com paletas, tipografia, estilos |
+| `/review` | Revisão de código pós-sprint | Após implementação, antes de /finish |
+| `/test-book` | Gerar/atualizar Caderno de Testes | Antes de finalizar MVP ou release |
+| `/release` | Finalizar projeto e gerar release | Conclusão de MVP ou Produção |
 
 **Como usar:**
 ```
@@ -206,8 +209,17 @@ python .agents/scripts/lock_manager.py list      # Ver locks ativos
 python .agents/scripts/lock_manager.py cleanup   # Limpar locks expirados
 ```
 
-### Ownership de Epics
-Formato no BACKLOG.md: `## Epic 1 [OWNER: claude_code]`
+### Ownership e Modelo Preferencial de Epics
+
+Formato no BACKLOG.md:
+```markdown
+## Epic 1: Nome [OWNER: claude_code] [MODEL: opus-4-5]
+```
+
+| Campo | Descrição | Valores |
+|-------|-----------|---------|
+| `OWNER` | Agente/ferramenta responsável | `claude_code`, `antigravity`, `codex` |
+| `MODEL` | Modelo AI preferencial | `opus-4-5`, `sonnet`, `haiku`, `gemini-2.0` |
 
 ---
 
@@ -238,7 +250,7 @@ Toda conversa começa com:
 ✅ Protocolo Inove AI Framework ativo
 ✅ 21 agentes disponíveis
 ✅ 40 skills disponíveis
-✅ 18 workflows disponíveis
+✅ 21 workflows disponíveis
 ✅ Roteamento inteligente habilitado
 
 🎯 Pronto para trabalhar. O que devo fazer?

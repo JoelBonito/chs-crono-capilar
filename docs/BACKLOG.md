@@ -6,7 +6,7 @@
 
 ---
 
-## Epic 1: Core & Infraestrutura (P0)
+## Epic 1: Core & Infraestrutura (P0) [OWNER: claude_code] [MODEL: opus-4-5]
 *Fundação do sistema, autenticação e layout base.*
 
 - [x] **Story 1.1:** Setup Inicial e Design System
@@ -20,7 +20,7 @@
 
 ---
 
-## Epic 2: Pipeline de Vendas (CRM) (P0)
+## Epic 2: Pipeline de Vendas (CRM) (P0) [OWNER: claude_code] [MODEL: opus-4-5]
 *Gestão de Leads e conversão em projetos.*
 
 - [x] **Story 2.1:** Gestão de Clientes
@@ -36,7 +36,7 @@
 
 ---
 
-## Epic 3: Gestão de Projetos (Execution) (P0)
+## Epic 3: Gestão de Projetos (Execution) (P0) [OWNER: claude_code] [MODEL: opus-4-5]
 *O coração do sistema. Gestão técnica e financeira da entrega.*
 
 - [x] **Story 3.1:** Dashboard do Projeto (7-Tabs)
@@ -54,7 +54,7 @@
 
 ---
 
-## Epic 4: Módulo Meu SaaS (Recorrência) (P1)
+## Epic 4: Módulo Meu SaaS (Recorrência) (P1) [OWNER: claude_code] [MODEL: sonnet]
 *Gestão de contratos ativos e LTV.*
 
 - [x] **Story 4.1:** Listagem de Assinaturas
@@ -67,7 +67,7 @@
 
 ---
 
-## Epic 5: Financeiro Unificado (P1)
+## Epic 5: Financeiro Unificado (P1) [OWNER: antigravity] [MODEL: gemini-2.0]
 *Visão consolidada de caixa.*
 
 - [x] **Story 5.1:** Motor Financeiro
@@ -79,7 +79,7 @@
 
 ---
 
-## Epic 6: Configurações & Dashboard (P2)
+## Epic 6: Configurações & Dashboard (P2) [OWNER: antigravity] [MODEL: gemini-2.0]
 *Configurações do sistema e dashboard principal.*
 
 - [x] **Story 6.1:** Configurações do Sistema

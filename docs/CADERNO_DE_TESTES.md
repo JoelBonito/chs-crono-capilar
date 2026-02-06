@@ -12,7 +12,7 @@
 3. [Scripts Python](#3-scripts-python)
 4. [Agentes (21)](#4-agentes-21)
 5. [Skills (40)](#5-skills-40)
-6. [Workflows (18)](#6-workflows-18)
+6. [Workflows (21)](#6-workflows-20)
 7. [Roteamento Inteligente](#7-roteamento-inteligente)
 8. [Sistema Dual-Agent](#8-sistema-dual-agent)
 9. [Web Application (Next.js)](#9-web-application-nextjs)
@@ -74,7 +74,7 @@
 |---|-------|----------------------|----------|--------|
 | 1.3.1 | Total de agentes = 21 | `ls .agents/agents/*.md \| wc -l` | 21 | `[x]` |
 | 1.3.2 | Total de skills >= 40 | `ls -d .agents/skills/*/ \| wc -l` | >= 40 | `[x]` |
-| 1.3.3 | Total de workflows = 18 | `ls .agents/workflows/*.md \| wc -l` | 18 | `[x]` |
+| 1.3.3 | Total de workflows = 21 | `ls .agents/workflows/*.md \| wc -l` | 20 | `[x]` |
 | 1.3.4 | Total de scripts Python >= 20 | `ls .agents/scripts/*.py \| wc -l` | >= 20 | `[x]` |
 
 ### 1.4 Script de Validacao Automatica (P0)
@@ -375,7 +375,7 @@
 
 ---
 
-## 6. Workflows (18)
+## 6. Workflows (21)
 
 ### 6.1 Existencia de Workflows (P0)
 
@@ -399,6 +399,9 @@
 | 6.1.16 | Preview | `.agents/workflows/preview.md` | `[x]` |
 | 6.1.17 | Orchestrate | `.agents/workflows/orchestrate.md` | `[x]` |
 | 6.1.18 | UI/UX Pro Max | `.agents/workflows/ui-ux-pro-max.md` | `[x]` |
+| 6.1.19 | Review | `.agents/workflows/review.md` | `[x]` |
+| 6.1.20 | Test-Book | `.agents/workflows/test-book.md` | `[x]` |
+| 6.1.21 | Release | `.agents/workflows/release.md` | `[x]` |
 
 ### 6.2 Estrutura dos Workflows (P1)
 
@@ -541,7 +544,7 @@
 |---|-------|---------|----------|--------|
 | 9.5.1 | agents.json valido | `web/src/data/generated/agents.json` | JSON parseavel, 21 agentes consistentes com `.agents/agents/` | `[x]` |
 | 9.5.2 | skills.json valido | `web/src/data/generated/skills.json` | JSON parseavel, dados consistentes com `.agents/skills/` | `[x]` |
-| 9.5.3 | workflows.json valido | `web/src/data/generated/workflows.json` | JSON parseavel, 18 workflows consistentes com `.agents/workflows/` | `[x]` |
+| 9.5.3 | workflows.json valido | `web/src/data/generated/workflows.json` | JSON parseavel, 21 workflows consistentes com `.agents/workflows/` | `[x]` |
 | 9.5.4 | generate_web_data.py funciona | `python3 .agents/scripts/generate_web_data.py` | Gera JSONs sem erros | `[x]` |
 
 ---
@@ -636,13 +639,13 @@
 | 3. Scripts Python | 56 | 51 | 0 | 5 |
 | 4. Agentes (21) | 26 | 26 | 0 | 0 |
 | 5. Skills (40) | 49 | 49 | 0 | 0 |
-| 6. Workflows | 22 | 22 | 0 | 0 |
+| 6. Workflows | 25 | 25 | 0 | 0 |
 | 7. Roteamento | 21 | 0 | 0 | 21 |
 | 8. Dual-Agent | 14 | 14 | 0 | 0 |
 | 9. Web Application | 29 | 25 | 0 | 4 |
 | 10. Integracao E2E | 20 | 20 | 0 | 0 |
 | 11. Regressao/Edge | 16 | 11 | 0 | 5 |
-| **TOTAL** | **293** | **257** | **0** | **36** |
+| **TOTAL** | **296** | **260** | **0** | **36** |
 
 ---
 
