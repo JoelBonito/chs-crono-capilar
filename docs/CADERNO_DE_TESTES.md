@@ -556,7 +556,7 @@
 | # | Passo | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
 | 10.1.1 | Criar diretorio temporario | `mkdir /tmp/test-project && cd /tmp/test-project && git init` | Dir criado e inicializado | `[x]` |
-| 10.1.2 | Executar CLI init | `npx @joelbonito/inove-ai-framework init` | Framework instalado | `[x]` |
+| 10.1.2 | Executar CLI init | `npx @inove-ai/inove-ai-framework init` | Framework instalado | `[x]` |
 | 10.1.3 | Validar instalacao | `python3 .agents/scripts/validate_installation.py` | Todos componentes presentes | `[x]` |
 | 10.1.4 | Iniciar sessao | `python3 .agents/scripts/auto_session.py start` | Sessao iniciada | `[x]` |
 | 10.1.5 | Ver dashboard | `python3 .agents/scripts/dashboard.py` | Dashboard exibido sem erros | `[x]` |
