@@ -17,10 +17,43 @@ Casos de uso:
     - Conflito detectado
 """
 
-import os
 import sys
 import subprocess
+import shlex
 from pathlib import Path
+
+
+def _sanitize_applescript_string(text: str) -> str:
+    """
+    Sanitiza uma string para uso seguro em AppleScript.
+
+    Escapa caracteres que podem causar injeção de comandos:
+    - Backslashes
+    - Aspas duplas
+    - Caracteres de controle
+
+    Args:
+        text: String a ser sanitizada
+
+    Returns:
+        String segura para uso em AppleScript
+    """
+    if not isinstance(text, str):
+        text = str(text)
+
+    # Remove caracteres de controle que podem causar problemas
+    text = ''.join(char for char in text if ord(char) >= 32 or char in '\n\t')
+
+    # Escapa backslashes primeiro, depois aspas
+    text = text.replace('\\', '\\\\')
+    text = text.replace('"', '\\"')
+
+    # Limita o tamanho para evitar buffer issues
+    max_length = 500
+    if len(text) > max_length:
+        text = text[:max_length] + "..."
+
+    return text
 
 
 def notify_mac(title: str, message: str, sound: bool = False):
@@ -32,9 +65,9 @@ def notify_mac(title: str, message: str, sound: bool = False):
         message: Mensagem da notificação
         sound: Se True, toca um som
     """
-    # Escapa aspas na mensagem
-    title = title.replace('"', '\\"')
-    message = message.replace('"', '\\"')
+    # Security fix: Sanitiza strings para prevenir command injection
+    title = _sanitize_applescript_string(title)
+    message = _sanitize_applescript_string(message)
 
     # Monta comando AppleScript
     script = f'display notification "{message}" with title "{title}"'
@@ -46,11 +79,15 @@ def notify_mac(title: str, message: str, sound: bool = False):
         subprocess.run(
             ["osascript", "-e", script],
             check=True,
-            capture_output=True
+            capture_output=True,
+            timeout=10  # Security: Add timeout to prevent hangs
         )
         return True
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Erro ao enviar notificação: {e}", file=sys.stderr)
+        return False
+    except subprocess.TimeoutExpired:
+        print(f"⚠️ Timeout ao enviar notificação", file=sys.stderr)
         return False
     except FileNotFoundError:
         # osascript não disponível (não está no macOS)

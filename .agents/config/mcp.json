@@ -1,13 +1,16 @@
 {
+    "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/mcp-config-schema.json",
+    "_comment": "Security: API keys should be set via environment variables, not hardcoded",
     "mcpServers": {
         "context7": {
             "command": "npx",
             "args": [
                 "-y",
-                "@upstash/context7-mcp",
-                "--api-key",
-                "YOUR_API_KEY"
-            ]
+                "@upstash/context7-mcp"
+            ],
+            "env": {
+                "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+            }
         },
         "shadcn": {
             "command": "npx",

@@ -8,7 +8,7 @@ const args = process.argv.slice(2);
 const command = args[0];
 
 // Paths
-const PACKAGE_ROOT = path.join(__dirname, '..');
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const TARGET_DIR = process.cwd();
 const AGENT_SRC = path.join(PACKAGE_ROOT, '.agents');
 const AGENT_DEST = path.join(TARGET_DIR, '.agents');
@@ -16,7 +16,41 @@ const AGENT_DEST = path.join(TARGET_DIR, '.agents');
 // Instruction files to copy to project root
 const INSTRUCTION_FILES = ['CLAUDE.md', 'AGENTS.md', 'GEMINI.md'];
 
+/**
+ * Security: Validates that a path is within the allowed base directory.
+ * Prevents path traversal attacks.
+ *
+ * @param {string} targetPath - Path to validate
+ * @param {string} baseDir - Allowed base directory
+ * @returns {boolean} - True if path is safe
+ */
+function isPathSafe(targetPath, baseDir) {
+    const resolvedTarget = path.resolve(targetPath);
+    const resolvedBase = path.resolve(baseDir);
+    return resolvedTarget.startsWith(resolvedBase + path.sep) || resolvedTarget === resolvedBase;
+}
+
+/**
+ * Security: Sanitizes error messages to avoid exposing system paths.
+ *
+ * @param {Error} error - Error object
+ * @returns {string} - Sanitized error message
+ */
+function sanitizeErrorMessage(error) {
+    if (!error || !error.message) return 'Unknown error';
+    // Remove absolute paths from error messages
+    return error.message.replace(/\/[^\s:]+/g, '[path]');
+}
+
 function copyDir(src, dest) {
+    // Security: Validate paths before operations
+    if (!isPathSafe(src, PACKAGE_ROOT) && !isPathSafe(src, TARGET_DIR)) {
+        throw new Error('Source path validation failed');
+    }
+    if (!isPathSafe(dest, TARGET_DIR)) {
+        throw new Error('Destination path validation failed');
+    }
+
     if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
     }
@@ -24,8 +58,19 @@ function copyDir(src, dest) {
     const entries = fs.readdirSync(src, { withFileTypes: true });
 
     for (const entry of entries) {
+        // Security: Skip hidden files that could be malicious
+        if (entry.name.startsWith('.') && entry.name !== '.agents') {
+            continue;
+        }
+
         const srcPath = path.join(src, entry.name);
         const destPath = path.join(dest, entry.name);
+
+        // Security: Re-validate computed paths
+        if (!isPathSafe(srcPath, PACKAGE_ROOT) && !isPathSafe(srcPath, src)) {
+            console.warn(`   Skipping potentially unsafe path: ${entry.name}`);
+            continue;
+        }
 
         if (entry.isDirectory()) {
             copyDir(srcPath, destPath);
@@ -72,12 +117,13 @@ function init() {
     }
 
     // 3. Copy .agents folder
-    console.log(`Copying .agents folder to ${TARGET_DIR}...`);
+    console.log('Copying .agents folder...');
     try {
         copyDir(AGENT_SRC, AGENT_DEST);
         console.log('.agents folder copied successfully.');
     } catch (error) {
-        console.error('Error copying files:', error.message);
+        // Security: Sanitize error message to avoid exposing system paths
+        console.error('Error copying files:', sanitizeErrorMessage(error));
         process.exit(1);
     }
 
@@ -92,7 +138,8 @@ function init() {
                 fs.copyFileSync(srcFile, destFile);
                 console.log(`   ${file} copied.`);
             } catch (error) {
-                console.warn(`   Warning: Could not copy ${file}: ${error.message}`);
+                // Security: Sanitize error message
+                console.warn(`   Warning: Could not copy ${file}: ${sanitizeErrorMessage(error)}`);
             }
         } else {
             console.warn(`   Warning: ${file} not found in package.`);

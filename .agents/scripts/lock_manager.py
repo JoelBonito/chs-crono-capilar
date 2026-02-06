@@ -98,6 +98,33 @@ class LockManager:
             lock_file.unlink()
             return None
 
+    def _atomic_create_file(self, file_path: Path, content: str) -> bool:
+        """
+        Cria um arquivo de forma atômica usando O_CREAT | O_EXCL.
+
+        Esta operação é atômica no sistema de arquivos - se dois processos
+        tentarem criar o mesmo arquivo simultaneamente, apenas um terá sucesso.
+
+        Args:
+            file_path: Caminho do arquivo
+            content: Conteúdo a escrever
+
+        Returns:
+            True se criou o arquivo, False se já existia
+        """
+        try:
+            # O_CREAT | O_EXCL é atômico - falha se arquivo já existe
+            fd = os.open(str(file_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            try:
+                os.write(fd, content.encode('utf-8'))
+            finally:
+                os.close(fd)
+            return True
+        except FileExistsError:
+            return False
+        except OSError:
+            return False
+
     def acquire_lock(
         self,
         resource: str,
@@ -107,6 +134,8 @@ class LockManager:
     ) -> bool:
         """
         Tenta adquirir um lock para um recurso.
+
+        Usa operações atômicas (O_CREAT | O_EXCL) para prevenir race conditions.
 
         Args:
             resource: Nome do recurso a bloquear
@@ -121,21 +150,21 @@ class LockManager:
         agent = agent or self._get_agent_source()
         timeout = timeout or self.default_timeout
 
-        # Verifica se já existe lock
+        # Verifica se já existe lock (e se está stale)
         existing_lock = self.get_lock_info(resource)
 
         if existing_lock:
             # Verifica se é o mesmo agente
             if existing_lock['locked_by'] == agent:
-                # Renova o lock
+                # Renova o lock (reescrita é segura para o mesmo agente)
                 existing_lock['locked_at'] = datetime.now().isoformat()
                 lock_file.write_text(json.dumps(existing_lock, indent=2))
                 return True
 
-            # Lock pertence a outro agente
+            # Lock pertence a outro agente e não está stale
             return False
 
-        # Cria novo lock
+        # Cria novo lock usando operação atômica
         lock_data = {
             "locked_by": agent,
             "locked_at": datetime.now().isoformat(),
@@ -144,11 +173,20 @@ class LockManager:
             **metadata
         }
 
-        try:
-            lock_file.write_text(json.dumps(lock_data, indent=2))
+        content = json.dumps(lock_data, indent=2)
+
+        # Security fix: Usa criação atômica para prevenir race condition (TOCTOU)
+        if self._atomic_create_file(lock_file, content):
             return True
-        except IOError:
-            return False
+
+        # Se falhou, pode ser que outro processo criou o lock entre nossa verificação
+        # e a tentativa de criação. Verificamos novamente.
+        existing_lock = self.get_lock_info(resource)
+        if existing_lock and existing_lock['locked_by'] == agent:
+            # É nosso lock (caso raro de retry)
+            return True
+
+        return False
 
     def release_lock(self, resource: str, agent: str = None) -> bool:
         """
