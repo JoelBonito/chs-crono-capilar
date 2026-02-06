@@ -1,7 +1,7 @@
 # Caderno de Testes - Inove AI Framework
 
 > Caderno completo de testes para validacao de todos os componentes do framework.
-> Versao: 1.0 | Data: 2026-02-01
+> Versao: 1.1 | Data: 2026-02-05 | Atualizado de .agent/ para .agents/
 
 ---
 
@@ -10,8 +10,8 @@
 1. [Estrutura e Integridade de Arquivos](#1-estrutura-e-integridade-de-arquivos)
 2. [CLI (bin/cli.js)](#2-cli-binclijs)
 3. [Scripts Python](#3-scripts-python)
-4. [Agentes (20)](#4-agentes-20)
-5. [Skills (36+)](#5-skills-36)
+4. [Agentes (21)](#4-agentes-21)
+5. [Skills (40)](#5-skills-40)
 6. [Workflows (18)](#6-workflows-18)
 7. [Roteamento Inteligente](#7-roteamento-inteligente)
 8. [Sistema Dual-Agent](#8-sistema-dual-agent)
@@ -44,13 +44,13 @@
 
 | # | Teste | Comando de Validacao | Status |
 |---|-------|----------------------|--------|
-| 1.1.1 | Diretorio `.agent/` existe | `test -d .agent && echo OK` | `[x]` |
-| 1.1.2 | Diretorio `.agent/agents/` existe | `test -d .agent/agents && echo OK` | `[x]` |
-| 1.1.3 | Diretorio `.agent/skills/` existe | `test -d .agent/skills && echo OK` | `[x]` |
-| 1.1.4 | Diretorio `.agent/workflows/` existe | `test -d .agent/workflows && echo OK` | `[x]` |
-| 1.1.5 | Diretorio `.agent/scripts/` existe | `test -d .agent/scripts && echo OK` | `[x]` |
-| 1.1.6 | Diretorio `.agent/rules/` existe | `test -d .agent/rules && echo OK` | `[x]` |
-| 1.1.7 | Diretorio `.agent/locks/` existe ou e criavel | `mkdir -p .agent/locks && echo OK` | `[x]` |
+| 1.1.1 | Diretorio `.agents/` existe | `test -d .agent && echo OK` | `[x]` |
+| 1.1.2 | Diretorio `.agents/agents/` existe | `test -d .agent/agents && echo OK` | `[x]` |
+| 1.1.3 | Diretorio `.agents/skills/` existe | `test -d .agent/skills && echo OK` | `[x]` |
+| 1.1.4 | Diretorio `.agents/workflows/` existe | `test -d .agent/workflows && echo OK` | `[x]` |
+| 1.1.5 | Diretorio `.agents/scripts/` existe | `test -d .agent/scripts && echo OK` | `[x]` |
+| 1.1.6 | Diretorio `.agents/rules/` existe | `test -d .agent/rules && echo OK` | `[x]` |
+| 1.1.7 | Diretorio `.agents/locks/` existe ou e criavel | `mkdir -p .agent/locks && echo OK` | `[x]` |
 | 1.1.8 | Diretorio `docs/` existe | `test -d docs && echo OK` | `[x]` |
 | 1.1.9 | Diretorio `web/` existe | `test -d web && echo OK` | `[x]` |
 | 1.1.10 | Diretorio `bin/` existe | `test -d bin && echo OK` | `[x]` |
@@ -60,8 +60,8 @@
 | # | Teste | Comando de Validacao | Status |
 |---|-------|----------------------|--------|
 | 1.2.1 | `CLAUDE.md` existe na raiz | `test -f CLAUDE.md && echo OK` | `[x]` |
-| 1.2.2 | `.agent/ARCHITECTURE.md` existe | `test -f .agent/ARCHITECTURE.md && echo OK` | `[x]` |
-| 1.2.3 | `.agent/rules/GEMINI.md` existe | `test -f .agent/rules/GEMINI.md && echo OK` | `[x]` |
+| 1.2.2 | `.agents/ARCHITECTURE.md` existe | `test -f .agents/ARCHITECTURE.md && echo OK` | `[x]` |
+| 1.2.3 | `.agents/rules/GEMINI.md` existe | `test -f .agents/rules/GEMINI.md && echo OK` | `[x]` |
 | 1.2.4 | `.claude/project_instructions.md` existe | `test -f .claude/project_instructions.md && echo OK` | `[x]` |
 | 1.2.5 | `.claude/settings.json` existe | `test -f .claude/settings.json && echo OK` | `[x]` |
 | 1.2.6 | `package.json` raiz existe | `test -f package.json && echo OK` | `[x]` |
@@ -72,16 +72,16 @@
 
 | # | Teste | Comando de Validacao | Esperado | Status |
 |---|-------|----------------------|----------|--------|
-| 1.3.1 | Total de agentes = 20 | `ls .agent/agents/*.md \| wc -l` | 20 | `[x]` |
-| 1.3.2 | Total de skills >= 36 | `ls -d .agent/skills/*/ \| wc -l` | >= 36 | `[x]` |
-| 1.3.3 | Total de workflows = 18 | `ls .agent/workflows/*.md \| wc -l` | 18 | `[x]` |
-| 1.3.4 | Total de scripts Python >= 15 | `ls .agent/scripts/*.py \| wc -l` | >= 15 | `[x]` |
+| 1.3.1 | Total de agentes = 21 | `ls .agents/agents/*.md \| wc -l` | 21 | `[x]` |
+| 1.3.2 | Total de skills >= 40 | `ls -d .agents/skills/*/ \| wc -l` | >= 40 | `[x]` |
+| 1.3.3 | Total de workflows = 18 | `ls .agents/workflows/*.md \| wc -l` | 18 | `[x]` |
+| 1.3.4 | Total de scripts Python >= 20 | `ls .agents/scripts/*.py \| wc -l` | >= 20 | `[x]` |
 
 ### 1.4 Script de Validacao Automatica (P0)
 
 | # | Teste | Comando | Status |
 |---|-------|---------|--------|
-| 1.4.1 | `validate_installation.py` executa sem erros | `python3 .agent/scripts/validate_installation.py` | `[x]` |
+| 1.4.1 | `validate_installation.py` executa sem erros | `python3 .agents/scripts/validate_installation.py` | `[x]` |
 | 1.4.2 | Resultado: todos os componentes instalados | Saida contem "VALIDACAO COMPLETA" | `[x]` |
 
 ---
@@ -104,7 +104,7 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 2.2.1 | Init copia pasta `.agent/` | Executar `init` em dir temp | `.agent/` criado com conteudo completo | `[x]` |
+| 2.2.1 | Init copia pasta `.agents/` | Executar `init` em dir temp | `.agents/` criado com conteudo completo | `[x]` |
 | 2.2.2 | Init copia `CLAUDE.md` | Verificar apos `init` | `CLAUDE.md` presente na raiz do target | `[x]` |
 | 2.2.3 | Init cria pasta `.claude/` | Verificar apos `init` | `.claude/project_instructions.md` presente | `[x]` |
 | 2.2.4 | Init tenta instalar git hooks | Observar saida | Mensagem de instalacao ou warning | `[x]` |
@@ -117,7 +117,7 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 2.3.1 | Copia subdiretorios recursivamente | Verificar `.agent/agents/`, `.agent/skills/` | Todos os subdiretorios presentes | `[x]` |
+| 2.3.1 | Copia subdiretorios recursivamente | Verificar `.agents/agents/`, `.agents/skills/` | Todos os subdiretorios presentes | `[x]` |
 | 2.3.2 | Preserva conteudo dos arquivos | Comparar hash de um arquivo | Hashes identicos | `[x]` |
 | 2.3.3 | Cria diretorio destino se inexistente | `init` em dir sem `.agent` | Diretorio criado automaticamente | `[x]` |
 
@@ -129,7 +129,7 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.1.1 | Import sem erros | `python3 -c "from lock_manager import LockManager"` (cwd: `.agent/scripts/`) | Sem erros | `[x]` |
+| 3.1.1 | Import sem erros | `python3 -c "from lock_manager import LockManager"` (cwd: `.agents/scripts/`) | Sem erros | `[x]` |
 | 3.1.2 | Criar LockManager | `LockManager()` | Instancia criada, `locks/` criado | `[x]` |
 | 3.1.3 | Adquirir lock | `acquire_lock("test", "claude_code")` | Retorna `True`, arquivo `.lock` criado | `[x]` |
 | 3.1.4 | Lock impede segundo agente | `acquire_lock("test", "antigravity")` | Retorna `False` | `[x]` |
@@ -185,7 +185,7 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.4.1 | Executa sem erros | `python3 .agent/scripts/dashboard.py` | Saida formatada sem excecoes | `[x]` |
+| 3.4.1 | Executa sem erros | `python3 .agents/scripts/dashboard.py` | Saida formatada sem excecoes | `[x]` |
 | 3.4.2 | Exibe progresso do projeto | Verificar saida | Secao "Progresso do Projeto" presente | `[x]` |
 | 3.4.3 | Exibe sessao atual | Verificar saida | Secao "Sessao Atual" presente | `[x]` |
 | 3.4.4 | Exibe estatisticas semanais | Verificar saida | Secao "Esta Semana" presente | `[x]` |
@@ -197,8 +197,8 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.5.1 | Iniciar sessao | `python3 .agent/scripts/auto_session.py start` | Sessao criada com timestamp | `[x]` |
-| 3.5.2 | Encerrar sessao | `python3 .agent/scripts/auto_session.py end` | Sessao encerrada com duracao | `[x]` |
+| 3.5.1 | Iniciar sessao | `python3 .agents/scripts/auto_session.py start` | Sessao criada com timestamp | `[x]` |
+| 3.5.2 | Encerrar sessao | `python3 .agents/scripts/auto_session.py end` | Sessao encerrada com duracao | `[x]` |
 | 3.5.3 | Sessao persiste entre chamadas | Start, depois verificar status | Sessao permanece ativa | `[x]` |
 | 3.5.4 | Multiplos starts nao criam conflito | Start 2x consecutivo | Comportamento estavel | `[x]` |
 
@@ -214,29 +214,29 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.7.1 | Executa sem erros | `python3 .agent/scripts/metrics.py` | Saida formatada ou mensagem informativa | `[x]` |
+| 3.7.1 | Executa sem erros | `python3 .agents/scripts/metrics.py` | Saida formatada ou mensagem informativa | `[x]` |
 | 3.7.2 | Gera insights do projeto | Verificar saida | Metricas relevantes exibidas | `[x]` |
 
 ### 3.8 notifier.py (P2)
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.8.1 | Teste basico | `python3 .agent/scripts/notifier.py test` | Notificacao enviada (macOS) | `[x]` |
+| 3.8.1 | Teste basico | `python3 .agents/scripts/notifier.py test` | Notificacao enviada (macOS) | `[x]` |
 | 3.8.2 | Funciona sem macOS (graceful) | Executar em Linux | Nao gera excecao fatal | `[-]` |
 
 ### 3.9 validate_traceability.py (P2)
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.9.1 | Executa sem erros | `python3 .agent/scripts/validate_traceability.py` | Relatorio de rastreabilidade | `[x]` |
+| 3.9.1 | Executa sem erros | `python3 .agents/scripts/validate_traceability.py` | Relatorio de rastreabilidade | `[x]` |
 | 3.9.2 | Valida cobertura de skills nos agentes | Verificar saida | Lista de skills referenciadas vs existentes | `[x]` |
 
 ### 3.10 checklist.py e verify_all.py (P1)
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 3.10.1 | checklist.py executa | `python3 .agent/scripts/checklist.py .` | Checklist de validacao | `[x]` |
-| 3.10.2 | verify_all.py executa | `python3 .agent/scripts/verify_all.py .` | Verificacao completa | `[x]` |
+| 3.10.1 | checklist.py executa | `python3 .agents/scripts/checklist.py .` | Checklist de validacao | `[x]` |
+| 3.10.2 | verify_all.py executa | `python3 .agents/scripts/verify_all.py .` | Verificacao completa | `[x]` |
 
 ### 3.11 Outros Scripts (P2)
 
@@ -246,36 +246,37 @@
 | 3.11.2 | `auto_finish.py` importavel | `python3 -c "import auto_finish"` | Sem erros | `[x]` |
 | 3.11.3 | `auto_preview.py` importavel | `python3 -c "import auto_preview"` | Sem erros | `[x]` |
 | 3.11.4 | `reminder_system.py` importavel | `python3 -c "import reminder_system"` | Sem erros | `[x]` |
-| 3.11.5 | `session_manager.py` importavel | `python3 -c "import session_manager"` | Sem erros | `[x]` |
+| 3.11.5 | `project_analyzer.py` importavel | `python3 -c "import project_analyzer"` | Sem erros | `[x]` |
 
 ---
 
-## 4. Agentes (20)
+## 4. Agentes (21)
 
 ### 4.1 Existencia de Arquivos (P0)
 
 | # | Agente | Arquivo | Status |
 |---|--------|---------|--------|
-| 4.1.1 | Orchestrator | `.agent/agents/orchestrator.md` | `[x]` |
-| 4.1.2 | Project Planner | `.agent/agents/project-planner.md` | `[x]` |
-| 4.1.3 | Product Manager | `.agent/agents/product-manager.md` | `[x]` |
-| 4.1.4 | Product Owner | `.agent/agents/product-owner.md` | `[x]` |
-| 4.1.5 | Frontend Specialist | `.agent/agents/frontend-specialist.md` | `[x]` |
-| 4.1.6 | Backend Specialist | `.agent/agents/backend-specialist.md` | `[x]` |
-| 4.1.7 | Database Architect | `.agent/agents/database-architect.md` | `[x]` |
-| 4.1.8 | Mobile Developer | `.agent/agents/mobile-developer.md` | `[x]` |
-| 4.1.9 | Game Developer | `.agent/agents/game-developer.md` | `[x]` |
-| 4.1.10 | Security Auditor | `.agent/agents/security-auditor.md` | `[x]` |
-| 4.1.11 | Penetration Tester | `.agent/agents/penetration-tester.md` | `[x]` |
-| 4.1.12 | Debugger | `.agent/agents/debugger.md` | `[x]` |
-| 4.1.13 | DevOps Engineer | `.agent/agents/devops-engineer.md` | `[x]` |
-| 4.1.14 | Test Engineer | `.agent/agents/test-engineer.md` | `[x]` |
-| 4.1.15 | QA Automation Engineer | `.agent/agents/qa-automation-engineer.md` | `[x]` |
-| 4.1.16 | Performance Optimizer | `.agent/agents/performance-optimizer.md` | `[x]` |
-| 4.1.17 | Documentation Writer | `.agent/agents/documentation-writer.md` | `[x]` |
-| 4.1.18 | Code Archaeologist | `.agent/agents/code-archaeologist.md` | `[x]` |
-| 4.1.19 | SEO Specialist | `.agent/agents/seo-specialist.md` | `[x]` |
-| 4.1.20 | Explorer Agent | `.agent/agents/explorer-agent.md` | `[x]` |
+| 4.1.1 | Orchestrator | `.agents/agents/orchestrator.md` | `[x]` |
+| 4.1.2 | Project Planner | `.agents/agents/project-planner.md` | `[x]` |
+| 4.1.3 | Product Manager | `.agents/agents/product-manager.md` | `[x]` |
+| 4.1.4 | Product Owner | `.agents/agents/product-owner.md` | `[x]` |
+| 4.1.5 | Frontend Specialist | `.agents/agents/frontend-specialist.md` | `[x]` |
+| 4.1.6 | Backend Specialist | `.agents/agents/backend-specialist.md` | `[x]` |
+| 4.1.7 | Database Architect | `.agents/agents/database-architect.md` | `[x]` |
+| 4.1.8 | Mobile Developer | `.agents/agents/mobile-developer.md` | `[x]` |
+| 4.1.9 | Game Developer | `.agents/agents/game-developer.md` | `[x]` |
+| 4.1.10 | Security Auditor | `.agents/agents/security-auditor.md` | `[x]` |
+| 4.1.11 | Penetration Tester | `.agents/agents/penetration-tester.md` | `[x]` |
+| 4.1.12 | Debugger | `.agents/agents/debugger.md` | `[x]` |
+| 4.1.13 | DevOps Engineer | `.agents/agents/devops-engineer.md` | `[x]` |
+| 4.1.14 | Test Engineer | `.agents/agents/test-engineer.md` | `[x]` |
+| 4.1.15 | QA Automation Engineer | `.agents/agents/qa-automation-engineer.md` | `[x]` |
+| 4.1.16 | Performance Optimizer | `.agents/agents/performance-optimizer.md` | `[x]` |
+| 4.1.17 | Documentation Writer | `.agents/agents/documentation-writer.md` | `[x]` |
+| 4.1.18 | Code Archaeologist | `.agents/agents/code-archaeologist.md` | `[x]` |
+| 4.1.19 | SEO Specialist | `.agents/agents/seo-specialist.md` | `[x]` |
+| 4.1.20 | Explorer Agent | `.agents/agents/explorer-agent.md` | `[x]` |
+| 4.1.21 | UX Researcher | `.agents/agents/ux-researcher.md` | `[x]` |
 
 ### 4.2 Estrutura dos Agentes (P1)
 
@@ -285,7 +286,7 @@
 |---|-------|----------|--------|
 | 4.2.1 | Todos agentes tem frontmatter YAML | Inicia com `---` e contem campos `name`, `description` | `[x]` |
 | 4.2.2 | Todos agentes referenciam skills | Campo `skills:` no frontmatter | `[x]` |
-| 4.2.3 | Skills referenciadas existem | Cada skill no frontmatter tem diretorio em `.agent/skills/` | `[x]` |
+| 4.2.3 | Skills referenciadas existem | Cada skill no frontmatter tem diretorio em `.agents/skills/` | `[x]` |
 | 4.2.4 | Nenhum agente esta vazio | Tamanho > 500 bytes | `[x]` |
 | 4.2.5 | Agentes tem role definition | Contem secao de definicao de papel/persona | `[x]` |
 
@@ -306,53 +307,58 @@
 
 ---
 
-## 5. Skills (36+)
+## 5. Skills (40)
 
 ### 5.1 Existencia de Skills (P0)
 
 | # | Skill | Diretorio | Status |
 |---|-------|-----------|--------|
-| 5.1.1 | Frontend Design | `.agent/skills/frontend-design/` | `[x]` |
-| 5.1.2 | Tailwind Patterns | `.agent/skills/tailwind-patterns/` | `[x]` |
-| 5.1.3 | Web Design Guidelines | `.agent/skills/web-design-guidelines/` | `[x]` |
-| 5.1.4 | API Patterns | `.agent/skills/api-patterns/` | `[x]` |
-| 5.1.5 | Node.js Best Practices | `.agent/skills/nodejs-best-practices/` | `[x]` |
-| 5.1.6 | Python Patterns | `.agent/skills/python-patterns/` | `[x]` |
-| 5.1.7 | Database Design | `.agent/skills/database-design/` | `[x]` |
-| 5.1.8 | Testing Patterns | `.agent/skills/testing-patterns/` | `[x]` |
-| 5.1.9 | Webapp Testing | `.agent/skills/webapp-testing/` | `[x]` |
-| 5.1.10 | TDD Workflow | `.agent/skills/tdd-workflow/` | `[x]` |
-| 5.1.11 | Lint and Validate | `.agent/skills/lint-and-validate/` | `[x]` |
-| 5.1.12 | Vulnerability Scanner | `.agent/skills/vulnerability-scanner/` | `[x]` |
-| 5.1.13 | Red Team Tactics | `.agent/skills/red-team-tactics/` | `[x]` |
-| 5.1.14 | App Builder | `.agent/skills/app-builder/` | `[x]` |
-| 5.1.15 | Architecture | `.agent/skills/architecture/` | `[x]` |
-| 5.1.16 | Plan Writing | `.agent/skills/plan-writing/` | `[x]` |
-| 5.1.17 | Brainstorming | `.agent/skills/brainstorming/` | `[x]` |
-| 5.1.18 | Clean Code | `.agent/skills/clean-code/` | `[x]` |
-| 5.1.19 | Performance Profiling | `.agent/skills/performance-profiling/` | `[x]` |
-| 5.1.20 | Systematic Debugging | `.agent/skills/systematic-debugging/` | `[x]` |
-| 5.1.21 | Deployment Procedures | `.agent/skills/deployment-procedures/` | `[x]` |
-| 5.1.22 | Server Management | `.agent/skills/server-management/` | `[x]` |
-| 5.1.23 | Mobile Design | `.agent/skills/mobile-design/` | `[x]` |
-| 5.1.24 | Game Development | `.agent/skills/game-development/` | `[x]` |
-| 5.1.25 | SEO Fundamentals | `.agent/skills/seo-fundamentals/` | `[x]` |
-| 5.1.26 | GEO Fundamentals | `.agent/skills/geo-fundamentals/` | `[x]` |
-| 5.1.27 | Bash Linux | `.agent/skills/bash-linux/` | `[x]` |
-| 5.1.28 | PowerShell Windows | `.agent/skills/powershell-windows/` | `[x]` |
-| 5.1.29 | Behavioral Modes | `.agent/skills/behavioral-modes/` | `[x]` |
-| 5.1.30 | Parallel Agents | `.agent/skills/parallel-agents/` | `[x]` |
-| 5.1.31 | MCP Builder | `.agent/skills/mcp-builder/` | `[x]` |
-| 5.1.32 | Documentation Templates | `.agent/skills/documentation-templates/` | `[x]` |
-| 5.1.33 | i18n Localization | `.agent/skills/i18n-localization/` | `[x]` |
-| 5.1.34 | Intelligent Routing | `.agent/skills/intelligent-routing/` | `[x]` |
-| 5.1.35 | Next.js/React Expert | `.agent/skills/nextjs-react-expert/` | `[x]` |
+| 5.1.1 | Frontend Design | `.agents/skills/frontend-design/` | `[x]` |
+| 5.1.2 | Tailwind Patterns | `.agents/skills/tailwind-patterns/` | `[x]` |
+| 5.1.3 | Web Design Guidelines | `.agents/skills/web-design-guidelines/` | `[x]` |
+| 5.1.4 | API Patterns | `.agents/skills/api-patterns/` | `[x]` |
+| 5.1.5 | Node.js Best Practices | `.agents/skills/nodejs-best-practices/` | `[x]` |
+| 5.1.6 | Python Patterns | `.agents/skills/python-patterns/` | `[x]` |
+| 5.1.7 | Database Design | `.agents/skills/database-design/` | `[x]` |
+| 5.1.8 | Testing Patterns | `.agents/skills/testing-patterns/` | `[x]` |
+| 5.1.9 | Webapp Testing | `.agents/skills/webapp-testing/` | `[x]` |
+| 5.1.10 | TDD Workflow | `.agents/skills/tdd-workflow/` | `[x]` |
+| 5.1.11 | Lint and Validate | `.agents/skills/lint-and-validate/` | `[x]` |
+| 5.1.12 | Vulnerability Scanner | `.agents/skills/vulnerability-scanner/` | `[x]` |
+| 5.1.13 | Red Team Tactics | `.agents/skills/red-team-tactics/` | `[x]` |
+| 5.1.14 | App Builder | `.agents/skills/app-builder/` | `[x]` |
+| 5.1.15 | Architecture | `.agents/skills/architecture/` | `[x]` |
+| 5.1.16 | Plan Writing | `.agents/skills/plan-writing/` | `[x]` |
+| 5.1.17 | Brainstorming | `.agents/skills/brainstorming/` | `[x]` |
+| 5.1.18 | Clean Code | `.agents/skills/clean-code/` | `[x]` |
+| 5.1.19 | Performance Profiling | `.agents/skills/performance-profiling/` | `[x]` |
+| 5.1.20 | Systematic Debugging | `.agents/skills/systematic-debugging/` | `[x]` |
+| 5.1.21 | Deployment Procedures | `.agents/skills/deployment-procedures/` | `[x]` |
+| 5.1.22 | Server Management | `.agents/skills/server-management/` | `[x]` |
+| 5.1.23 | Mobile Design | `.agents/skills/mobile-design/` | `[x]` |
+| 5.1.24 | Game Development | `.agents/skills/game-development/` | `[x]` |
+| 5.1.25 | SEO Fundamentals | `.agents/skills/seo-fundamentals/` | `[x]` |
+| 5.1.26 | GEO Fundamentals | `.agents/skills/geo-fundamentals/` | `[x]` |
+| 5.1.27 | Bash Linux | `.agents/skills/bash-linux/` | `[x]` |
+| 5.1.28 | PowerShell Windows | `.agents/skills/powershell-windows/` | `[x]` |
+| 5.1.29 | Behavioral Modes | `.agents/skills/behavioral-modes/` | `[x]` |
+| 5.1.30 | Parallel Agents | `.agents/skills/parallel-agents/` | `[x]` |
+| 5.1.31 | MCP Builder | `.agents/skills/mcp-builder/` | `[x]` |
+| 5.1.32 | Documentation Templates | `.agents/skills/documentation-templates/` | `[x]` |
+| 5.1.33 | i18n Localization | `.agents/skills/i18n-localization/` | `[x]` |
+| 5.1.34 | Intelligent Routing | `.agents/skills/intelligent-routing/` | `[x]` |
+| 5.1.35 | Next.js/React Expert | `.agents/skills/nextjs-react-expert/` | `[x]` |
+| 5.1.36 | Doc Review | `.agents/skills/doc-review/` | `[x]` |
+| 5.1.37 | GAP Analysis | `.agents/skills/gap-analysis/` | `[x]` |
+| 5.1.38 | System Design | `.agents/skills/system-design/` | `[x]` |
+| 5.1.39 | UX Research | `.agents/skills/ux-research/` | `[x]` |
+| 5.1.40 | Code Review Checklist | `.agents/skills/code-review-checklist/` | `[x]` |
 
 ### 5.2 Estrutura de Skills (P1)
 
 | # | Teste | Criterio | Status |
 |---|-------|----------|--------|
-| 5.2.1 | Todas skills tem `SKILL.md` | `test -f .agent/skills/*/SKILL.md` | `[x]` |
+| 5.2.1 | Todas skills tem `SKILL.md` | `test -f .agents/skills/*/SKILL.md` | `[x]` |
 | 5.2.2 | Nenhum `SKILL.md` esta vazio | Tamanho > 100 bytes | `[x]` |
 | 5.2.3 | Skills com scripts/ tem scripts validos | Verificar `.py` ou `.sh` em scripts/ | `[x]` |
 | 5.2.4 | Skills com references/ tem arquivos | Verificar diretorio nao vazio | `[x]` |
@@ -361,11 +367,11 @@
 
 | # | Teste | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
-| 5.3.1 | `app-builder/` tem templates | `ls .agent/skills/app-builder/templates/` | >= 5 templates | `[x]` |
+| 5.3.1 | `app-builder/` tem templates | `ls .agents/skills/app-builder/templates/` | >= 5 templates | `[x]` |
 | 5.3.2 | Cada template tem `TEMPLATE.md` | Verificar cada subdiretorio | Arquivo presente | `[x]` |
-| 5.3.3 | `api-patterns/` tem referencias | `ls .agent/skills/api-patterns/` | Multiplos arquivos .md | `[x]` |
-| 5.3.4 | `testing-patterns/` tem scripts | `ls .agent/skills/testing-patterns/scripts/` | Scripts de teste | `[x]` |
-| 5.3.5 | `performance-profiling/` tem scripts | `ls .agent/skills/performance-profiling/scripts/` | Scripts de profiling | `[x]` |
+| 5.3.3 | `api-patterns/` tem referencias | `ls .agents/skills/api-patterns/` | Multiplos arquivos .md | `[x]` |
+| 5.3.4 | `testing-patterns/` tem scripts | `ls .agents/skills/testing-patterns/scripts/` | Scripts de teste | `[x]` |
+| 5.3.5 | `performance-profiling/` tem scripts | `ls .agents/skills/performance-profiling/scripts/` | Scripts de profiling | `[x]` |
 
 ---
 
@@ -375,24 +381,24 @@
 
 | # | Workflow | Arquivo | Status |
 |---|---------|---------|--------|
-| 6.1.1 | Define | `.agent/workflows/define.md` | `[x]` |
-| 6.1.2 | Journeys | `.agent/workflows/journeys.md` | `[x]` |
-| 6.1.3 | Context | `.agent/workflows/context.md` | `[x]` |
-| 6.1.4 | Readiness | `.agent/workflows/readiness.md` | `[x]` |
-| 6.1.5 | Brainstorm | `.agent/workflows/brainstorm.md` | `[x]` |
-| 6.1.6 | Create | `.agent/workflows/create.md` | `[x]` |
-| 6.1.7 | Debug | `.agent/workflows/debug.md` | `[x]` |
-| 6.1.8 | Enhance | `.agent/workflows/enhance.md` | `[x]` |
-| 6.1.9 | Deploy | `.agent/workflows/deploy.md` | `[x]` |
-| 6.1.10 | Test | `.agent/workflows/test.md` | `[x]` |
-| 6.1.11 | Plan | `.agent/workflows/plan.md` | `[x]` |
-| 6.1.12 | Track | `.agent/workflows/track.md` | `[x]` |
-| 6.1.13 | Status | `.agent/workflows/status.md` | `[x]` |
-| 6.1.14 | Finish | `.agent/workflows/finish.md` | `[x]` |
-| 6.1.15 | Log | `.agent/workflows/log.md` | `[x]` |
-| 6.1.16 | Preview | `.agent/workflows/preview.md` | `[x]` |
-| 6.1.17 | Orchestrate | `.agent/workflows/orchestrate.md` | `[x]` |
-| 6.1.18 | UI/UX Pro Max | `.agent/workflows/ui-ux-pro-max.md` | `[x]` |
+| 6.1.1 | Define | `.agents/workflows/define.md` | `[x]` |
+| 6.1.2 | Journeys | `.agents/workflows/journeys.md` | `[x]` |
+| 6.1.3 | Context | `.agents/workflows/context.md` | `[x]` |
+| 6.1.4 | Readiness | `.agents/workflows/readiness.md` | `[x]` |
+| 6.1.5 | Brainstorm | `.agents/workflows/brainstorm.md` | `[x]` |
+| 6.1.6 | Create | `.agents/workflows/create.md` | `[x]` |
+| 6.1.7 | Debug | `.agents/workflows/debug.md` | `[x]` |
+| 6.1.8 | Enhance | `.agents/workflows/enhance.md` | `[x]` |
+| 6.1.9 | Deploy | `.agents/workflows/deploy.md` | `[x]` |
+| 6.1.10 | Test | `.agents/workflows/test.md` | `[x]` |
+| 6.1.11 | Plan | `.agents/workflows/plan.md` | `[x]` |
+| 6.1.12 | Track | `.agents/workflows/track.md` | `[x]` |
+| 6.1.13 | Status | `.agents/workflows/status.md` | `[x]` |
+| 6.1.14 | Finish | `.agents/workflows/finish.md` | `[x]` |
+| 6.1.15 | Log | `.agents/workflows/log.md` | `[x]` |
+| 6.1.16 | Preview | `.agents/workflows/preview.md` | `[x]` |
+| 6.1.17 | Orchestrate | `.agents/workflows/orchestrate.md` | `[x]` |
+| 6.1.18 | UI/UX Pro Max | `.agents/workflows/ui-ux-pro-max.md` | `[x]` |
 
 ### 6.2 Estrutura dos Workflows (P1)
 
@@ -498,7 +504,7 @@
 |---|--------|------|-------|--------|
 | 9.2.1 | Home | `/` | Renderiza sem erros, conteudo visivel | `[x]` |
 | 9.2.2 | Docs | `/docs` | Pagina de documentacao acessivel | `[x]` |
-| 9.2.3 | Agents | `/docs/agents` | Lista de 20 agentes exibida | `[x]` |
+| 9.2.3 | Agents | `/docs/agents` | Lista de 21 agentes exibida | `[x]` |
 | 9.2.4 | Skills | `/docs/skills` | Lista de skills exibida | `[x]` |
 | 9.2.5 | Workflows | `/docs/workflows` | Lista de workflows exibida | `[x]` |
 | 9.2.6 | CLI | `/docs/cli` | Documentacao do CLI | `[x]` |
@@ -529,13 +535,14 @@
 | 9.4.3 | Syntax highlighting funciona | Blocos de codigo com cores (Shiki) | `[-]` |
 | 9.4.4 | Navegacao lateral funciona | Links de docs navegam corretamente | `[-]` |
 
-### 9.5 Dados JSON (P1)
+### 9.5 Dados JSON Gerados (P1)
 
 | # | Teste | Arquivo | Criterio | Status |
 |---|-------|---------|----------|--------|
-| 9.5.1 | agents.json valido | `web/src/services/agents.json` | JSON parseavel, dados consistentes com `.agent/agents/` | `[x]` |
-| 9.5.2 | skills.json valido | `web/src/services/skills.json` | JSON parseavel, dados consistentes com `.agent/skills/` | `[x]` |
-| 9.5.3 | workflows.json valido | `web/src/services/workflows.json` | JSON parseavel, dados consistentes com `.agent/workflows/` | `[x]` |
+| 9.5.1 | agents.json valido | `web/src/data/generated/agents.json` | JSON parseavel, 21 agentes consistentes com `.agents/agents/` | `[x]` |
+| 9.5.2 | skills.json valido | `web/src/data/generated/skills.json` | JSON parseavel, dados consistentes com `.agents/skills/` | `[x]` |
+| 9.5.3 | workflows.json valido | `web/src/data/generated/workflows.json` | JSON parseavel, 18 workflows consistentes com `.agents/workflows/` | `[x]` |
+| 9.5.4 | generate_web_data.py funciona | `python3 .agents/scripts/generate_web_data.py` | Gera JSONs sem erros | `[x]` |
 
 ---
 
@@ -547,23 +554,23 @@
 |---|-------|--------------|-------------------|--------|
 | 10.1.1 | Criar diretorio temporario | `mkdir /tmp/test-project && cd /tmp/test-project && git init` | Dir criado e inicializado | `[x]` |
 | 10.1.2 | Executar CLI init | `npx @joelbonito/inove-ai-framework init` | Framework instalado | `[x]` |
-| 10.1.3 | Validar instalacao | `python3 .agent/scripts/validate_installation.py` | Todos componentes presentes | `[x]` |
-| 10.1.4 | Iniciar sessao | `python3 .agent/scripts/auto_session.py start` | Sessao iniciada | `[x]` |
-| 10.1.5 | Ver dashboard | `python3 .agent/scripts/dashboard.py` | Dashboard exibido sem erros | `[x]` |
-| 10.1.6 | Encerrar sessao | `python3 .agent/scripts/auto_session.py end` | Sessao encerrada | `[x]` |
+| 10.1.3 | Validar instalacao | `python3 .agents/scripts/validate_installation.py` | Todos componentes presentes | `[x]` |
+| 10.1.4 | Iniciar sessao | `python3 .agents/scripts/auto_session.py start` | Sessao iniciada | `[x]` |
+| 10.1.5 | Ver dashboard | `python3 .agents/scripts/dashboard.py` | Dashboard exibido sem erros | `[x]` |
+| 10.1.6 | Encerrar sessao | `python3 .agents/scripts/auto_session.py end` | Sessao encerrada | `[x]` |
 
 ### 10.2 Fluxo Completo: Gerenciar Backlog (P0)
 
 | # | Passo | Procedimento | Resultado Esperado | Status |
 |---|-------|--------------|-------------------|--------|
 | 10.2.1 | Criar backlog com Epic | Escrever `docs/BACKLOG.md` com 1 Epic, 3 Stories | Arquivo criado | `[x]` |
-| 10.2.2 | Verificar progresso 0% | `python3 .agent/scripts/progress_tracker.py` | Barra 0% | `[x]` |
-| 10.2.3 | Marcar Story 1.1 como concluida | `python3 .agent/scripts/finish_task.py "1.1"` | Story marcada [x] | `[x]` |
-| 10.2.4 | Verificar progresso ~33% | `python3 .agent/scripts/progress_tracker.py` | Barra ~33% | `[x]` |
-| 10.2.5 | Marcar Story 1.2 como concluida | `python3 .agent/scripts/finish_task.py "1.2"` | Story marcada [x] | `[x]` |
-| 10.2.6 | Marcar Story 1.3 como concluida | `python3 .agent/scripts/finish_task.py "1.3"` | Story marcada [x] | `[x]` |
-| 10.2.7 | Verificar progresso 100% | `python3 .agent/scripts/progress_tracker.py` | Barra 100% | `[x]` |
-| 10.2.8 | Dashboard reflete progresso | `python3 .agent/scripts/dashboard.py` | Progresso 100% no dashboard | `[x]` |
+| 10.2.2 | Verificar progresso 0% | `python3 .agents/scripts/progress_tracker.py` | Barra 0% | `[x]` |
+| 10.2.3 | Marcar Story 1.1 como concluida | `python3 .agents/scripts/finish_task.py "1.1"` | Story marcada [x] | `[x]` |
+| 10.2.4 | Verificar progresso ~33% | `python3 .agents/scripts/progress_tracker.py` | Barra ~33% | `[x]` |
+| 10.2.5 | Marcar Story 1.2 como concluida | `python3 .agents/scripts/finish_task.py "1.2"` | Story marcada [x] | `[x]` |
+| 10.2.6 | Marcar Story 1.3 como concluida | `python3 .agents/scripts/finish_task.py "1.3"` | Story marcada [x] | `[x]` |
+| 10.2.7 | Verificar progresso 100% | `python3 .agents/scripts/progress_tracker.py` | Barra 100% | `[x]` |
+| 10.2.8 | Dashboard reflete progresso | `python3 .agents/scripts/dashboard.py` | Progresso 100% no dashboard | `[x]` |
 
 ### 10.3 Fluxo Completo: Dual-Agent Concorrencia (P1)
 
@@ -571,7 +578,7 @@
 |---|-------|--------------|-------------------|--------|
 | 10.3.1 | Agent A adquire lock no backlog | `AGENT_SOURCE=claude_code python3 finish_task.py "1.1"` | Lock adquirido, task marcada | `[x]` |
 | 10.3.2 | Agent B bloqueado durante edicao | Simular acesso concorrente | Lock impede edicao | `[x]` |
-| 10.3.3 | Lock liberado apos conclusao | Verificar `.agent/locks/` | Nenhum lock ativo | `[x]` |
+| 10.3.3 | Lock liberado apos conclusao | Verificar `.agents/locks/` | Nenhum lock ativo | `[x]` |
 | 10.3.4 | Agent B consegue editar apos | `AGENT_SOURCE=antigravity python3 finish_task.py "1.2"` | Sucesso | `[x]` |
 
 ### 10.4 CLAUDE.md Loading (P0)
@@ -595,7 +602,7 @@
 | 11.1.2 | Dashboard sem backlog | Sem `docs/BACKLOG.md` | Exibe N/A no progresso sem crash | `[x]` |
 | 11.1.3 | Progress tracker com backlog vazio | `BACKLOG.md` sem Epics | Mensagem informativa, exit 1 | `[x]` |
 | 11.1.4 | Finish task com backlog corrompido | Caracteres invalidos no BACKLOG | Erro tratado graciosamente | `[x]` |
-| 11.1.5 | Lock manager com diretorio ausente | `.agent/locks/` removido | Recriado automaticamente | `[x]` |
+| 11.1.5 | Lock manager com diretorio ausente | `.agents/locks/` removido | Recriado automaticamente | `[x]` |
 | 11.1.6 | Lock file com JSON invalido | Escrever lixo em `.lock` | Tratado como lock invalido, removido | `[x]` |
 
 ### 11.2 Limites e Boundaries (P2)
@@ -627,15 +634,15 @@
 | 1. Estrutura/Integridade | 24 | 24 | 0 | 0 |
 | 2. CLI | 16 | 15 | 0 | 1 |
 | 3. Scripts Python | 56 | 51 | 0 | 5 |
-| 4. Agentes | 25 | 25 | 0 | 0 |
-| 5. Skills | 44 | 44 | 0 | 0 |
+| 4. Agentes (21) | 26 | 26 | 0 | 0 |
+| 5. Skills (40) | 49 | 49 | 0 | 0 |
 | 6. Workflows | 22 | 22 | 0 | 0 |
 | 7. Roteamento | 21 | 0 | 0 | 21 |
 | 8. Dual-Agent | 14 | 14 | 0 | 0 |
-| 9. Web Application | 28 | 24 | 0 | 4 |
+| 9. Web Application | 29 | 25 | 0 | 4 |
 | 10. Integracao E2E | 20 | 20 | 0 | 0 |
 | 11. Regressao/Edge | 16 | 11 | 0 | 5 |
-| **TOTAL** | **286** | **250** | **0** | **36** |
+| **TOTAL** | **293** | **257** | **0** | **36** |
 
 ---
 
@@ -645,24 +652,27 @@
 
 ```bash
 # 1. Validar instalacao
-python3 .agent/scripts/validate_installation.py
+python3 .agents/scripts/validate_installation.py
 
-# 2. Contar componentes
-echo "Agents: $(ls .agent/agents/*.md | wc -l)"
-echo "Skills: $(ls -d .agent/skills/*/ | wc -l)"
-echo "Workflows: $(ls .agent/workflows/*.md | wc -l)"
-echo "Scripts: $(ls .agent/scripts/*.py | wc -l)"
+# 2. Contar componentes (esperado: 21, 40, 18, 20)
+echo "Agents: $(ls .agents/agents/*.md | wc -l)"
+echo "Skills: $(ls -d .agents/skills/*/ | wc -l)"
+echo "Workflows: $(ls .agents/workflows/*.md | wc -l)"
+echo "Scripts: $(ls .agents/scripts/*.py | wc -l)"
 
 # 3. Testar scripts core
-python3 .agent/scripts/dashboard.py
-python3 .agent/scripts/progress_tracker.py
-python3 .agent/scripts/lock_manager.py list
+python3 .agents/scripts/dashboard.py
+python3 .agents/scripts/progress_tracker.py
+python3 .agents/scripts/lock_manager.py list
 
 # 4. Build web
 cd web && npm install && npm run build
 
 # 5. CLI
 node bin/cli.js help
+
+# 6. Verificacao completa
+python3 .agents/scripts/verify_all.py .
 ```
 
 ### Execucao Completa
@@ -685,7 +695,8 @@ node bin/cli.js help
 | 2026-02-01 | Claude Code (Opus 4.5) | 216/286 | 62 | 8 | Rodada 1: 8 falhas, 62 N/A (requerem backlog/interativo/Linux) |
 | 2026-02-01 | Claude Code (Opus 4.5) | 246/312 | 66 | 0 | Rodada 2: 0 falhas. Corrigidos: metrics.py, lint web, checklist.py, verify_all.py, validate_traceability.py, 13 workflows padronizados. |
 | 2026-02-01 | Claude Code (Opus 4.5) | 250/286 | 36 | 0 | Rodada 3: Usando BACKLOG.md do inove-ai-dev (6 Epics, 14 Stories, 100%). Testes E2E de backlog, dual-agent concurrency, progress tracker e finish_task todos aprovados. 36 N/A (interativo/Linux). |
+| 2026-02-05 | Claude Code (Opus 4) | 257/293 | 36 | 0 | Rodada 4 (Re-auditoria): Migrado .agent/ -> .agents/. Adicionados: ux-researcher (21o agente), 5 skills novas (doc-review, gap-analysis, system-design, ux-research, code-review-checklist). Corrigido: validate_installation.py (referencia removida a IMPLEMENTACAO_FASES_3_4.md). Removidos: JSONs legados em web/src/services/ (web usa data/generated/). |
 
 ---
 
-*Gerado automaticamente pelo Inove AI Framework - Caderno de Testes v1.0*
+*Gerado automaticamente pelo Inove AI Framework - Caderno de Testes v1.1*

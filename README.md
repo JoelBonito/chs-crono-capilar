@@ -1,27 +1,21 @@
-# Antigravity Kit
+# Inove AI Framework
 
-> AI Agent templates with Skills, Agents, and Workflows
-
-<div  align="center">
-    <a href="https://unikorn.vn/p/antigravity-kit?ref=unikorn" target="_blank"><img src="https://unikorn.vn/api/widgets/badge/antigravity-kit?theme=dark" alt="Antigravity Kit - Nổi bật trên Unikorn.vn" style="width: 210px; height: 54px;" width="210" height="54" /></a>
-    <a href="https://unikorn.vn/p/antigravity-kit?ref=unikorn" target="_blank"><img src="https://unikorn.vn/api/widgets/badge/antigravity-kit/rank?theme=dark&type=daily" alt="Antigravity Kit - Hàng ngày" style="width: 250px; height: 64px;" width="250" height="64" /></a>
-    <a href="https://launch.j2team.dev/products/antigravity-kit" target="_blank"><img src="https://launch.j2team.dev/badge/antigravity-kit/dark" alt="Antigravity Kit on J2TEAM Launch" width="250" height="54" /></a>
-</div>
+> Multi-Agent AI Development Kit with Skills, Agents, and Workflows for Claude Code, Codex CLI, and Antigravity/Gemini.
 
 ## Quick Install
 
 ```bash
-npx @vudovn/ag-kit init
+npx @inove-ai/inove-ai-framework init
 ```
 
-Or install globally:
+This installs the `.agents` folder containing all templates into your project, along with `CLAUDE.md`, `AGENTS.md`, and `GEMINI.md`.
 
-```bash
-npm install -g @vudovn/ag-kit
-ag-kit init
-```
+## What's Included
 
-This installs the `.agent` folder containing all templates into your project.
+- **21 Specialized Agents** for different domains (frontend, backend, security, database, etc.)
+- **40 Modular Skills** loaded on demand
+- **18 Workflows** (slash commands) for structured processes
+- **Multi-Agent System** with lock synchronization and ownership
 
 ## Usage
 
@@ -31,47 +25,31 @@ This installs the `.agent` folder containing all templates into your project.
 
 ```
 You: "Add JWT authentication"
-AI: 🤖 Applying @security-auditor + @backend-specialist...
+AI: Applying @security-auditor + @backend-specialist...
 
 You: "Fix the dark mode button"
-AI: 🤖 Using @frontend-specialist...
+AI: Using @frontend-specialist...
 
 You: "Login returns 500 error"
-AI: 🤖 Using @debugger for systematic analysis...
+AI: Using @debugger for systematic analysis...
 ```
-
-**How it works:**
-
-- Analyzes your request silently
-- Detects domain(s) automatically (frontend, backend, security, etc.)
-- Selects the best specialist(s)
-- Informs you which expertise is being applied
-- You get specialist-level responses without needing to know the system architecture
-
-**Benefits:**
-
-- ✅ Zero learning curve - just describe what you need
-- ✅ Always get expert responses
-- ✅ Transparent - shows which agent is being used
-- ✅ Can still override by mentioning agent explicitly
 
 ### Using Workflows
 
 Invoke workflows with slash commands:
 
-| Command          | Description                           |
-| ---------------- | ------------------------------------- |
-| `/brainstorm`    | Explore options before implementation |
-| `/create`        | Create new features or apps           |
-| `/debug`         | Systematic debugging                  |
-| `/deploy`        | Deploy application                    |
-| `/enhance`       | Improve existing code                 |
-| `/orchestrate`   | Multi-agent coordination              |
-| `/plan`          | Create task breakdown                 |
-| `/preview`       | Preview changes locally               |
-| `/status`        | Check project status                  |
-| `/test`          | Generate and run tests                |
-| `/ui-ux-pro-max` | Design with 50 styles                 |
+| Command          | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `/define`        | Full project planning in 9 phases with GAP Analysis |
+| `/brainstorm`    | Explore options before implementation          |
+| `/create`        | Create new features or apps                    |
+| `/debug`         | Systematic debugging                           |
+| `/deploy`        | Deploy application                             |
+| `/enhance`       | Improve existing code                          |
+| `/test`          | Generate and run tests                         |
+| `/orchestrate`   | Multi-agent coordination                       |
+| `/status`        | Check project status                           |
+| `/track`         | Update task progress                           |
 
 Example:
 
@@ -81,47 +59,26 @@ Example:
 /debug why login fails
 ```
 
-### Using Skills
+## Multi-Platform Support
 
-Skills are loaded automatically based on task context. The AI reads skill descriptions and applies relevant knowledge.
+| Tool             | Instruction File | How it works                     |
+| ---------------- | ---------------- | -------------------------------- |
+| Claude Code      | `CLAUDE.md`      | Loaded automatically per session |
+| Codex CLI        | `AGENTS.md`      | Bridge to `.agents/INSTRUCTIONS.md` |
+| Antigravity/Gemini | `GEMINI.md`    | Platform-specific rules          |
 
-## CLI Tool
-
-| Command         | Description                               |
-| --------------- | ----------------------------------------- |
-| `ag-kit init`   | Install `.agent` folder into your project |
-| `ag-kit update` | Update to the latest version              |
-| `ag-kit status` | Check installation status                 |
-
-### Options
-
-```bash
-ag-kit init --force        # Overwrite existing .agent folder
-ag-kit init --path ./myapp # Install in specific directory
-ag-kit init --branch dev   # Use specific branch
-ag-kit init --quiet        # Suppress output (for CI/CD)
-ag-kit init --dry-run      # Preview actions without executing
-```
+All platforms share the same canonical source in `.agents/`.
 
 ## Documentation
 
-- **[Web App Example](https://antigravity-kit.vercel.app//docs/guide/examples/web-app)** - Step-by-step guide to creating a web application
-- **[Online Docs](https://antigravity-kit.vercel.app//docs)** - Browse all documentation online
+- **Architecture:** [.agents/ARCHITECTURE.md](.agents/ARCHITECTURE.md)
+- **Skills:** `.agents/skills/*/SKILL.md`
+- **Agents:** `.agents/agents/*.md`
 
-## Buy me coffee
+## Based on
 
-<p align="center">
-  <a href="https://buymeacoffee.com/vudovn">
-    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
-  </a>
-</p>
-
-<p align="center"> - or - </p>
-
-<p align="center">
-  <img src="https://img.vietqr.io/image/mbbank-0779440918-compact.jpg" alt="Buy me coffee" width="200" />
-</p>
+This project is a fork of [Antigravity Kit](https://github.com/vudovn/antigravity-kit) by Vudovn, extended with multi-platform support (Claude Code + Codex CLI), additional agents, skills, and workflows.
 
 ## License
 
-MIT © Vudovn
+MIT - See [LICENSE](LICENSE) for details.

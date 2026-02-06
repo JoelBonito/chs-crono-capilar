@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "generate-data": "python3 ../.agents/scripts/generate_web_data.py --root ..",
+    "prebuild": "python3 ../.agents/scripts/generate_web_data.py --root .."
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -10,12 +10,11 @@ const command = args[0];
 // Paths
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const TARGET_DIR = process.cwd();
-const AGENT_SRC = path.join(PACKAGE_ROOT, '.agent');
-const AGENT_DEST = path.join(TARGET_DIR, '.agent');
+const AGENT_SRC = path.join(PACKAGE_ROOT, '.agents');
+const AGENT_DEST = path.join(TARGET_DIR, '.agents');
 
 // Instruction files to copy to project root
-// Note: GEMINI.md is inside .agent/rules/ and copied with the .agent folder
-const INSTRUCTION_FILES = ['CLAUDE.md'];
+const INSTRUCTION_FILES = ['CLAUDE.md', 'AGENTS.md', 'GEMINI.md'];
 
 function copyDir(src, dest) {
     if (!fs.existsSync(dest)) {
@@ -38,25 +37,52 @@ function copyDir(src, dest) {
 }
 
 function init() {
-    console.log('🚀 Initializing Inove AI Framework...');
+    const forceMode = args.includes('--force');
 
-    // 1. Copy .agent folder
+    console.log('Initializing Inove AI Framework...');
+
+    // 1. Check source exists
     if (!fs.existsSync(AGENT_SRC)) {
-        console.error('❌ Error: Could not find source .agent folder.');
+        console.error('Error: Could not find source .agents folder.');
         process.exit(1);
     }
 
-    console.log(`📦 Copying .agent folder to ${TARGET_DIR}...`);
+    // 2. Check for existing files (overwrite guard)
+    if (!forceMode) {
+        const existingPaths = [];
+
+        if (fs.existsSync(AGENT_DEST)) {
+            existingPaths.push('.agents/');
+        }
+
+        for (const file of INSTRUCTION_FILES) {
+            if (fs.existsSync(path.join(TARGET_DIR, file))) {
+                existingPaths.push(file);
+            }
+        }
+
+        if (existingPaths.length > 0) {
+            console.log('The following already exist in this directory:');
+            for (const p of existingPaths) {
+                console.log(`  - ${p}`);
+            }
+            console.log('Use --force to overwrite: npx @inove-ai/inove-ai-framework init --force');
+            process.exit(1);
+        }
+    }
+
+    // 3. Copy .agents folder
+    console.log(`Copying .agents folder to ${TARGET_DIR}...`);
     try {
         copyDir(AGENT_SRC, AGENT_DEST);
-        console.log('✅ .agent folder copied successfully.');
+        console.log('.agents folder copied successfully.');
     } catch (error) {
-        console.error('❌ Error copying files:', error.message);
+        console.error('Error copying files:', error.message);
         process.exit(1);
     }
 
-    // 1.5 Copy instruction files (CLAUDE.md, GEMINI.md)
-    console.log('📝 Copying AI instruction files...');
+    // 4. Copy instruction files
+    console.log('Copying AI instruction files...');
     for (const file of INSTRUCTION_FILES) {
         const srcFile = path.join(PACKAGE_ROOT, file);
         const destFile = path.join(TARGET_DIR, file);
@@ -64,64 +90,43 @@ function init() {
         if (fs.existsSync(srcFile)) {
             try {
                 fs.copyFileSync(srcFile, destFile);
-                console.log(`   ✅ ${file} copied.`);
+                console.log(`   ${file} copied.`);
             } catch (error) {
-                console.warn(`   ⚠️ Warning: Could not copy ${file}: ${error.message}`);
+                console.warn(`   Warning: Could not copy ${file}: ${error.message}`);
             }
         } else {
-            console.warn(`   ⚠️ Warning: ${file} not found in package.`);
+            console.warn(`   Warning: ${file} not found in package.`);
         }
     }
 
-    // 1.6 Setup .claude folder with project_instructions
-    const claudeDir = path.join(TARGET_DIR, '.claude');
-    const projectInstructionsSrc = path.join(PACKAGE_ROOT, '.claude', 'project_instructions.md');
-    const projectInstructionsDest = path.join(claudeDir, 'project_instructions.md');
-
-    if (fs.existsSync(projectInstructionsSrc)) {
-        console.log('🔧 Setting up .claude folder...');
-        try {
-            if (!fs.existsSync(claudeDir)) {
-                fs.mkdirSync(claudeDir, { recursive: true });
-            }
-            fs.copyFileSync(projectInstructionsSrc, projectInstructionsDest);
-            console.log('   ✅ .claude/project_instructions.md copied.');
-        } catch (error) {
-            console.warn(`   ⚠️ Warning: Could not setup .claude folder: ${error.message}`);
-        }
-    }
-
-    // 2. Install Git Hooks
+    // 5. Install Git Hooks
     const hooksScript = path.join(AGENT_DEST, 'scripts', 'install_git_hooks.sh');
     if (fs.existsSync(hooksScript)) {
-        console.log('🔧 Installing Git Hooks...');
+        console.log('Installing Git Hooks...');
         try {
-            // Make executable
             fs.chmodSync(hooksScript, '755');
-            // Execute
-            execSync(`bash "${hooksScript}"`, { stdio: 'inherit' });
+            execFileSync('bash', [hooksScript], { stdio: 'inherit' });
         } catch (error) {
-            console.warn('⚠️ Warning: Failed to install git hooks automatically.');
-            console.warn('   You can run manually: bash .agent/scripts/install_git_hooks.sh');
+            console.warn('Warning: Failed to install git hooks automatically.');
+            console.warn('   You can run manually: bash .agents/scripts/install_git_hooks.sh');
         }
     }
 
-    // 3. First Session Start
+    // 6. First Session Start
     const autoSessionScript = path.join(AGENT_DEST, 'scripts', 'auto_session.py');
     if (fs.existsSync(autoSessionScript)) {
-        console.log('🤖 Starting first session...');
+        console.log('Starting first session...');
         try {
-            // Check if python3 exists
-            execSync('python3 --version', { stdio: 'ignore' });
-            execSync(`python3 "${autoSessionScript}" start`, { stdio: 'inherit' });
+            execFileSync('python3', ['--version'], { stdio: 'ignore' });
+            execFileSync('python3', [autoSessionScript, 'start'], { stdio: 'inherit' });
         } catch (error) {
-            console.log('ℹ️  Could not auto-start session (python3 missing or error).');
-            console.log('   Run manually: python3 .agent/scripts/auto_session.py start');
+            console.log('Could not auto-start session (python3 missing or error).');
+            console.log('   Run manually: python3 .agents/scripts/auto_session.py start');
         }
     }
 
-    console.log('\n🎉 Setup Complete! Inove AI Framework is ready.');
-    console.log('   Run "python3 .agent/scripts/dashboard.py" to check status.');
+    console.log('\nSetup Complete! Inove AI Framework is ready.');
+    console.log('   Run "python3 .agents/scripts/dashboard.py" to check status.');
 }
 
 function showHelp() {
@@ -129,8 +134,8 @@ function showHelp() {
 Inove AI Framework CLI
 
 Usage:
-  npx @joelbonito/inove-ai-framework init   Install framework in current directory
-  npx @joelbonito/inove-ai-framework help   Show this help
+  npx @inove-ai/inove-ai-framework init   Install framework in current directory
+  npx @inove-ai/inove-ai-framework help   Show this help
 `);
 }
 

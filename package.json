@@ -1,18 +1,23 @@
 {
   "name": "@inove-ai/inove-ai-framework",
   "version": "1.0.1",
-  "description": "Inove AI Framework - Dual-Agent AI Development Kit",
+  "description": "Inove AI Framework - Multi-Agent AI Development Kit",
   "bin": {
     "inove-ai-framework": "./bin/cli.js"
   },
   "files": [
-    ".agent",
-    ".claude",
+    ".agents/**",
+    "!.agents/.shared/**",
+    "!.agents/locks/**",
+    "!**/__pycache__/**",
+    "!**/*.pyc",
     "bin",
-    "CLAUDE.md"
+    "CLAUDE.md",
+    "AGENTS.md",
+    "GEMINI.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "python3 -m pytest tests/ -v"
   },
   "repository": {
     "type": "git",
