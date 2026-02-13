@@ -1,5 +1,6 @@
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
+import i18n from "@/i18n";
 
 interface AnalyzeHairRequest {
   userId: string;
@@ -47,7 +48,7 @@ export async function analyzeHair(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Analyse indisponible. Veuillez réessayer.");
+    throw new Error(error.message || i18n.t("diagnostic:error.processing"));
   }
 
   return response.json();

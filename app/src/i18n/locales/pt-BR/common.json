@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Início",
+    "diagnostic": "Diagnóstico",
+    "calendar": "Calendário",
+    "settings": "Configurações"
+  },
+  "treatments": {
+    "H": "Hidratação",
+    "N": "Nutrição",
+    "R": "Reconstrução"
+  },
+  "days": {
+    "short": [
+      "Dom",
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "Sáb"
+    ]
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "delete": "Excluir",
+    "deleting": "Excluindo...",
+    "back": "Voltar",
+    "next": "Próximo",
+    "skip": "Pular",
+    "finish": "Finalizar",
+    "close": "Fechar",
+    "edit": "Editar",
+    "or": "ou"
+  },
+  "dominant": "DOMINANTE"
+}

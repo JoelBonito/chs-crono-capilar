@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title1": "Sua rotina capilar,",
+    "title2": "potencializada pela IA",
+    "subtitle": "CronoCapilar cria um cronograma personalizado para cabelos saudáveis e radiantes.",
+    "cta": "Começar",
+    "login": "Entrar"
+  },
+  "features": {
+    "diagnostic": {
+      "title": "Diagnóstico IA",
+      "description": "Analise seu tipo de cabelo com nossa inteligência artificial."
+    },
+    "schedule": {
+      "title": "Cronograma personalizado",
+      "description": "Um calendário H/N/R adaptado às suas necessidades capilares."
+    },
+    "alerts": {
+      "title": "Alertas inteligentes",
+      "description": "Lembretes SMS para nunca esquecer seus cuidados."
+    }
+  },
+  "footer": {
+    "copyright": "© 2026 CronoCapilar - H.A.M LUXURY HAIR COSMETICS",
+    "legal": "Avisos legais",
+    "privacy": "Privacidade",
+    "cgu": "Termos de Uso"
+  }
+}

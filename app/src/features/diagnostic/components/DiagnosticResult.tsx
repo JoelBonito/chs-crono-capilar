@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Droplets, Leaf, Shield, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,13 +37,8 @@ const AXIS_CONFIG = {
   },
 } as const;
 
-const DOMINANT_MESSAGES: Record<"H" | "N" | "R", string> = {
-  H: "Vos cheveux ont principalement besoin d'hydratation. Ils manquent d'eau et de souplesse.",
-  N: "Vos cheveux ont principalement besoin de nutrition. Ils manquent de lipides et de protection.",
-  R: "Vos cheveux ont principalement besoin de reconstruction. La fibre capillaire est fragilisée.",
-};
-
 export default function DiagnosticResult({ result, onGenerateSchedule, onRetake }: DiagnosticResultProps) {
+  const { t } = useTranslation(["diagnostic", "common"]);
   const values = {
     H: result.hydrationNeed,
     N: result.nutritionNeed,
@@ -65,8 +61,8 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
 
   return (
     <div className="px-4 pb-20 pt-8">
-      <h1 className="font-serif text-h2 text-gray-900">Votre diagnostic</h1>
-      <p className="mt-2 text-body text-gray-600">{DOMINANT_MESSAGES[result.dominantNeed]}</p>
+      <h1 className="font-serif text-h2 text-gray-900">{t("diagnostic:result.title")}</h1>
+      <p className="mt-2 text-body text-gray-600">{t(`diagnostic:result.dominant${result.dominantNeed}`)}</p>
 
       {/* Donut chart */}
       <div className="mt-6 flex justify-center">
@@ -80,7 +76,7 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
                 {values[result.dominantNeed]}%
               </span>
               <p className="text-caption text-gray-500">
-                {AXIS_CONFIG[result.dominantNeed].label}
+                {t(`common:treatments.${result.dominantNeed}`)}
               </p>
             </div>
           </div>
@@ -93,7 +89,7 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
           <div key={s.key} className="flex items-center gap-1.5">
             <div className={cn("h-2.5 w-2.5 rounded-full", AXIS_CONFIG[s.key].bar)} />
             <span className="text-caption text-gray-600">
-              {AXIS_CONFIG[s.key].label}
+              {t(`common:treatments.${s.key}`)}
             </span>
           </div>
         ))}
@@ -118,7 +114,7 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
                 <Icon className={cn("h-5 w-5", config.color)} />
               </div>
               <div className="flex-1">
-                <p className="text-body font-medium text-gray-900">{config.label}</p>
+                <p className="text-body font-medium text-gray-900">{t(`common:treatments.${s.key}`)}</p>
               </div>
               <span className={cn("text-h4 font-bold", config.color)}>{s.value}%</span>
             </div>
@@ -133,7 +129,7 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
           className="w-full gap-2"
           onClick={onGenerateSchedule}
         >
-          G&eacute;n&eacute;rer mon chronogramme
+          {t("diagnostic:result.generateSchedule")}
           <ArrowRight className="h-4 w-4" />
         </Button>
         {onRetake && (
@@ -142,7 +138,7 @@ export default function DiagnosticResult({ result, onGenerateSchedule, onRetake 
             className="mt-3 w-full"
             onClick={onRetake}
           >
-            Refaire le diagnostic
+            {t("diagnostic:result.retake")}
           </Button>
         )}
       </div>

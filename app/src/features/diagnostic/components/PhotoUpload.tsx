@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Camera, X, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ interface PhotoUploadProps {
 }
 
 export default function PhotoUpload({ onSubmit, onSkip }: PhotoUploadProps) {
+  const { t } = useTranslation("diagnostic");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,25 +42,25 @@ export default function PhotoUpload({ onSubmit, onSkip }: PhotoUploadProps) {
 
   return (
     <div className="px-4 pb-20 pt-8">
-      <h1 className="font-serif text-h2 text-gray-900">Analyse photo</h1>
+      <h1 className="font-serif text-h2 text-gray-900">{t("photoUpload.title")}</h1>
       <p className="mt-2 text-body text-gray-600">
-        Ajoutez des photos de vos cheveux pour un diagnostic plus pr&eacute;cis (optionnel).
+        {t("photoUpload.subtitle")}
       </p>
       <p className="mt-1 text-caption text-gray-400">
-        L'IA analysera vos photos et affinera le r&eacute;sultat du questionnaire.
+        {t("photoUpload.aiNote")}
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
         {[0, 1].map((idx) => (
           <div key={idx}>
             <p className="mb-1.5 text-caption font-medium text-gray-700">
-              {idx === 0 ? "Vue d'ensemble" : "Gros plan"}
+              {idx === 0 ? t("photoUpload.overview") : t("photoUpload.closeup")}
             </p>
             {previews[idx] ? (
               <div className="relative aspect-square overflow-hidden rounded-md border border-gray-200">
                 <img
                   src={previews[idx]}
-                  alt={idx === 0 ? "Vue d'ensemble" : "Gros plan"}
+                  alt={idx === 0 ? t("photoUpload.overview") : t("photoUpload.closeup")}
                   className="h-full w-full object-cover"
                 />
                 <button
@@ -80,7 +82,7 @@ export default function PhotoUpload({ onSubmit, onSkip }: PhotoUploadProps) {
                 )}
               >
                 <Camera className="h-8 w-8" />
-                <span className="text-caption">Ajouter</span>
+                <span className="text-caption">{t("photoUpload.add")}</span>
               </button>
             )}
           </div>
@@ -104,11 +106,11 @@ export default function PhotoUpload({ onSubmit, onSkip }: PhotoUploadProps) {
             onClick={() => onSubmit(files)}
           >
             <Upload className="h-4 w-4" />
-            Analyser {files.length} photo{files.length > 1 ? "s" : ""}
+            {t(files.length > 1 ? "photoUpload.analyzePlural" : "photoUpload.analyze", { count: files.length })}
           </Button>
         )}
         <Button variant="ghost" className="w-full" onClick={onSkip}>
-          Passer cette &eacute;tape
+          {t("photoUpload.skip")}
         </Button>
       </div>
     </div>

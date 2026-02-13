@@ -1,17 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { FirebaseError } from "firebase/app";
 import Logo from "@/components/Logo";
 
-const firebaseErrorMessages: Record<string, string> = {
-  "auth/email-already-in-use": "Cet e-mail est déjà utilisé.",
-  "auth/weak-password": "Le mot de passe doit contenir au moins 6 caractères.",
-  "auth/invalid-email": "Adresse e-mail invalide.",
-};
-
 export default function Signup() {
+  const { t } = useTranslation("auth");
   const { signUpWithEmail, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
@@ -30,9 +26,9 @@ export default function Signup() {
       navigate("/profile-setup");
     } catch (err) {
       if (err instanceof FirebaseError) {
-        setError(firebaseErrorMessages[err.code] ?? "Une erreur est survenue.");
+        setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
-        setError("Une erreur est survenue.");
+        setError(t("errors.generic"));
       }
     } finally {
       setLoading(false);
@@ -46,9 +42,9 @@ export default function Signup() {
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof FirebaseError) {
-        setError(firebaseErrorMessages[err.code] ?? "Une erreur est survenue.");
+        setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
-        setError("Une erreur est survenue.");
+        setError(t("errors.generic"));
       }
     }
   }
@@ -57,9 +53,9 @@ export default function Signup() {
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <Logo size="lg" className="mx-auto mb-6" />
-        <h1 className="font-serif text-h2 text-gray-900">Créer un compte</h1>
+        <h1 className="font-serif text-h2 text-gray-900">{t("signup.title")}</h1>
         <p className="mt-2 text-body-sm text-gray-600">
-          Rejoignez CronoCapilar pour des cheveux sublimes
+          {t("signup.subtitle")}
         </p>
 
         {error && (
@@ -72,7 +68,7 @@ export default function Signup() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="text-caption font-medium text-gray-700">
-                Prénom
+                {t("signup.firstName")}
               </label>
               <input
                 id="firstName"
@@ -85,7 +81,7 @@ export default function Signup() {
             </div>
             <div>
               <label htmlFor="lastName" className="text-caption font-medium text-gray-700">
-                Nom
+                {t("signup.lastName")}
               </label>
               <input
                 id="lastName"
@@ -99,7 +95,7 @@ export default function Signup() {
           </div>
           <div>
             <label htmlFor="email" className="text-caption font-medium text-gray-700">
-              E-mail
+              {t("signup.email")}
             </label>
             <input
               id="email"
@@ -108,12 +104,12 @@ export default function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full rounded-sm border border-gray-300 px-3 py-3 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-              placeholder="votre@email.com"
+              placeholder={t("signup.emailPlaceholder")}
             />
           </div>
           <div>
             <label htmlFor="password" className="text-caption font-medium text-gray-700">
-              Mot de passe
+              {t("signup.password")}
             </label>
             <input
               id="password"
@@ -123,17 +119,17 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full rounded-sm border border-gray-300 px-3 py-3 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-              placeholder="6 caractères minimum"
+              placeholder={t("signup.passwordPlaceholder")}
             />
           </div>
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-            {loading ? "Création..." : "Créer mon compte"}
+            {loading ? t("signup.submitting") : t("signup.submit")}
           </Button>
         </form>
 
         <div className="my-6 flex items-center gap-4">
           <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-caption text-gray-400">ou</span>
+          <span className="text-caption text-gray-400">{t("common:buttons.or")}</span>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
@@ -156,24 +152,24 @@ export default function Signup() {
               fill="#EA4335"
             />
           </svg>
-          Continuer avec Google
+          {t("signup.googleButton")}
         </Button>
 
         <p className="mt-6 text-center text-body-sm text-gray-600">
-          Déjà un compte ?{" "}
+          {t("signup.hasAccount")}{" "}
           <Link to="/login" className="font-medium text-gold-700 hover:text-gold-800">
-            Se connecter
+            {t("signup.signIn")}
           </Link>
         </p>
 
         <p className="mt-4 text-center text-caption text-gray-400">
-          En créant un compte, vous acceptez nos{" "}
+          {t("signup.legalNotice")}{" "}
           <Link to="/cgu" className="underline hover:text-gray-600">
-            CGU
+            {t("signup.cgu")}
           </Link>{" "}
-          et notre{" "}
+          {t("signup.and")}{" "}
           <Link to="/politique-de-confidentialite" className="underline hover:text-gray-600">
-            Politique de confidentialité
+            {t("signup.privacy")}
           </Link>
           .
         </p>

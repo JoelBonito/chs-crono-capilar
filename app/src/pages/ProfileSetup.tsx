@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 
 export default function ProfileSetup() {
+  const { t } = useTranslation("auth");
   const { firebaseUser } = useAuth();
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
@@ -18,7 +20,7 @@ export default function ProfileSetup() {
     e.preventDefault();
     if (!firebaseUser) return;
     if (!acceptCGU) {
-      setError("Vous devez accepter les CGU pour continuer.");
+      setError(t("profileSetup.cguRequired"));
       return;
     }
 
@@ -32,7 +34,7 @@ export default function ProfileSetup() {
       });
       navigate("/dashboard");
     } catch {
-      setError("Une erreur est survenue. Veuillez réessayer.");
+      setError(t("errors.genericRetry"));
     } finally {
       setLoading(false);
     }
@@ -41,9 +43,9 @@ export default function ProfileSetup() {
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <h1 className="font-serif text-h2 text-gray-900">Compléter votre profil</h1>
+        <h1 className="font-serif text-h2 text-gray-900">{t("profileSetup.title")}</h1>
         <p className="mt-2 text-body-sm text-gray-600">
-          Quelques informations pour personnaliser votre expérience
+          {t("profileSetup.subtitle")}
         </p>
 
         {error && (
@@ -55,7 +57,7 @@ export default function ProfileSetup() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label htmlFor="phone" className="text-caption font-medium text-gray-700">
-              Numéro de téléphone (optionnel)
+              {t("profileSetup.phone")}
             </label>
             <input
               id="phone"
@@ -63,7 +65,7 @@ export default function ProfileSetup() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="mt-1 w-full rounded-sm border border-gray-300 px-3 py-3 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-              placeholder="+33 6 12 34 56 78"
+              placeholder={t("profileSetup.phonePlaceholder")}
             />
           </div>
 
@@ -76,23 +78,23 @@ export default function ProfileSetup() {
                 className="mt-0.5 h-5 w-5 rounded border-gray-300 text-gold-500 focus:ring-gold-500"
               />
               <span className="text-body-sm text-gray-700">
-                J&apos;accepte les{" "}
+                {t("profileSetup.acceptCGU")}{" "}
                 <a
                   href="/cgu"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gold-700 underline hover:text-gold-800"
                 >
-                  Conditions Générales d&apos;Utilisation
+                  {t("profileSetup.cguLink")}
                 </a>{" "}
-                et la{" "}
+                {t("profileSetup.andThe")}{" "}
                 <a
                   href="/politique-de-confidentialite"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gold-700 underline hover:text-gold-800"
                 >
-                  Politique de Confidentialité
+                  {t("profileSetup.privacyLink")}
                 </a>
                 . *
               </span>
@@ -106,13 +108,13 @@ export default function ProfileSetup() {
                 className="mt-0.5 h-5 w-5 rounded border-gray-300 text-gold-500 focus:ring-gold-500"
               />
               <span className="text-body-sm text-gray-700">
-                J&apos;accepte de recevoir des rappels par SMS pour mes soins capillaires.
+                {t("profileSetup.smsOptIn")}
               </span>
             </label>
           </div>
 
           <Button type="submit" variant="primary" className="w-full" disabled={loading || !acceptCGU}>
-            {loading ? "Enregistrement..." : "Commencer mon diagnostic"}
+            {loading ? t("profileSetup.submitting") : t("profileSetup.submit")}
           </Button>
         </form>
       </div>

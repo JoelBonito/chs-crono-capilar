@@ -18,7 +18,8 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import type { UserProfile } from "@/types";
+import i18n from "@/i18n";
+import type { UserProfile, Locale } from "@/types";
 
 interface AuthContextValue {
   user: UserProfile | null;
@@ -95,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           firstName: fbUser.displayName?.split(" ")[0] ?? "",
           lastName: fbUser.displayName?.split(" ").slice(1).join(" ") ?? "",
           phoneNumber: "",
-          locale: "fr-FR",
+          locale: i18n.language as Locale,
           region: "europe-west1",
           optInSMS: false,
           createdAt: serverTimestamp(),
@@ -126,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstName,
         lastName,
         phoneNumber: "",
-        locale: "fr-FR",
+        locale: i18n.language as Locale,
         region: "europe-west1",
         optInSMS: false,
         createdAt: serverTimestamp(),

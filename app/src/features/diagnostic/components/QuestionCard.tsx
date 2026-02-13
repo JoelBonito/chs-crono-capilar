@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Question } from "../questions";
@@ -9,6 +10,7 @@ interface QuestionCardProps {
 }
 
 export default function QuestionCard({ question, answer, onAnswer }: QuestionCardProps) {
+  const { t } = useTranslation("diagnostic");
   const isSingle = question.tipo === "single_choice";
   const selectedValues = answer ? (Array.isArray(answer) ? answer : [answer]) : [];
 
@@ -38,7 +40,7 @@ export default function QuestionCard({ question, answer, onAnswer }: QuestionCar
 
       {!isSingle && question.max_selecao && (
         <p className="mt-2 text-caption text-gray-400">
-          {selectedValues.length}/{question.max_selecao} s&eacute;lectionn&eacute;(s)
+          {t("questionCard.selected", { count: selectedValues.length, max: question.max_selecao })}
         </p>
       )}
 

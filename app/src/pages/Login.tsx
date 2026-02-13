@@ -1,23 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { FirebaseError } from "firebase/app";
 import Logo from "@/components/Logo";
 
-const firebaseErrorMessages: Record<string, string> = {
-  "auth/invalid-credential": "Identifiants incorrects. Veuillez réessayer.",
-  "auth/user-not-found": "Aucun compte trouvé avec cet e-mail.",
-  "auth/wrong-password": "Mot de passe incorrect.",
-  "auth/too-many-requests": "Trop de tentatives. Réessayez plus tard.",
-  "auth/popup-closed-by-user": "Connexion annulée.",
-  "auth/popup-blocked": "Le popup a été bloqué. Autorisez les popups pour ce site.",
-  "auth/unauthorized-domain": "Ce domaine n'est pas autorisé. Contactez le support.",
-  "auth/cancelled-popup-request": "Connexion annulée.",
-  "auth/network-request-failed": "Erreur réseau. Vérifiez votre connexion.",
-};
-
 export default function Login() {
+  const { t } = useTranslation("auth");
   const { signInWithGoogle, signInWithEmail } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -34,9 +24,9 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof FirebaseError) {
-        setError(firebaseErrorMessages[err.code] ?? "Une erreur est survenue.");
+        setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
-        setError("Une erreur est survenue.");
+        setError(t("errors.generic"));
       }
     } finally {
       setLoading(false);
@@ -59,10 +49,10 @@ export default function Login() {
       if (err instanceof FirebaseError) {
         console.error("[Login] Firebase error code:", err.code);
         console.error("[Login] Firebase error message:", err.message);
-        setError(firebaseErrorMessages[err.code] ?? `Erreur: ${err.message}`);
+        setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
         console.error("[Login] Non-Firebase error:", err);
-        setError(`Une erreur est survenue: ${err instanceof Error ? err.message : String(err)}`);
+        setError(t("errors.generic"));
       }
     } finally {
       setLoading(false);
@@ -73,9 +63,9 @@ export default function Login() {
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <Logo size="lg" className="mx-auto mb-6" />
-        <h1 className="font-serif text-h2 text-gray-900">Connexion</h1>
+        <h1 className="font-serif text-h2 text-gray-900">{t("login.title")}</h1>
         <p className="mt-2 text-body-sm text-gray-600">
-          Accédez à votre espace CronoCapilar
+          {t("login.subtitle")}
         </p>
 
         {error && (
@@ -87,7 +77,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label htmlFor="email" className="text-caption font-medium text-gray-700">
-              E-mail
+              {t("login.email")}
             </label>
             <input
               id="email"
@@ -96,12 +86,12 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full rounded-sm border border-gray-300 px-3 py-3 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-              placeholder="votre@email.com"
+              placeholder={t("login.emailPlaceholder")}
             />
           </div>
           <div>
             <label htmlFor="password" className="text-caption font-medium text-gray-700">
-              Mot de passe
+              {t("login.password")}
             </label>
             <input
               id="password"
@@ -114,13 +104,13 @@ export default function Login() {
             />
           </div>
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? t("login.submitting") : t("login.submit")}
           </Button>
         </form>
 
         <div className="my-6 flex items-center gap-4">
           <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-caption text-gray-400">ou</span>
+          <span className="text-caption text-gray-400">{t("common:buttons.or")}</span>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
@@ -143,24 +133,24 @@ export default function Login() {
               fill="#EA4335"
             />
           </svg>
-          Continuer avec Google
+          {t("login.googleButton")}
         </Button>
 
         <p className="mt-6 text-center text-body-sm text-gray-600">
-          Pas encore de compte ?{" "}
+          {t("login.noAccount")}{" "}
           <Link to="/signup" className="font-medium text-gold-700 hover:text-gold-800">
-            Créer un compte
+            {t("login.createAccount")}
           </Link>
         </p>
 
         <p className="mt-4 text-center text-caption text-gray-400">
-          En vous connectant, vous acceptez nos{" "}
+          {t("login.legalNotice")}{" "}
           <Link to="/cgu" className="underline hover:text-gray-600">
-            CGU
+            {t("login.cgu")}
           </Link>{" "}
-          et notre{" "}
+          {t("login.and")}{" "}
           <Link to="/politique-de-confidentialite" className="underline hover:text-gray-600">
-            Politique de confidentialité
+            {t("login.privacy")}
           </Link>
           .
         </p>

@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { Calendar, Download, ExternalLink, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { downloadICSFile, getGoogleCalendarUrl } from "@/services/calendarSync";
+import { downloadICSFile, syncToCalendar } from "@/services/calendarSync";
+import { getDeviceInfo } from "@/lib/device";
 import { generateSchedule } from "@/services/schedule";
 
 type TreatmentType = "H" | "N" | "R";
@@ -42,11 +45,9 @@ const TREATMENT_EMOJI: Record<TreatmentType, string> = {
   R: "\uD83D\uDD27",
 };
 
-const DAY_NAMES = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
+  return d.toLocaleDateString(i18n.language, {
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -57,7 +58,10 @@ export default function CalendarPage() {
   const { user, firebaseUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation(["calendar", "common"]);
   const navDiagnosticId = (location.state as { diagnosticId?: string } | null)?.diagnosticId;
+
+  const dayNames = t("common:days.short", { returnObjects: true }) as string[];
 
   const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -131,14 +135,14 @@ export default function CalendarPage() {
           setEvents(rebuilt);
         }
       } catch {
-        setError("Impossible de charger votre chronogramme.");
+        setError(t("calendar:errors.loadFailed"));
       } finally {
         setLoading(false);
       }
     }
 
     fetchSchedule();
-  }, [user]);
+  }, [user, t]);
 
   async function handleDownloadICS() {
     if (!schedule) return;
@@ -146,16 +150,24 @@ export default function CalendarPage() {
     try {
       await downloadICSFile(schedule.id, schedule.calendarToken);
     } catch {
-      setError("Erreur lors du téléchargement du fichier .ics");
+      setError(t("calendar:errors.downloadFailed"));
     } finally {
       setDownloading(false);
     }
   }
 
-  function handleSyncGoogle() {
+  const [syncing, setSyncing] = useState(false);
+
+  async function handleSyncCalendar() {
     if (!schedule) return;
-    const url = getGoogleCalendarUrl(schedule.id, schedule.calendarToken);
-    window.open(url, "_blank", "noopener,noreferrer");
+    setSyncing(true);
+    try {
+      await syncToCalendar(schedule.id, schedule.calendarToken);
+    } catch {
+      setError(t("calendar:errors.syncFailed"));
+    } finally {
+      setSyncing(false);
+    }
   }
 
   async function handleGenerate() {
@@ -191,7 +203,7 @@ export default function CalendarPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Impossible de créer le chronogramme. Vérifiez que le serveur est en marche.",
+          : t("calendar:errors.generateFailed"),
       );
     } finally {
       setGenerating(false);
@@ -202,7 +214,7 @@ export default function CalendarPage() {
     return (
       <div className="flex flex-col items-center justify-center px-4 pb-20 pt-16 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-gold-500" />
-        <p className="mt-4 text-body text-gray-600">Chargement de votre calendrier...</p>
+        <p className="mt-4 text-body text-gray-600">{t("calendar:loading")}</p>
       </div>
     );
   }
@@ -213,10 +225,10 @@ export default function CalendarPage() {
       return (
         <div className="px-4 pb-20 pt-8">
           <h1 className="font-serif text-h2 text-gray-900">
-            Créer votre chronogramme
+            {t("calendar:create.title")}
           </h1>
           <p className="mt-2 text-body text-gray-600">
-            Choisissez vos jours de soins pour générer votre calendrier personnalisé.
+            {t("calendar:create.subtitle")}
           </p>
 
           {error && (
@@ -228,13 +240,13 @@ export default function CalendarPage() {
           {/* Day picker */}
           <div className="mt-6">
             <label className="text-body font-medium text-gray-900">
-              Jours de soins
+              {t("calendar:create.daysLabel")}
             </label>
             <p className="mt-1 text-caption text-gray-500">
-              Sélectionnez 2 à 4 jours par semaine
+              {t("calendar:create.daysHint")}
             </p>
             <div className="mt-3 flex gap-2">
-              {DAY_NAMES.map((name, idx) => {
+              {dayNames.map((name, idx) => {
                 const isSelected = selectedDays.includes(idx);
                 return (
                   <button
@@ -268,7 +280,7 @@ export default function CalendarPage() {
           {/* Start date */}
           <div className="mt-6">
             <label className="text-body font-medium text-gray-900">
-              Date de début
+              {t("calendar:create.startDate")}
             </label>
             <input
               type="date"
@@ -290,12 +302,12 @@ export default function CalendarPage() {
               {generating ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Génération en cours...
+                  {t("calendar:create.generating")}
                 </>
               ) : (
                 <>
                   <Calendar className="h-5 w-5" />
-                  Générer mon chronogramme
+                  {t("calendar:create.generate")}
                 </>
               )}
             </Button>
@@ -308,16 +320,16 @@ export default function CalendarPage() {
     return (
       <div className="flex flex-col items-center justify-center px-4 pb-20 pt-16 text-center">
         <Calendar className="h-16 w-16 text-gold-500" />
-        <h1 className="mt-6 font-serif text-h2 text-gray-900">Calendrier</h1>
+        <h1 className="mt-6 font-serif text-h2 text-gray-900">{t("calendar:empty.title")}</h1>
         <p className="mt-2 max-w-sm text-body text-gray-600">
-          Complétez d'abord votre diagnostic pour obtenir votre chronogramme capillaire personnalisé.
+          {t("calendar:empty.description")}
         </p>
         <Button
           variant="primary"
           className="mt-6"
           onClick={() => navigate("/diagnostic")}
         >
-          Faire le diagnostic
+          {t("calendar:empty.button")}
         </Button>
       </div>
     );
@@ -333,9 +345,9 @@ export default function CalendarPage() {
 
   return (
     <div className="px-4 pb-24 pt-8">
-      <h1 className="font-serif text-h2 text-gray-900">Mon Chronogramme</h1>
+      <h1 className="font-serif text-h2 text-gray-900">{t("calendar:title")}</h1>
       <p className="mt-1 text-body-sm text-gray-600">
-        {events.length} séances sur 4 semaines
+        {t("calendar:sessionCount", { count: events.length })}
       </p>
 
       {error && (
@@ -351,7 +363,7 @@ export default function CalendarPage() {
           .map(([week, weekEvents]) => (
             <section key={week}>
               <h2 className="font-sans text-h4 text-gray-900">
-                Semaine {week}
+                {t("calendar:week", { number: week })}
               </h2>
               <div className="mt-2 space-y-2">
                 {weekEvents.map((event, idx) => (
@@ -369,7 +381,7 @@ export default function CalendarPage() {
                         {event.label}
                       </p>
                       <p className="text-body-sm text-gray-500">
-                        {formatDate(event.date)} · {DAY_NAMES[event.dayOfWeek]}
+                        {formatDate(event.date)} · {dayNames[event.dayOfWeek]}
                       </p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TREATMENT_COLORS[event.treatment]}`}>
@@ -387,10 +399,17 @@ export default function CalendarPage() {
         <Button
           variant="primary"
           className="w-full gap-2"
-          onClick={handleSyncGoogle}
+          onClick={handleSyncCalendar}
+          disabled={syncing}
         >
-          <ExternalLink className="h-5 w-5" />
-          Synchroniser avec Google Calendar
+          {syncing ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <ExternalLink className="h-5 w-5" />
+          )}
+          {getDeviceInfo().isMobile
+            ? t("calendar:sync.mobile")
+            : t("calendar:sync.desktop")}
         </Button>
         <Button
           variant="secondary"
@@ -403,18 +422,14 @@ export default function CalendarPage() {
           ) : (
             <Download className="h-5 w-5" />
           )}
-          Télécharger .ics
+          {getDeviceInfo().isMobile
+            ? t("calendar:download.mobile")
+            : t("calendar:download.desktop")}
         </Button>
       </div>
     </div>
   );
 }
-
-const TREATMENT_LABELS: Record<TreatmentType, string> = {
-  H: "Hydratation",
-  N: "Nutrition",
-  R: "Reconstruction",
-};
 
 /**
  * Client-side rebuild of calendar events from stored schedule data.
@@ -426,6 +441,12 @@ function rebuildEvents(
   daysOfWeek: number[],
   time: string,
 ): CalendarEvent[] {
+  const treatmentLabels: Record<TreatmentType, string> = {
+    H: i18n.t("common:treatments.H"),
+    N: i18n.t("common:treatments.N"),
+    R: i18n.t("common:treatments.R"),
+  };
+
   const sortedDays = [...daysOfWeek].sort((a, b) => a - b);
   const start = new Date(startAt);
   const events: CalendarEvent[] = [];
@@ -451,7 +472,7 @@ function rebuildEvents(
         dayOfWeek: targetDay,
         treatment,
         weekNumber: week + 1,
-        label: TREATMENT_LABELS[treatment],
+        label: treatmentLabels[treatment],
       });
 
       sessionIndex++;

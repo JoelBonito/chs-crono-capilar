@@ -1,0 +1,34 @@
+{
+  "title": "Meu Cronograma",
+  "sessionCount": "{{count}} sessões em 4 semanas",
+  "week": "Semana {{number}}",
+  "loading": "Carregando seu calendário...",
+  "create": {
+    "title": "Criar seu cronograma",
+    "subtitle": "Escolha seus dias de cuidados para gerar seu calendário personalizado.",
+    "daysLabel": "Dias de cuidados",
+    "daysHint": "Selecione 2 a 4 dias por semana",
+    "startDate": "Data de início",
+    "generating": "Gerando...",
+    "generate": "Gerar meu cronograma"
+  },
+  "empty": {
+    "title": "Calendário",
+    "description": "Complete primeiro seu diagnóstico para obter seu cronograma capilar personalizado.",
+    "button": "Fazer o diagnóstico"
+  },
+  "sync": {
+    "mobile": "Adicionar ao calendário",
+    "desktop": "Sincronizar com Google Calendar"
+  },
+  "download": {
+    "mobile": "Salvar arquivo .ics",
+    "desktop": "Baixar .ics"
+  },
+  "errors": {
+    "loadFailed": "Não foi possível carregar seu cronograma.",
+    "downloadFailed": "Erro ao baixar o arquivo .ics",
+    "syncFailed": "Erro ao sincronizar o calendário",
+    "generateFailed": "Não foi possível criar o cronograma. Verifique se o servidor está em funcionamento."
+  }
+}

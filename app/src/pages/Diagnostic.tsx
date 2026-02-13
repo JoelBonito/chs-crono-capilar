@@ -1,5 +1,6 @@
 import { useReducer, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { doc, setDoc, serverTimestamp, collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Loader2, ArrowLeft, ArrowRight, SkipForward } from "lucide-react";
@@ -8,8 +9,8 @@ import { db, storage } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 
-import { QUESTIONS, CONTEXTUAL_BRIDGES } from "@/features/diagnostic/questions";
 import { getAdaptiveQuestions } from "@/features/diagnostic/conditionalLogic";
+import { useTranslatedQuestions } from "@/features/diagnostic/useTranslatedQuestions";
 import {
   accumulateScores,
   normalizeScores,
@@ -66,6 +67,7 @@ interface State {
   result: DiagResult | null;
   diagnosticId: string | null;
   error: string | null;
+  isRetake: boolean;
 }
 
 type Action =
@@ -90,6 +92,7 @@ const initialState: State = {
   result: null,
   diagnosticId: null,
   error: null,
+  isRetake: false,
 };
 
 function reducer(state: State, action: Action): State {
@@ -117,7 +120,7 @@ function reducer(state: State, action: Action): State {
     case "SET_ERROR":
       return { ...state, step: "questions", error: action.error };
     case "RESTART":
-      return { ...initialState };
+      return { ...initialState, isRetake: true };
     default:
       return state;
   }
@@ -129,6 +132,8 @@ export default function Diagnostic() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { user, firebaseUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(["diagnostic", "common"]);
+  const { translatedQuestions, translatedBridges } = useTranslatedQuestions();
 
   // Restore saved progress on mount
   useEffect(() => {
@@ -141,7 +146,8 @@ export default function Diagnostic() {
   // Check for existing completed diagnostic on mount
   useEffect(() => {
     if (!user) return;
-    // Skip if user already has answers in progress or is past the questions step
+    // Skip if user explicitly restarted, has answers in progress, or is past the questions step
+    if (state.isRetake) return;
     if (state.step !== "questions" || Object.keys(state.answers).length > 0) return;
 
     async function checkExistingDiagnostic() {
@@ -171,7 +177,7 @@ export default function Diagnostic() {
     }
 
     checkExistingDiagnostic();
-  }, [user, state.step, state.answers]);
+  }, [user, state.step, state.answers, state.isRetake]);
 
   // Auto-save answers on change
   useEffect(() => {
@@ -186,7 +192,7 @@ export default function Diagnostic() {
     [state.answers],
   );
 
-  const questionMap = useMemo(() => new Map(QUESTIONS.map((q) => [q.id, q])), []);
+  const questionMap = useMemo(() => new Map(translatedQuestions.map((q) => [q.id, q])), [translatedQuestions]);
 
   const visibleQuestions = useMemo(
     () => visibleQuestionIds.map((id) => questionMap.get(id)!).filter(Boolean),
@@ -305,7 +311,7 @@ export default function Diagnostic() {
       console.error("Diagnostic processing failed:", err);
       dispatch({
         type: "SET_ERROR",
-        error: "Une erreur est survenue lors du traitement. Veuillez r\u00e9essayer.",
+        error: t("diagnostic:error.processing"),
       });
     }
   }
@@ -336,9 +342,9 @@ export default function Diagnostic() {
     return (
       <div className="flex flex-col items-center justify-center px-4 pb-20 pt-16 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-gold-500" />
-        <p className="mt-4 text-body text-gray-600">Analyse en cours...</p>
+        <p className="mt-4 text-body text-gray-600">{t("diagnostic:processing.title")}</p>
         <p className="mt-1 text-caption text-gray-400">
-          Calcul de votre profil capillaire
+          {t("diagnostic:processing.subtitle")}
         </p>
       </div>
     );
@@ -378,9 +384,9 @@ export default function Diagnostic() {
       )}
 
       {/* Contextual bridge message */}
-      {CONTEXTUAL_BRIDGES[currentQuestion.id] && (
+      {translatedBridges[currentQuestion.id] && (
         <p className="mb-3 text-body-sm italic text-gold-600">
-          {CONTEXTUAL_BRIDGES[currentQuestion.id]}
+          {translatedBridges[currentQuestion.id]}
         </p>
       )}
 
@@ -399,7 +405,7 @@ export default function Diagnostic() {
             onClick={() => dispatch({ type: "PREV_QUESTION" })}
           >
             <ArrowLeft className="h-4 w-4" />
-            Retour
+            {t("common:buttons.back")}
           </Button>
         )}
 
@@ -417,7 +423,7 @@ export default function Diagnostic() {
               }
             }}
           >
-            Passer
+            {t("common:buttons.skip")}
             <SkipForward className="h-4 w-4" />
           </Button>
         )}
@@ -428,7 +434,7 @@ export default function Diagnostic() {
           disabled={!hasValidAnswer()}
           onClick={handleNext}
         >
-          {isLastQuestion ? "Terminer" : "Suivant"}
+          {isLastQuestion ? t("common:buttons.finish") : t("common:buttons.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

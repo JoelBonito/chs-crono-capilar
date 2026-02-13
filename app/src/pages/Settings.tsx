@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
+import { cn } from "@/lib/utils";
+import type { Locale } from "@/types";
 import {
   Phone,
   Bell,
@@ -19,18 +22,6 @@ import {
   X,
   Pencil,
 } from "lucide-react";
-
-// -- Constants --
-
-const APP_VERSION = "CronoCapilar v1.0";
-const APP_AUTHOR = "Fait avec soin par CHS Paris";
-const APP_COPYRIGHT = "2026 Cosmetic Hair Shop";
-
-const LEGAL_LINKS = [
-  { to: "/cgu", label: "Conditions Generales d'Utilisation", icon: FileText },
-  { to: "/politique-de-confidentialite", label: "Politique de Confidentialite", icon: Shield },
-  { to: "/mentions-legales", label: "Mentions Legales", icon: Scale },
-] as const;
 
 // -- Helpers --
 
@@ -53,6 +44,7 @@ function buildFunctionsBaseUrl(): string {
 export default function Settings() {
   const { user, firebaseUser, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n: i18nInstance } = useTranslation(["settings", "common"]);
 
   // Edit mode state
   const [editing, setEditing] = useState(false);
@@ -69,6 +61,13 @@ export default function Settings() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [optInSMS, setOptInSMS] = useState(false);
+
+  // Legal links (defined inside component to access t())
+  const legalLinks = [
+    { to: "/cgu", label: t("settings:legal.cgu"), icon: FileText },
+    { to: "/politique-de-confidentialite", label: t("settings:legal.privacy"), icon: Shield },
+    { to: "/mentions-legales", label: t("settings:legal.legal"), icon: Scale },
+  ];
 
   // Sync form state when user profile loads/changes
   useEffect(() => {
@@ -112,15 +111,15 @@ export default function Settings() {
         optInSMS,
         updatedAt: serverTimestamp(),
       });
-      setSuccess("Profil mis a jour avec succes.");
+      setSuccess(t("settings:profile.saveSuccess"));
       setEditing(false);
       setTimeout(() => setSuccess(null), 3000);
     } catch {
-      setError("Impossible de mettre a jour le profil.");
+      setError(t("settings:profile.saveError"));
     } finally {
       setSaving(false);
     }
-  }, [firebaseUser, firstName, lastName, phone, optInSMS]);
+  }, [firebaseUser, firstName, lastName, phone, optInSMS, t]);
 
   const handleDeleteAccount = useCallback(async () => {
     if (!firebaseUser) return;
@@ -148,24 +147,39 @@ export default function Settings() {
       await signOut();
       navigate("/");
     } catch {
-      setError("Impossible de supprimer le compte. Veuillez reessayer.");
+      setError(t("settings:deleteDialog.deleteError"));
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);
     }
-  }, [firebaseUser, signOut, navigate]);
+  }, [firebaseUser, signOut, navigate, t]);
 
   const handleSignOut = useCallback(async () => {
     await signOut();
     navigate("/");
   }, [signOut, navigate]);
 
+  const handleChangeLanguage = useCallback(async (locale: Locale) => {
+    await i18nInstance.changeLanguage(locale);
+    localStorage.setItem("chs_locale", locale);
+    if (firebaseUser) {
+      try {
+        await updateDoc(doc(db, "users", firebaseUser.uid), {
+          locale,
+          updatedAt: serverTimestamp(),
+        });
+      } catch {
+        // Silent fail - locale is already saved in localStorage and i18next
+      }
+    }
+  }, [firebaseUser, i18nInstance]);
+
   // -- Render --
 
   return (
     <div className="px-4 pb-24 pt-8">
       {/* Page header */}
-      <h1 className="font-serif text-h2 text-gray-900">Parametres</h1>
+      <h1 className="font-serif text-h2 text-gray-900">{t("settings:title")}</h1>
 
       {/* Feedback banners */}
       {error && (
@@ -183,7 +197,7 @@ export default function Settings() {
       <section className="mt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-caption font-medium uppercase tracking-wider text-gray-400">
-            Profil
+            {t("settings:profile.section")}
           </h2>
           {!editing && (
             <button
@@ -192,7 +206,7 @@ export default function Settings() {
               className="flex items-center gap-1 text-caption text-gold-700 transition-colors duration-fast hover:text-gold-800"
             >
               <Pencil className="h-3.5 w-3.5" />
-              Modifier
+              {t("common:buttons.edit")}
             </button>
           )}
         </div>
@@ -215,16 +229,16 @@ export default function Settings() {
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Prenom"
-                    aria-label="Prenom"
+                    placeholder={t("settings:profile.firstNamePlaceholder")}
+                    aria-label={t("settings:profile.firstNamePlaceholder")}
                     className="w-full rounded-sm border border-gray-300 px-3 py-2 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
                   />
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Nom"
-                    aria-label="Nom de famille"
+                    placeholder={t("settings:profile.lastNamePlaceholder")}
+                    aria-label={t("settings:profile.lastNamePlaceholder")}
                     className="w-full rounded-sm border border-gray-300 px-3 py-2 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
                   />
                 </div>
@@ -248,13 +262,13 @@ export default function Settings() {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+33 6 12 34 56 78"
-                  aria-label="Numero de telephone"
+                  placeholder={t("settings:profile.phonePlaceholder")}
+                  aria-label={t("settings:profile.phonePlaceholder")}
                   className="w-full rounded-sm border border-gray-300 px-3 py-2 text-body focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
                 />
               ) : (
                 <span className="text-body text-gray-900">
-                  {user?.phoneNumber || "Non renseigne"}
+                  {user?.phoneNumber || t("settings:profile.phoneEmpty")}
                 </span>
               )}
             </div>
@@ -265,14 +279,14 @@ export default function Settings() {
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 shrink-0 text-gray-400" />
-                <span className="text-body text-gray-900">Rappels SMS</span>
+                <span className="text-body text-gray-900">{t("settings:profile.smsReminders")}</span>
               </div>
               {editing ? (
                 <button
                   type="button"
                   role="switch"
                   aria-checked={optInSMS}
-                  aria-label="Activer les rappels SMS"
+                  aria-label={t("settings:profile.smsAriaLabel")}
                   onClick={() => setOptInSMS(!optInSMS)}
                   className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-fast ${
                     optInSMS ? "bg-gold-500" : "bg-gray-300"
@@ -286,7 +300,7 @@ export default function Settings() {
                 </button>
               ) : (
                 <span className="text-body-sm text-gray-500">
-                  {user?.optInSMS ? "Active" : "Desactive"}
+                  {user?.optInSMS ? t("settings:profile.smsActive") : t("settings:profile.smsInactive")}
                 </span>
               )}
             </div>
@@ -303,7 +317,7 @@ export default function Settings() {
                 disabled={saving}
               >
                 <X className="h-4 w-4" />
-                Annuler
+                {t("common:buttons.cancel")}
               </Button>
               <Button
                 variant="primary"
@@ -317,20 +331,49 @@ export default function Settings() {
                 ) : (
                   <Check className="h-4 w-4" />
                 )}
-                {saving ? "Enregistrement..." : "Enregistrer"}
+                {saving ? t("common:buttons.saving") : t("common:buttons.save")}
               </Button>
             </div>
           )}
         </div>
       </section>
 
+      {/* ---- LANGUAGE SECTION ---- */}
+      <section className="mt-8">
+        <h2 className="text-caption font-medium uppercase tracking-wider text-gray-400">
+          {t("settings:language.section")}
+        </h2>
+        <div className="mt-2 divide-y divide-gray-100 rounded-sm border border-gray-200">
+          {(["fr-FR", "pt-BR"] as const).map((locale) => {
+            const isActive = i18nInstance.language === locale;
+            const flag = locale === "fr-FR" ? "\u{1F1EB}\u{1F1F7}" : "\u{1F1E7}\u{1F1F7}";
+            const label = locale === "fr-FR" ? t("settings:language.fr") : t("settings:language.pt");
+            return (
+              <button
+                key={locale}
+                type="button"
+                onClick={() => handleChangeLanguage(locale)}
+                className={cn(
+                  "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-fast",
+                  isActive ? "bg-gold-500/5" : "hover:bg-gray-50 active:bg-gray-100",
+                )}
+              >
+                <span className="text-xl">{flag}</span>
+                <span className="flex-1 text-body text-gray-900">{label}</span>
+                {isActive && <Check className="h-5 w-5 text-gold-500" />}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       {/* ---- LEGAL SECTION ---- */}
       <section className="mt-8">
         <h2 className="text-caption font-medium uppercase tracking-wider text-gray-400">
-          Informations legales
+          {t("settings:legal.section")}
         </h2>
         <div className="mt-2 divide-y divide-gray-100 rounded-sm border border-gray-200">
-          {LEGAL_LINKS.map(({ to, label, icon: Icon }) => (
+          {legalLinks.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
@@ -349,7 +392,7 @@ export default function Settings() {
       {/* ---- ACCOUNT ACTIONS SECTION ---- */}
       <section className="mt-8">
         <h2 className="text-caption font-medium uppercase tracking-wider text-gray-400">
-          Compte
+          {t("settings:account.section")}
         </h2>
         <div className="mt-2 divide-y divide-gray-100 rounded-sm border border-gray-200">
           {/* Sign out */}
@@ -359,7 +402,7 @@ export default function Settings() {
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-fast hover:bg-gray-50 active:bg-gray-100"
           >
             <LogOut className="h-5 w-5 text-gray-400" />
-            <span className="text-body text-gray-900">Se deconnecter</span>
+            <span className="text-body text-gray-900">{t("settings:account.signOut")}</span>
           </button>
 
           {/* Delete account */}
@@ -369,7 +412,7 @@ export default function Settings() {
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-fast hover:bg-error/5 active:bg-error/10"
           >
             <Trash2 className="h-5 w-5 text-error" />
-            <span className="text-body text-error">Supprimer mon compte</span>
+            <span className="text-body text-error">{t("settings:account.deleteAccount")}</span>
           </button>
         </div>
       </section>
@@ -377,9 +420,9 @@ export default function Settings() {
       {/* ---- APP INFO FOOTER ---- */}
       <footer className="mt-10 space-y-3 text-center">
         <Logo size="sm" className="mx-auto" />
-        <p className="text-caption text-gray-400">{APP_VERSION}</p>
-        <p className="text-caption text-gray-400">{APP_AUTHOR}</p>
-        <p className="text-caption text-gray-300">&copy; {APP_COPYRIGHT}</p>
+        <p className="text-caption text-gray-400">{t("settings:footer.version")}</p>
+        <p className="text-caption text-gray-400">{t("settings:footer.author")}</p>
+        <p className="text-caption text-gray-300">&copy; {t("settings:footer.copyright")}</p>
       </footer>
 
       {/* ---- DELETE CONFIRMATION DIALOG ---- */}
@@ -395,10 +438,10 @@ export default function Settings() {
               id="delete-dialog-title"
               className="font-serif text-h4 text-gray-900"
             >
-              Supprimer votre compte
+              {t("settings:deleteDialog.title")}
             </h3>
             <p className="mt-2 text-body-sm text-gray-600">
-              Cette action est irreversible. Toutes vos donnees seront supprimees conformement au RGPD (Article 17).
+              {t("settings:deleteDialog.description")}
             </p>
             <div className="mt-6 flex gap-3">
               <Button
@@ -408,7 +451,7 @@ export default function Settings() {
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={deleting}
               >
-                Annuler
+                {t("common:buttons.cancel")}
               </Button>
               <button
                 type="button"
@@ -417,7 +460,7 @@ export default function Settings() {
                 className="flex flex-1 items-center justify-center gap-2 rounded-full bg-error px-4 py-2.5 text-body-sm font-medium text-white transition-colors duration-fast hover:bg-red-800 disabled:opacity-50"
               >
                 {deleting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {deleting ? "Suppression..." : "Supprimer"}
+                {deleting ? t("common:buttons.deleting") : t("common:buttons.delete")}
               </button>
             </div>
           </div>

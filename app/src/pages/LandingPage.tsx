@@ -1,46 +1,49 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ScanFace, Calendar, Bell } from "lucide-react";
 import Logo from "@/components/Logo";
 
-const features = [
-  {
-    icon: ScanFace,
-    title: "Diagnostic IA",
-    description: "Analysez votre type de cheveux grâce à notre intelligence artificielle.",
-  },
-  {
-    icon: Calendar,
-    title: "Chronogramme personnalisé",
-    description: "Un calendrier H/N/R adapté à vos besoins capillaires.",
-  },
-  {
-    icon: Bell,
-    title: "Alertes intelligentes",
-    description: "Rappels SMS pour ne jamais oublier vos soins.",
-  },
-];
-
 export default function LandingPage() {
+  const { t } = useTranslation("landing");
+
+  const features = [
+    {
+      icon: ScanFace,
+      title: t("features.diagnostic.title"),
+      description: t("features.diagnostic.description"),
+    },
+    {
+      icon: Calendar,
+      title: t("features.schedule.title"),
+      description: t("features.schedule.description"),
+    },
+    {
+      icon: Bell,
+      title: t("features.alerts.title"),
+      description: t("features.alerts.description"),
+    },
+  ];
+
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Hero */}
       <section className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
         <Logo size="xl" className="mb-8" />
         <h1 className="font-serif text-hero text-gray-900">
-          Votre routine capillaire,
+          {t("hero.title1")}
           <br />
-          <span className="text-gold-700">sublimée par l&apos;IA</span>
+          <span className="text-gold-700">{t("hero.title2")}</span>
         </h1>
         <p className="mt-4 max-w-md text-body text-gray-600">
-          CronoCapilar crée un chronogramme personnalisé pour des cheveux sains et éclatants.
+          {t("hero.subtitle")}
         </p>
         <div className="mt-8 flex gap-4">
           <Link to="/signup">
-            <Button variant="primary">Commencer</Button>
+            <Button variant="primary">{t("hero.cta")}</Button>
           </Link>
           <Link to="/login">
-            <Button variant="ghost">Se connecter</Button>
+            <Button variant="ghost">{t("hero.login")}</Button>
           </Link>
         </div>
       </section>
@@ -65,16 +68,16 @@ export default function LandingPage() {
         <div className="mx-auto max-w-4xl space-y-4">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <Logo size="sm" />
-            <p className="text-caption text-gray-500">&copy; 2026 CronoCapilar - H.A.M LUXURY HAIR COSMETICS</p>
+            <p className="text-caption text-gray-500">{t("footer.copyright")}</p>
             <nav className="flex gap-4 text-caption text-gray-500">
               <Link to="/mentions-legales" className="hover:text-gray-900">
-                Mentions légales
+                {t("footer.legal")}
               </Link>
               <Link to="/politique-de-confidentialite" className="hover:text-gray-900">
-                Confidentialité
+                {t("footer.privacy")}
               </Link>
               <Link to="/cgu" className="hover:text-gray-900">
-                CGU
+                {t("footer.cgu")}
               </Link>
             </nav>
           </div>

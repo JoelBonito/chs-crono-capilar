@@ -16,6 +16,8 @@ import {
   Leaf,
   Wrench,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -64,12 +66,6 @@ const TREATMENT_BAR_COLORS: Record<TreatmentType, string> = {
   R: "bg-amber-500",
 };
 
-const TREATMENT_LABELS: Record<TreatmentType, string> = {
-  H: "Hydratation",
-  N: "Nutrition",
-  R: "Reconstruction",
-};
-
 const TREATMENT_ICONS: Record<TreatmentType, typeof Droplets> = {
   H: Droplets,
   N: Leaf,
@@ -85,16 +81,18 @@ function getGreetingSubtext(
   schedule: ScheduleSummary | null,
 ): string {
   if (!diagnostic) {
-    return "Bienvenue sur votre espace capillaire personnalis\u00e9.";
+    return i18n.t("dashboard:subtexts.welcome");
   }
   if (!schedule) {
-    return "Votre diagnostic est pr\u00eat. Cr\u00e9ez votre chronogramme !";
+    return i18n.t("dashboard:subtexts.diagnosticReady");
   }
   const next = findNextEvent(schedule.calendarEvents);
   if (next) {
-    return `Votre prochain soin est pr\u00e9vu pour ${formatDateFriendly(next.date)}.`;
+    return i18n.t("dashboard:subtexts.nextTreatment", {
+      date: formatDateFriendly(next.date),
+    });
   }
-  return "Votre chronogramme est termin\u00e9. F\u00e9licitations !";
+  return i18n.t("dashboard:subtexts.completed");
 }
 
 function findNextEvent(events: CalendarEvent[]): CalendarEvent | null {
@@ -107,7 +105,7 @@ function findNextEvent(events: CalendarEvent[]): CalendarEvent | null {
 
 function formatDateFriendly(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
+  return d.toLocaleDateString(i18n.language, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -144,35 +142,36 @@ function deriveDominantNeed(h: number, n: number, r: number): TreatmentType {
 // ---------------------------------------------------------------------------
 
 function StartDiagnosticCard() {
+  const { t } = useTranslation(["dashboard", "common"]);
+
   return (
     <div className="rounded-md border border-gray-200 bg-gray-50 p-6 text-center">
       <ScanFace className="mx-auto h-12 w-12 text-gold-500" />
       <h2 className="mt-4 font-sans text-h4 text-gray-900">
-        Commencez votre diagnostic
+        {t("dashboard:startDiagnostic.title")}
       </h2>
       <p className="mt-2 text-body-sm text-gray-600">
-        Analysez votre type de cheveux pour obtenir un chronogramme
-        personnalis&eacute;.
+        {t("dashboard:startDiagnostic.description")}
       </p>
       <Link to="/diagnostic" className="mt-4 inline-block">
-        <Button variant="primary">Lancer le diagnostic</Button>
+        <Button variant="primary">{t("dashboard:startDiagnostic.button")}</Button>
       </Link>
     </div>
   );
 }
 
 function CreateScheduleCard({ diagnosticId }: { diagnosticId: string }) {
+  const { t } = useTranslation(["dashboard", "common"]);
   const navigate = useNavigate();
 
   return (
     <div className="rounded-md border border-gold-500/30 bg-gold-500/5 p-6 text-center">
       <Calendar className="mx-auto h-12 w-12 text-gold-500" />
       <h2 className="mt-4 font-sans text-h4 text-gray-900">
-        Votre diagnostic est pr&ecirc;t !
+        {t("dashboard:createSchedule.title")}
       </h2>
       <p className="mt-2 text-body-sm text-gray-600">
-        Cr&eacute;ez votre chronogramme personnalis&eacute; bas&eacute; sur vos
-        besoins capillaires.
+        {t("dashboard:createSchedule.description")}
       </p>
       <Button
         variant="primary"
@@ -181,7 +180,7 @@ function CreateScheduleCard({ diagnosticId }: { diagnosticId: string }) {
           navigate("/calendrier", { state: { diagnosticId } })
         }
       >
-        Cr&eacute;er votre chronogramme
+        {t("dashboard:createSchedule.button")}
       </Button>
     </div>
   );
@@ -192,6 +191,8 @@ function DiagnosticSummaryCard({
 }: {
   diagnostic: DiagnosticSummary;
 }) {
+  const { t } = useTranslation(["dashboard", "common"]);
+
   const needs: { type: TreatmentType; value: number }[] = [
     { type: "H", value: diagnostic.hydrationNeed },
     { type: "N", value: diagnostic.nutritionNeed },
@@ -201,12 +202,12 @@ function DiagnosticSummaryCard({
   return (
     <div className="rounded-md border border-gray-200 bg-white p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-sans text-h4 text-gray-900">Votre profil</h3>
+        <h3 className="font-sans text-h4 text-gray-900">{t("dashboard:profile.title")}</h3>
         <Link
           to="/diagnostic"
           className="flex items-center gap-1 text-caption text-gold-700 transition-colors duration-fast hover:text-gold-500"
         >
-          Voir d&eacute;tails
+          {t("dashboard:profile.details")}
           <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -223,10 +224,10 @@ function DiagnosticSummaryCard({
                     isDominant ? "font-medium text-gray-900" : "text-gray-600",
                   )}
                 >
-                  {TREATMENT_LABELS[type]}
+                  {t(`common:treatments.${type}`)}
                   {isDominant && (
                     <span className="ml-1.5 inline-block rounded-full bg-gold-500/15 px-1.5 py-0.5 text-[0.625rem] font-semibold leading-none text-gold-700">
-                      DOMINANT
+                      {t("common:dominant")}
                     </span>
                   )}
                 </span>
@@ -259,6 +260,7 @@ function DiagnosticSummaryCard({
 }
 
 function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
+  const { t } = useTranslation(["dashboard", "common"]);
   const nextEvent = findNextEvent(schedule.calendarEvents);
   const weekProgress = getWeekProgress(schedule.calendarEvents);
 
@@ -266,16 +268,17 @@ function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
     return (
       <div className="rounded-md border border-green-200 bg-green-50 p-4 text-center">
         <p className="font-sans text-h4 text-green-800">
-          Chronogramme termin&eacute; !
+          {t("dashboard:scheduleCompleted.title")}
         </p>
         <p className="mt-1 text-body-sm text-green-700">
-          Vous avez compl&eacute;t&eacute; tous vos soins. Bravo !
+          {t("dashboard:scheduleCompleted.description")}
         </p>
       </div>
     );
   }
 
   const Icon = TREATMENT_ICONS[nextEvent.treatment];
+  const remainingCount = weekProgress?.remainingThisWeek ?? 0;
 
   return (
     <Link to="/calendrier" className="block">
@@ -292,7 +295,7 @@ function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
 
           <div className="min-w-0 flex-1">
             <p className="text-caption uppercase tracking-wider text-gray-400">
-              Prochain soin
+              {t("dashboard:nextTreatment.label")}
             </p>
             <p className="mt-0.5 font-sans text-body font-medium text-gray-900">
               {nextEvent.label}
@@ -316,11 +319,14 @@ function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
               />
             </div>
             <span className="shrink-0 text-caption text-gray-500">
-              Semaine {weekProgress.currentWeek}/{weekProgress.totalWeeks}
+              {t("dashboard:nextTreatment.week", {
+                current: weekProgress.currentWeek,
+                total: weekProgress.totalWeeks,
+              })}
               {" \u00b7 "}
-              {weekProgress.remainingThisWeek} soin
-              {weekProgress.remainingThisWeek > 1 ? "s" : ""} restant
-              {weekProgress.remainingThisWeek > 1 ? "s" : ""}
+              {remainingCount > 1
+                ? t("dashboard:nextTreatment.remainingPlural", { count: remainingCount })
+                : t("dashboard:nextTreatment.remaining", { count: remainingCount })}
             </span>
           </div>
         )}
@@ -351,6 +357,7 @@ function DashboardSkeleton() {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { t } = useTranslation(["dashboard", "common"]);
   const [diagnostic, setDiagnostic] = useState<DiagnosticSummary | null>(null);
   const [schedule, setSchedule] = useState<ScheduleSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -430,7 +437,7 @@ export default function Dashboard() {
     <div className="px-4 pb-20 pt-8">
       {/* Greeting */}
       <h1 className="font-serif text-h2 text-gray-900">
-        Bonjour, {user?.firstName ?? ""}
+        {t("dashboard:greeting", { name: user?.firstName ?? "" })}
       </h1>
       <p className="mt-2 text-body text-gray-600">
         {getGreetingSubtext(diagnostic, schedule)}
