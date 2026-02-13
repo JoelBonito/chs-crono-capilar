@@ -77,24 +77,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    const fbUser = result.user;
-    const existing = await fetchUserProfile(fbUser.uid);
-    if (!existing) {
-      await setDoc(doc(db, "users", fbUser.uid), {
-        email: fbUser.email,
-        firstName: fbUser.displayName?.split(" ")[0] ?? "",
-        lastName: fbUser.displayName?.split(" ").slice(1).join(" ") ?? "",
-        phoneNumber: "",
-        locale: "fr-FR",
-        region: "europe-west1",
-        optInSMS: false,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+    console.log("[Auth] Starting Google sign-in...");
+    console.log("[Auth] Auth config:", {
+      authDomain: auth.config.authDomain,
+      projectId: auth.config.projectId,
+    });
+
+    try {
+      console.log("[Auth] Opening popup...");
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("[Auth] Popup successful, user:", result.user.email);
+
+      const fbUser = result.user;
+      const existing = await fetchUserProfile(fbUser.uid);
+      console.log("[Auth] Existing profile:", existing ? "found" : "not found");
+
+      if (!existing) {
+        console.log("[Auth] Creating new user profile...");
+        await setDoc(doc(db, "users", fbUser.uid), {
+          email: fbUser.email,
+          firstName: fbUser.displayName?.split(" ")[0] ?? "",
+          lastName: fbUser.displayName?.split(" ").slice(1).join(" ") ?? "",
+          phoneNumber: "",
+          locale: "fr-FR",
+          region: "europe-west1",
+          optInSMS: false,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        console.log("[Auth] Profile created");
+      }
+
+      const profile = await fetchUserProfile(fbUser.uid);
+      setUser(profile);
+      console.log("[Auth] Sign-in complete");
+    } catch (error) {
+      console.error("[Auth] Sign-in error:", error);
+      throw error;
     }
-    const profile = await fetchUserProfile(fbUser.uid);
-    setUser(profile);
   }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {

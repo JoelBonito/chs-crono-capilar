@@ -11,6 +11,10 @@ const firebaseErrorMessages: Record<string, string> = {
   "auth/wrong-password": "Mot de passe incorrect.",
   "auth/too-many-requests": "Trop de tentatives. Réessayez plus tard.",
   "auth/popup-closed-by-user": "Connexion annulée.",
+  "auth/popup-blocked": "Le popup a été bloqué. Autorisez les popups pour ce site.",
+  "auth/unauthorized-domain": "Ce domaine n'est pas autorisé. Contactez le support.",
+  "auth/cancelled-popup-request": "Connexion annulée.",
+  "auth/network-request-failed": "Erreur réseau. Vérifiez votre connexion.",
 };
 
 export default function Login() {
@@ -41,15 +45,27 @@ export default function Login() {
 
   async function handleGoogle() {
     setError("");
+    setLoading(true);
+    console.log("[Login] Google button clicked");
+
     try {
+      console.log("[Login] Calling signInWithGoogle...");
       await signInWithGoogle();
+      console.log("[Login] Sign-in successful, navigating to dashboard");
       navigate("/dashboard");
     } catch (err) {
+      console.error("[Login] Error during Google sign-in:", err);
+
       if (err instanceof FirebaseError) {
-        setError(firebaseErrorMessages[err.code] ?? "Une erreur est survenue.");
+        console.error("[Login] Firebase error code:", err.code);
+        console.error("[Login] Firebase error message:", err.message);
+        setError(firebaseErrorMessages[err.code] ?? `Erreur: ${err.message}`);
       } else {
-        setError("Une erreur est survenue.");
+        console.error("[Login] Non-Firebase error:", err);
+        setError(`Une erreur est survenue: ${err instanceof Error ? err.message : String(err)}`);
       }
+    } finally {
+      setLoading(false);
     }
   }
 

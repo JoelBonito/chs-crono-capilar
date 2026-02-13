@@ -22,35 +22,35 @@ echo ""
 echo "📝 Configurando variáveis de ambiente para PRODUCTION..."
 echo ""
 
-# Array de variáveis a serem configuradas
-declare -A env_vars=(
-    ["VITE_FIREBASE_API_KEY"]="AIzaSyDrpEo88GapBfQWQBfAlOnrt-e6wkthK9M"
-    ["VITE_FIREBASE_AUTH_DOMAIN"]="chs-crono-capilar-2026.firebaseapp.com"
-    ["VITE_FIREBASE_PROJECT_ID"]="chs-crono-capilar-2026"
-    ["VITE_FIREBASE_STORAGE_BUCKET"]="chs-crono-capilar-2026.firebasestorage.app"
-    ["VITE_FIREBASE_MESSAGING_SENDER_ID"]="945327647639"
-    ["VITE_FIREBASE_APP_ID"]="1:945327647639:web:977452fe7b1af41aa472d2"
-    ["VITE_USE_EMULATORS"]="false"
-    ["VITE_GEMINI_API_KEY"]="AIzaSyA0bibFLrtK4f-MDnxQLDir__MFqQRKRCo"
-    ["VITE_APP_DOMAIN"]="cronocapilar.inoveai.app.br"
-    ["VITE_COMPANY_EMAIL"]="chs.achat@gmail.com"
-    ["VITE_COMPANY_PHONE"]="33617767675"
-)
+# Função para configurar uma variável
+set_env() {
+    local key="$1"
+    local value="$2"
 
-# Configurar cada variável
-for key in "${!env_vars[@]}"; do
-    value="${env_vars[$key]}"
     echo "⚙️  Configurando $key..."
 
-    # Remover se existir
-    vercel env rm "$key" production --yes 2>/dev/null || true
+    # Remover se existir (silenciosamente se não existir)
+    echo "y" | vercel env rm "$key" production 2>/dev/null || true
 
     # Adicionar nova
-    echo "$value" | vercel env add "$key" production --yes
+    echo "$value" | vercel env add "$key" production
 
     echo "✅ $key configurado"
     echo ""
-done
+}
+
+# Configurar cada variável
+set_env "VITE_FIREBASE_API_KEY" "AIzaSyDrpEo88GapBfQWQBfAlOnrt-e6wkthK9M"
+set_env "VITE_FIREBASE_AUTH_DOMAIN" "chs-crono-capilar-2026.firebaseapp.com"
+set_env "VITE_FIREBASE_PROJECT_ID" "chs-crono-capilar-2026"
+set_env "VITE_FIREBASE_STORAGE_BUCKET" "chs-crono-capilar-2026.firebasestorage.app"
+set_env "VITE_FIREBASE_MESSAGING_SENDER_ID" "945327647639"
+set_env "VITE_FIREBASE_APP_ID" "1:945327647639:web:977452fe7b1af41aa472d2"
+set_env "VITE_USE_EMULATORS" "false"
+set_env "VITE_GEMINI_API_KEY" "AIzaSyA0bibFLrtK4f-MDnxQLDir__MFqQRKRCo"
+set_env "VITE_APP_DOMAIN" "cronocapilar.inoveai.app.br"
+set_env "VITE_COMPANY_EMAIL" "chs.achat@gmail.com"
+set_env "VITE_COMPANY_PHONE" "+33617767675"
 
 echo ""
 echo "✅ Todas as variáveis configuradas!"
