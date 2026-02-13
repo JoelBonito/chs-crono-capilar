@@ -23,29 +23,27 @@ function ProtectedLayout() {
   );
 }
 
-export const router = createBrowserRouter(
-  [
-    // Public routes
-    { path: "/", element: <LandingPage /> },
-    { path: "/login", element: <Login /> },
-    { path: "/signup", element: <Signup /> },
-    { path: "/profile-setup", element: <ProfileSetup /> },
-    { path: "/mentions-legales", element: <LegalNotice /> },
-    { path: "/politique-de-confidentialite", element: <PrivacyPolicy /> },
-    { path: "/cgu", element: <TermsOfService /> },
+export const router = createBrowserRouter([
+  // Public routes
+  { path: "/", element: <LandingPage /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
+  { path: "/profile-setup", element: <ProfileSetup /> },
+  { path: "/mentions-legales", element: <LegalNotice /> },
+  { path: "/politique-de-confidentialite", element: <PrivacyPolicy /> },
+  { path: "/cgu", element: <TermsOfService /> },
 
-    // Protected routes
-    {
-      element: <ProtectedLayout />,
-      children: [
-        { path: "/dashboard", element: <Dashboard /> },
-        { path: "/diagnostic", element: <Diagnostic /> },
-        { path: "/calendrier", element: <CalendarPage /> },
-        { path: "/parametres", element: <Settings /> },
-      ],
-    },
+  // Protected routes
+  {
+    element: <ProtectedLayout />,
+    children: [
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/diagnostic", element: <Diagnostic /> },
+      { path: "/calendrier", element: <CalendarPage /> },
+      { path: "/parametres", element: <Settings /> },
+    ],
+  },
 
-    // Catch-all
-    { path: "*", element: <Navigate to="/" replace /> },
-  ]
-);
+  // Catch-all
+  { path: "*", element: <Navigate to="/" replace /> },
+]);

@@ -2,6 +2,7 @@
 const PRODUCTION_ORIGINS = [
   "https://cronocapilar.web.app",
   "https://cronocapilar.firebaseapp.com",
+  "https://cronocapilar.inoveai.app.br",
 ];
 
 const DEV_ORIGINS = [

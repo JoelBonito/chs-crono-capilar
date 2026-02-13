@@ -23,11 +23,6 @@ service cloud.firestore {
       return field is string && field.size() > 0 && field.size() < 1000;
     }
 
-    // Helper: validate phone number format (E.164)
-    function isValidPhone(phone) {
-      return phone is string && phone.matches('^\\+[1-9]\\d{1,14}$');
-    }
-
     // ==========================================
     // Collection: users
     // ==========================================
