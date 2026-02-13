@@ -109,14 +109,18 @@
 | 7.2 | **Feedback Visual de Análise**: skeletons e barra de progresso durante análise da IA. | `@frontend-specialist` | AG | Sprint 2 | Done | 2026-02-07 | `web/src/components/diagnostic/loading-state.tsx` |
 | 7.3 | **Fallbacks Robustos**: tratamento de erros quando a API da IA falha ou retorna dados inválidos. | `@backend-specialist` | CC | Sprint 2 | Done | 2026-02-07 | `functions/src/diagnostic/analyzer.ts` (3-tier: full prompt → retry → textual fallback) |
 
-### Epic 8: Monetização & Checkout (P0) [OWNER: backend-specialist] [TOOL: CC]
-*Infraestrutura para venda de planos premium.*
+### Epic 8: Monetização & Checkout (P0 backend / P-POST-MVP frontend) [OWNER: backend-specialist] [TOOL: CC]
+*Infraestrutura para venda de planos premium. Backend pronto; frontend adiado para pos-MVP por decisao de produto (2026-02-13).*
+
+> **Decisao MVP (2026-02-13):** O frontend NAO tera nenhuma referencia a pagamentos, planos ou upgrade no MVP.
+> O backend permanece pronto para ativacao futura. Nenhum componente de paywall, pagina de upgrade ou
+> campo `isPremium` sera exposto na interface do usuario ate decisao contraria.
 
 | ID | Story | Agente Recomendado | Ferramenta | Sprint Planejado | Status | Data Conclusão | Evidência |
 |----|-------|-------------------|------------|------------------|--------|----------------|-----------|
-| 8.1 | **Integração Stripe**: gerar links de pagamento para plano Premium. | `@backend-specialist` | CC | Sprint 2 | Done | 2026-02-07 | `functions/src/billing/handler.ts`, `functions/src/billing/config.ts` (checkout, portal, webhook) |
-| 8.2 | **Paywall de Cronograma**: bloquear acesso total ao calendário para usuários Free (apenas 3 dias visíveis). | `@frontend-specialist` | AG | Sprint 2 | Done | 2026-02-07 | `web/src/components/calendar/paywall-overlay.tsx` |
-| 8.3 | **Página de Upgrade**: UI de venda com comparação Free vs Premium. | `@frontend-specialist` | AG | Sprint 2 | Done | 2026-02-07 | `web/src/app/(app)/upgrade/page.tsx` |
+| 8.1 | **Integração Stripe (Backend)**: Cloud Functions para checkout, portal e webhook. | `@backend-specialist` | CC | Sprint 2 | Done | 2026-02-07 | `functions/src/billing/handler.ts`, `functions/src/billing/config.ts` (checkout, portal, webhook) |
+| 8.2 | **Paywall de Cronograma**: bloquear acesso ao calendário para usuários Free. | `@frontend-specialist` | AG | Post-MVP | Deferred | — | _Adiado: sem frontend billing no MVP._ |
+| 8.3 | **Página de Upgrade**: UI de venda com comparação Free vs Premium. | `@frontend-specialist` | AG | Post-MVP | Deferred | — | _Adiado: sem frontend billing no MVP._ |
 
 ---
 

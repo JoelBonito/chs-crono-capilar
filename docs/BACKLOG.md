@@ -7,7 +7,7 @@
 > **Sempre atualize o documento canonico primeiro.**
 
 **Ultima Atualizacao:** 2026-02-13
-**Status Geral:** 8 Epics | 25 Stories | 18 Concluidas (72%)
+**Status Geral:** 8 Epics | 25 Stories | 19 Concluidas (76%) | 2 Deferred (pos-MVP)
 **Agente Responsavel:** `@product-owner`
 
 > **NOTA (2026-02-13):** Backlog corrigido apos auditoria. O script `finish_task.py` havia
@@ -54,10 +54,12 @@
 - [x] **Story 7.2:** Feedback Visual e Loading.
 - [x] **Story 7.3:** Fallbacks Robustos.
 
-### Epic 8: Monetizacao & Checkout (P0) [OWNER: backend-specialist] [TOOL: CC]
-- [ ] **Story 8.1:** Integracao Stripe. ⚠️ _Backend pronto (`functions/src/billing/`), zero UI checkout._
-- [ ] **Story 8.2:** Paywall e Freemium. ⚠️ _Nenhuma logica de paywall no frontend._
-- [ ] **Story 8.3:** Pagina de Upgrade. ⚠️ _Pagina nao existe._
+### Epic 8: Monetizacao & Checkout (P0 backend / Post-MVP frontend) [OWNER: backend-specialist] [TOOL: CC]
+> **Decisao MVP (2026-02-13):** Frontend de billing adiado para pos-MVP. Backend pronto, zero UI no MVP.
+
+- [x] **Story 8.1:** Integracao Stripe (Backend). _Cloud Functions prontas: checkout, portal, webhook._
+- [ ] **Story 8.2:** Paywall e Freemium. ⏸️ _**Deferred** — adiado para pos-MVP._
+- [ ] **Story 8.3:** Pagina de Upgrade. ⏸️ _**Deferred** — adiado para pos-MVP._
 
 ---
 
@@ -72,8 +74,8 @@
 | **5. Notificacoes** | 3 | 1 | 33% — Backend pronto, falta UI |
 | **6. Dashboard Admin** | 2 | 0 | 0% — Backend pronto, zero UI |
 | **7. Refinamento & UX IA** | 3 | 3 | 100% Concluido |
-| **8. Monetizacao & Checkout** | 3 | 0 | 0% — Backend pronto, zero UI |
-| **TOTAL** | **25** | **18** | **72%** |
+| **8. Monetizacao & Checkout** | 3 | 1 | 33% — Backend Done, frontend Deferred (pos-MVP) |
+| **TOTAL** | **25** | **19** | **76%** (+ 2 Deferred) |
 
 ---
 
@@ -84,10 +86,12 @@
 - **Frontend (app/):** ~55% completo — 8 paginas funcionais, 3 modulos sem UI
 - **Integracao E2E:** ~40% — Diagnostic + Schedule + Calendar integrados, Stripe/Admin/Produtos nao
 
-### O Que Falta para 100%
-1. **Epic 8 (P0):** Pagina de checkout Stripe, paywall, pagina de upgrade
-2. **Epic 5 (P1):** UI de consumo de produtos, centro de notificacoes
-3. **Epic 6 (P2):** Dashboard admin completo com metricas
+### O Que Falta para MVP
+1. **Epic 5 (P1):** UI de consumo de produtos, centro de notificacoes
+2. **Epic 6 (P2):** Dashboard admin completo com metricas
+
+### Adiado para Pos-MVP
+- **Epic 8 — Stories 8.2, 8.3:** Frontend de billing (paywall, pagina de upgrade) — decisao de produto 2026-02-13
 
 ### Paginas Funcionais no Frontend
 | Pagina | Status |
