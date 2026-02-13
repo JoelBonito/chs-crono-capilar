@@ -17,6 +17,14 @@
     "GEMINI.md"
   ],
   "scripts": {
+    "dev": "pnpm --prefix app dev",
+    "dev:emulators": "concurrently \"firebase emulators:start\" \"pnpm --prefix app dev\"",
+    "emulators": "firebase emulators:start",
+    "seed": "npx tsx scripts/seed-emulator.ts",
+    "build": "pnpm --prefix app build",
+    "start": "pnpm --prefix app preview",
+    "lint": "pnpm --prefix app lint",
+    "typecheck": "pnpm --prefix app typecheck",
     "test": "python3 -m pytest tests/ -v"
   },
   "repository": {
@@ -35,5 +43,12 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "tsx": "^4.21.0"
+  },
+  "dependencies": {
+    "firebase": "^12.9.0"
   }
 }

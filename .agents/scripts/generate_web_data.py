@@ -146,8 +146,8 @@ def generate_summary(agents: list, skills: list, workflows: list) -> Dict[str, A
 
 def main():
     parser = argparse.ArgumentParser(description="Generate web JSON data from .agents/ markdown files")
-    parser.add_argument("--out", default="web/src/data/generated",
-                        help="Output directory for JSON files (default: web/src/data/generated)")
+    parser.add_argument("--out", default=".agents/data/generated",
+                        help="Output directory for JSON files (default: .agents/data/generated)")
     parser.add_argument("--root", default=".", help="Project root (default: current directory)")
 
     args = parser.parse_args()

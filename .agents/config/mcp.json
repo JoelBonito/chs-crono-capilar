@@ -18,6 +18,16 @@
                 "shadcn@latest",
                 "mcp"
             ]
+        },
+        "stitch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "mcp-remote",
+                "https://stitch.googleapis.com/mcp",
+                "-H",
+                "X-Goog-Api-Key: AQ.Ab8RN6JZdTBg21l6V5O6Dog6AJigphzpYuKA7O_5uYtWZuhkpg"
+            ]
         }
     }
 }

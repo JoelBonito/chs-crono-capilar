@@ -23,3 +23,26 @@ antigravity-doc
 .vscode/
 *.swp
 *.swo
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+functions/lib/
+
+# App
+app/node_modules/
+app/dist/
+
+# Web (removed - was framework docs site, not CHS product)
+web/
+
+# Environment files (all locations)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Secrets
+**/service-account-*.json
+**/.secret.local

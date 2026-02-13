@@ -1,23 +1,21 @@
-# Caderno de Testes - Inove AI Framework
+# Caderno de Testes - CronoCapilar (CHS)
 
-> Caderno completo de testes para validacao de todos os componentes do framework.
-> Versao: 1.1 | Data: 2026-02-05 | Atualizado de .agent/ para .agents/
+> **Versao:** 2.0
+> **Data:** 2026-02-09
+> **Gerado por:** Claude Code (Opus 4.6) com 4 agentes especializados
+> **Baseado em:** docs/BACKLOG.md, docs/02-Requisitos/detailed-user-stories.md, docs/01-Planejamento/02-prd.md
+> **Status:** Draft
 
 ---
 
-## Sumario
+## Agentes Envolvidos na Geracao
 
-1. [Estrutura e Integridade de Arquivos](#1-estrutura-e-integridade-de-arquivos)
-2. [CLI (bin/cli.js)](#2-cli-binclijs)
-3. [Scripts Python](#3-scripts-python)
-4. [Agentes (21)](#4-agentes-21)
-5. [Skills (40)](#5-skills-40)
-6. [Workflows (21)](#6-workflows-20)
-7. [Roteamento Inteligente](#7-roteamento-inteligente)
-8. [Sistema Dual-Agent](#8-sistema-dual-agent)
-9. [Web Application (Next.js)](#9-web-application-nextjs)
-10. [Integracao End-to-End](#10-integracao-end-to-end)
-11. [Regressao e Edge Cases](#11-regressao-e-edge-cases)
+| Agente | Foco | Cenarios Gerados |
+|--------|------|-----------------|
+| `@backend-specialist` | Cloud Functions, APIs, Firestore, schemas, integracao | 312 |
+| `@frontend-specialist` | UI/UX, acessibilidade, navegacao, i18n, responsividade | 142 |
+| `@security-auditor` | OWASP Top 10, RGPD, Firestore/Storage rules, Stripe, Twilio | 174 |
+| `@explorer-agent` | Criterios de aceitacao, RFs, rastreabilidade | Matriz completa |
 
 ---
 
@@ -25,681 +23,724 @@
 
 | Simbolo | Significado |
 |---------|-------------|
-| `[ ]` | Teste pendente |
-| `[x]` | Teste aprovado |
-| `[!]` | Teste com falha |
-| `[-]` | Teste nao aplicavel |
+| [ ] | Teste pendente |
+| [x] | Teste aprovado |
+| [!] | Teste com falha |
+| [-] | Teste nao aplicavel |
 
-**Prioridades:**
-- **P0** - Critico (bloqueia uso do framework)
-- **P1** - Alta (funcionalidade core comprometida)
-- **P2** - Media (funcionalidade secundaria)
-- **P3** - Baixa (cosmetico/documentacao)
+**Severidade:** P0 = Bloqueia release | P1 = Corrigir antes de prod | P2 = Backlog v1.1
 
 ---
 
-## 1. Estrutura e Integridade de Arquivos
+## Resumo de Cobertura
 
-### 1.1 Diretorios Raiz (P0)
-
-| # | Teste | Comando de Validacao | Status |
-|---|-------|----------------------|--------|
-| 1.1.1 | Diretorio `.agents/` existe | `test -d .agent && echo OK` | `[x]` |
-| 1.1.2 | Diretorio `.agents/agents/` existe | `test -d .agent/agents && echo OK` | `[x]` |
-| 1.1.3 | Diretorio `.agents/skills/` existe | `test -d .agent/skills && echo OK` | `[x]` |
-| 1.1.4 | Diretorio `.agents/workflows/` existe | `test -d .agent/workflows && echo OK` | `[x]` |
-| 1.1.5 | Diretorio `.agents/scripts/` existe | `test -d .agent/scripts && echo OK` | `[x]` |
-| 1.1.6 | Diretorio `.agents/rules/` existe | `test -d .agent/rules && echo OK` | `[x]` |
-| 1.1.7 | Diretorio `.agents/locks/` existe ou e criavel | `mkdir -p .agent/locks && echo OK` | `[x]` |
-| 1.1.8 | Diretorio `docs/` existe | `test -d docs && echo OK` | `[x]` |
-| 1.1.9 | Diretorio `web/` existe | `test -d web && echo OK` | `[x]` |
-| 1.1.10 | Diretorio `bin/` existe | `test -d bin && echo OK` | `[x]` |
-
-### 1.2 Arquivos de Configuracao (P0)
-
-| # | Teste | Comando de Validacao | Status |
-|---|-------|----------------------|--------|
-| 1.2.1 | `CLAUDE.md` existe na raiz | `test -f CLAUDE.md && echo OK` | `[x]` |
-| 1.2.2 | `.agents/ARCHITECTURE.md` existe | `test -f .agents/ARCHITECTURE.md && echo OK` | `[x]` |
-| 1.2.3 | `.agents/rules/GEMINI.md` existe | `test -f .agents/rules/GEMINI.md && echo OK` | `[x]` |
-| 1.2.4 | `.claude/project_instructions.md` existe | `test -f .claude/project_instructions.md && echo OK` | `[x]` |
-| 1.2.5 | `.claude/settings.json` existe | `test -f .claude/settings.json && echo OK` | `[x]` |
-| 1.2.6 | `package.json` raiz existe | `test -f package.json && echo OK` | `[x]` |
-| 1.2.7 | `.editorconfig` existe | `test -f .editorconfig && echo OK` | `[x]` |
-| 1.2.8 | `.gitignore` existe | `test -f .gitignore && echo OK` | `[x]` |
-
-### 1.3 Contagem de Componentes (P1)
-
-| # | Teste | Comando de Validacao | Esperado | Status |
-|---|-------|----------------------|----------|--------|
-| 1.3.1 | Total de agentes = 21 | `ls .agents/agents/*.md \| wc -l` | 21 | `[x]` |
-| 1.3.2 | Total de skills >= 40 | `ls -d .agents/skills/*/ \| wc -l` | >= 40 | `[x]` |
-| 1.3.3 | Total de workflows = 21 | `ls .agents/workflows/*.md \| wc -l` | 20 | `[x]` |
-| 1.3.4 | Total de scripts Python >= 20 | `ls .agents/scripts/*.py \| wc -l` | >= 20 | `[x]` |
-
-### 1.4 Script de Validacao Automatica (P0)
-
-| # | Teste | Comando | Status |
-|---|-------|---------|--------|
-| 1.4.1 | `validate_installation.py` executa sem erros | `python3 .agents/scripts/validate_installation.py` | `[x]` |
-| 1.4.2 | Resultado: todos os componentes instalados | Saida contem "VALIDACAO COMPLETA" | `[x]` |
+| Categoria | Total | Pendentes | Aprovados | Falhas | N/A |
+|-----------|-------|-----------|-----------|--------|-----|
+| Estrutura & Infra | 35 | 35 | 0 | 0 | 0 |
+| Autenticacao & Perfil | 52 | 52 | 0 | 0 | 0 |
+| Diagnostico IA | 68 | 68 | 0 | 0 | 0 |
+| Cronograma Capilar | 45 | 45 | 0 | 0 | 0 |
+| Notificacoes & Recompra | 48 | 48 | 0 | 0 | 0 |
+| Dashboard Admin | 20 | 20 | 0 | 0 | 0 |
+| Refinamento UX IA | 8 | 8 | 0 | 0 | 0 |
+| Monetizacao & Checkout | 42 | 42 | 0 | 0 | 0 |
+| Seguranca (OWASP/RGPD) | 174 | 174 | 0 | 0 | 0 |
+| Acessibilidade (WCAG AA) | 28 | 28 | 0 | 0 | 0 |
+| i18n & Localizacao | 10 | 10 | 0 | 0 | 0 |
+| Responsividade | 9 | 9 | 0 | 0 | 0 |
+| Navegacao & Rotas | 17 | 17 | 0 | 0 | 0 |
+| Performance | 5 | 5 | 0 | 0 | 0 |
+| **TOTAL** | **561** | **561** | **0** | **0** | **0** |
 
 ---
 
-## 2. CLI (bin/cli.js)
+## Matriz de Cobertura Story -> Testes
 
-### 2.1 Comandos Basicos (P0)
-
-| # | Teste | Comando | Resultado Esperado | Status |
-|---|-------|---------|-------------------|--------|
-| 2.1.1 | CLI e executavel | `node bin/cli.js` | Exibe ajuda sem erro | `[x]` |
-| 2.1.2 | Comando `help` funciona | `node bin/cli.js help` | Exibe uso e comandos | `[x]` |
-| 2.1.3 | Flag `--help` funciona | `node bin/cli.js --help` | Exibe uso e comandos | `[x]` |
-| 2.1.4 | Flag `-h` funciona | `node bin/cli.js -h` | Exibe uso e comandos | `[x]` |
-| 2.1.5 | Comando desconhecido mostra ajuda | `node bin/cli.js foo` | Exibe ajuda (default case) | `[x]` |
-
-### 2.2 Comando `init` (P0)
-
-> **Pre-condicao:** Executar em diretorio temporario limpo.
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 2.2.1 | Init copia pasta `.agents/` | Executar `init` em dir temp | `.agents/` criado com conteudo completo | `[x]` |
-| 2.2.2 | Init copia `CLAUDE.md` | Verificar apos `init` | `CLAUDE.md` presente na raiz do target | `[x]` |
-| 2.2.3 | Init cria pasta `.claude/` | Verificar apos `init` | `.claude/project_instructions.md` presente | `[x]` |
-| 2.2.4 | Init tenta instalar git hooks | Observar saida | Mensagem de instalacao ou warning | `[x]` |
-| 2.2.5 | Init tenta iniciar sessao | Observar saida | Mensagem de sessao ou info python | `[x]` |
-| 2.2.6 | Init exibe mensagem de sucesso | Observar saida | "Setup Complete!" na saida | `[x]` |
-| 2.2.7 | Init idempotente (rodar 2x) | Executar `init` 2 vezes | Sem erros, arquivos sobrescritos | `[x]` |
-| 2.2.8 | Init sem `.agent` fonte falha | Renomear `.agent` fonte | Erro "Could not find source .agent folder" | `[-]` |
-
-### 2.3 Funcao `copyDir` (P1)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 2.3.1 | Copia subdiretorios recursivamente | Verificar `.agents/agents/`, `.agents/skills/` | Todos os subdiretorios presentes | `[x]` |
-| 2.3.2 | Preserva conteudo dos arquivos | Comparar hash de um arquivo | Hashes identicos | `[x]` |
-| 2.3.3 | Cria diretorio destino se inexistente | `init` em dir sem `.agent` | Diretorio criado automaticamente | `[x]` |
+| Epic | Story | Criterios de Aceite | Testes Gerados | RF |
+|------|-------|---------------------|----------------|----|
+| 1 | 1.1 | 2 | 9 | RF08 |
+| 1 | 1.2 | 2 | 10 | RF08 |
+| 1 | 1.3 | 1 | 8 | RF08 |
+| 1 | 1.4 | 2 | 8 | RF08 |
+| 2 | 2.1 | 1 | 26 | RF06 |
+| 2 | 2.2 | 2 | 6 | RF06 |
+| 2 | 2.3 | 1 | 14 | RF05 |
+| 3 | 3.1 | 2 | 15 | RF01 |
+| 3 | 3.2 | 1 | 22 | RF01 |
+| 3 | 3.3 | 2 | 23 | RF01 |
+| 3 | 3.4 | 1 | 8 | RF01 |
+| 4 | 4.1 | 1 | 16 | RF07 |
+| 4 | 4.2 | 2 | 18 | RF07 |
+| 4 | 4.3 | 2 | 17 | RF03 |
+| 5 | 5.1 | 2 | 16 | RF10 |
+| 5 | 5.2 | 1 | 18 | RF04 |
+| 5 | 5.3 | 2 | 14 | RF10 |
+| 6 | 6.1 | 1 | 10 | RF09 |
+| 6 | 6.2 | 2 | 10 | RF09 |
+| 7 | 7.1 | - | 8 | - |
+| 7 | 7.2 | - | 5 | - |
+| 7 | 7.3 | - | 3 | - |
+| 8 | 8.1 | - | 19 | - |
+| 8 | 8.2 | - | 4 | - |
+| 8 | 8.3 | - | 4 | - |
 
 ---
 
-## 3. Scripts Python
+# 1. ESTRUTURA & INFRAESTRUTURA (P0)
 
-### 3.1 lock_manager.py (P0)
+## 1.1 Arquivos de Configuracao
 
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.1.1 | Import sem erros | `python3 -c "from lock_manager import LockManager"` (cwd: `.agents/scripts/`) | Sem erros | `[x]` |
-| 3.1.2 | Criar LockManager | `LockManager()` | Instancia criada, `locks/` criado | `[x]` |
-| 3.1.3 | Adquirir lock | `acquire_lock("test", "claude_code")` | Retorna `True`, arquivo `.lock` criado | `[x]` |
-| 3.1.4 | Lock impede segundo agente | `acquire_lock("test", "antigravity")` | Retorna `False` | `[x]` |
-| 3.1.5 | Mesmo agente renova lock | `acquire_lock("test", "claude_code")` 2x | Retorna `True`, timestamp atualizado | `[x]` |
-| 3.1.6 | Liberar lock | `release_lock("test", "claude_code")` | Retorna `True`, arquivo removido | `[x]` |
-| 3.1.7 | Liberar lock de outro agente falha | `release_lock("test", "antigravity")` quando lock e de claude_code | Retorna `False` | `[x]` |
-| 3.1.8 | Liberar lock inexistente | `release_lock("inexistente")` | Retorna `True` (ja liberado) | `[x]` |
-| 3.1.9 | Lock expira apos timeout | Criar lock com timeout=1, aguardar 2s | `get_lock_info` retorna `None` | `[x]` |
-| 3.1.10 | Cleanup remove locks expirados | Criar lock expirado, rodar `cleanup_stale_locks()` | Retorna contagem > 0 | `[x]` |
-| 3.1.11 | Listar locks ativos | Criar 2 locks, rodar `list_active_locks()` | Dict com 2 entradas | `[x]` |
-| 3.1.12 | Force release funciona | `force_release("test")` | Lock removido independente do owner | `[x]` |
-| 3.1.13 | Wait for lock funciona | Lock em uso, aguarda e adquire apos release | Retorna `True` apos espera | `[-]` |
-| 3.1.14 | Wait for lock timeout | Lock em uso permanente, max_wait=2 | Retorna `False` apos timeout | `[-]` |
-| 3.1.15 | CLI: `list` sem locks | `python3 lock_manager.py list` | "Nenhum lock ativo" | `[x]` |
-| 3.1.16 | CLI: `cleanup` | `python3 lock_manager.py cleanup` | Mensagem de locks removidos | `[x]` |
-| 3.1.17 | CLI: `force-release` sem argumento | `python3 lock_manager.py force-release` | Mensagem de uso correto | `[x]` |
-| 3.1.18 | Lock com JSON corrompido e tratado | Escrever JSON invalido em `.lock` | `get_lock_info` retorna `None`, arquivo removido | `[x]` |
+| # | Teste | Comando/Acao | Esperado | Status |
+|---|-------|--------------|----------|--------|
+| 1.1.1 | package.json existe (app/) | `test -f app/package.json` | Arquivo presente | [ ] |
+| 1.1.2 | package.json existe (functions/) | `test -f functions/package.json` | Arquivo presente | [ ] |
+| 1.1.3 | firebase.json configurado | `test -f firebase.json` | Arquivo presente com hosting, functions, firestore, storage | [ ] |
+| 1.1.4 | firestore.rules existe | `test -f firestore.rules` | Regras de seguranca completas | [ ] |
+| 1.1.5 | storage.rules existe | `test -f storage.rules` | Regras de upload configuradas | [ ] |
+| 1.1.6 | .env NAO comitado | `git ls-files .env app/.env` | Nenhum resultado (gitignored) | [ ] |
+| 1.1.7 | CI/CD deploy.yml existe | `test -f .github/workflows/deploy.yml` | Pipeline de deploy | [ ] |
+| 1.1.8 | CI/CD preview.yml existe | `test -f .github/workflows/preview.yml` | Pipeline de preview | [ ] |
 
-### 3.2 progress_tracker.py (P0)
+## 1.2 Build & Compilacao
 
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.2.1 | Encontra `docs/BACKLOG.md` | `find_backlog()` com arquivo existente | Retorna Path correto | `[x]` |
-| 3.2.2 | Retorna None sem backlog | `find_backlog()` sem arquivo | Retorna `None` | `[x]` |
-| 3.2.3 | Parse backlog vazio | `parse_backlog("")` | Lista vazia | `[x]` |
-| 3.2.4 | Parse backlog com 1 Epic, 2 tarefas | Backlog com 1 Epic: 1 `[x]`, 1 `[ ]` | Epic com total=2, done=1 | `[x]` |
-| 3.2.5 | Parse backlog com ownership | Epic com `[OWNER: claude_code]` | `epic.owner == "claude_code"` | `[x]` |
-| 3.2.6 | Parse backlog sem ownership | Epic sem tag `[OWNER:]` | `epic.owner is None` | `[x]` |
-| 3.2.7 | Barra de progresso 0% | `generate_bar(0)` | `"░░░░░░░░░░░░░░░░░░░░"` (20 chars) | `[x]` |
-| 3.2.8 | Barra de progresso 50% | `generate_bar(50)` | `"██████████░░░░░░░░░░"` | `[x]` |
-| 3.2.9 | Barra de progresso 100% | `generate_bar(100)` | `"████████████████████"` | `[x]` |
-| 3.2.10 | Gerar relatorio salva em `docs/progress-bar.md` | Executar `main()` | Arquivo criado com conteudo correto | `[x]` |
-| 3.2.11 | Relatorio contem tabela por Epic | Verificar saida | Tabela com colunas Epic, Owner, Progresso | `[x]` |
-| 3.2.12 | CLI sem backlog exibe erro | `python3 progress_tracker.py` sem backlog | Mensagem de erro + exit 1 | `[x]` |
+| # | Teste | Comando/Acao | Esperado | Status |
+|---|-------|--------------|----------|--------|
+| 1.2.1 | App build sem erros | `cd app && npm run build` | Exit code 0, sem erros TypeScript | [ ] |
+| 1.2.2 | App lint sem erros | `cd app && npm run lint` | ESLint sem erros | [ ] |
+| 1.2.3 | Functions build sem erros | `cd functions && npm run build` | Compilacao TypeScript OK | [ ] |
+| 1.2.4 | Functions testes existentes passam | `cd functions && npm test` | 63 testes passam (7 suites) | [ ] |
+| 1.2.5 | Web build sem erros | `cd web && npm run build` | Next.js build OK | [ ] |
 
-### 3.3 finish_task.py (P0)
+## 1.3 Firebase & Regiao
 
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.3.1 | Marcar Story como concluida | `python3 finish_task.py "1.1"` | `- [x]` no backlog, mensagem de sucesso | `[x]` |
-| 3.3.2 | Aceita formatos: "3.1", "Story 3.1" | Testar ambos formatos | Ambos funcionam corretamente | `[x]` |
-| 3.3.3 | Task ja concluida nao duplica | Marcar task ja `[x]` | Mensagem "nao encontrada ou ja concluida" | `[x]` |
-| 3.3.4 | Task inexistente retorna erro | `finish_task.py "999.99"` | Mensagem de erro, exit 1 | `[x]` |
-| 3.3.5 | Backlog nao encontrado retorna erro | Executar sem `docs/BACKLOG.md` | Mensagem "BACKLOG.md nao encontrado" | `[x]` |
-| 3.3.6 | Ownership: agente correto permite | Agent=claude_code marca Epic [OWNER: claude_code] | Sucesso | `[x]` |
-| 3.3.7 | Ownership: agente errado bloqueia | Agent=antigravity marca Epic [OWNER: claude_code] | Erro de ownership | `[x]` |
-| 3.3.8 | Flag `--force` sobrescreve ownership | `finish_task.py "1.1" --force` com owner errado | Sucesso com warning | `[x]` |
-| 3.3.9 | Lock adquirido durante edicao | Verificar lock durante execucao | Lock "backlog" ativo | `[x]` |
-| 3.3.10 | Lock liberado apos edicao (sucesso ou erro) | Verificar lock apos execucao | Lock removido | `[x]` |
-| 3.3.11 | Sem argumentos exibe uso | `python3 finish_task.py` | Mensagem de uso, exit 1 | `[x]` |
+| # | Teste | Comando/Acao | Esperado | Status |
+|---|-------|--------------|----------|--------|
+| 1.3.1 | Regiao europe-west1 configurada | Verificar `functions/src/shared/config.ts` | `REGION = "europe-west1"` | [ ] |
+| 1.3.2 | Firebase init sem erros | Iniciar app com env vars corretas | Firebase SDK inicializa sem erros no console | [ ] |
+| 1.3.3 | Emuladores conectam em dev | `VITE_USE_EMULATORS=true` | Auth :9099, Firestore :8080, Storage :9199 | [ ] |
+| 1.3.4 | AppCheck inicializa em prod | `VITE_RECAPTCHA_SITE_KEY` definida | ReCaptchaV3Provider inicializado | [ ] |
+| 1.3.5 | AppCheck skip sem site key | `VITE_RECAPTCHA_SITE_KEY` ausente | Console warn, sem crash | [ ] |
 
-### 3.4 dashboard.py (P1)
+## 1.4 Design Tokens & Tailwind
 
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.4.1 | Executa sem erros | `python3 .agents/scripts/dashboard.py` | Saida formatada sem excecoes | `[x]` |
-| 3.4.2 | Exibe progresso do projeto | Verificar saida | Secao "Progresso do Projeto" presente | `[x]` |
-| 3.4.3 | Exibe sessao atual | Verificar saida | Secao "Sessao Atual" presente | `[x]` |
-| 3.4.4 | Exibe estatisticas semanais | Verificar saida | Secao "Esta Semana" presente | `[x]` |
-| 3.4.5 | Salva em `docs/dashboard.md` | Verificar arquivo | Arquivo criado com conteudo | `[x]` |
-| 3.4.6 | Sem sessao ativa mostra status offline | Sem sessao rodando | "Nenhuma sessao ativa" | `[x]` |
-| 3.4.7 | Exibe proximas tarefas | Com backlog populado | Lista de proximas tarefas | `[x]` |
+| # | Teste | Comando/Acao | Esperado | Status |
+|---|-------|--------------|----------|--------|
+| 1.4.1 | Tokens de cor gold aplicados | Inspecionar elemento com `text-gold-500` | Cor gold correta renderizada | [ ] |
+| 1.4.2 | Tipografia serif configurada | Inspecionar heading | Font-family serif premium aplicada | [ ] |
+| 1.4.3 | Button primary: gold bg + black text | Renderizar `<Button variant="primary">` | Background gold, texto preto | [ ] |
+| 1.4.4 | Button disabled: gray styling | Button com loading=true | `disabled:bg-gray-300 disabled:text-gray-500` | [ ] |
+| 1.4.5 | cn() resolve conflitos Tailwind | `cn("bg-red-500", "bg-blue-500")` | Resultado: `bg-blue-500` | [ ] |
 
-### 3.5 auto_session.py (P1)
+## 1.5 i18n (Localizacao)
 
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.5.1 | Iniciar sessao | `python3 .agents/scripts/auto_session.py start` | Sessao criada com timestamp | `[x]` |
-| 3.5.2 | Encerrar sessao | `python3 .agents/scripts/auto_session.py end` | Sessao encerrada com duracao | `[x]` |
-| 3.5.3 | Sessao persiste entre chamadas | Start, depois verificar status | Sessao permanece ativa | `[x]` |
-| 3.5.4 | Multiplos starts nao criam conflito | Start 2x consecutivo | Comportamento estavel | `[x]` |
-
-### 3.6 session_logger.py (P2)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.6.1 | Import sem erros | `python3 -c "import session_logger"` | Sem erros | `[x]` |
-| 3.6.2 | Encontra diretorio de logs | `find_logs_dir()` | Retorna Path ou None | `[x]` |
-| 3.6.3 | Busca logs por intervalo de datas | `get_logs_in_range(...)` | Lista de sessoes filtrada | `[-]` |
-
-### 3.7 metrics.py (P2)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.7.1 | Executa sem erros | `python3 .agents/scripts/metrics.py` | Saida formatada ou mensagem informativa | `[x]` |
-| 3.7.2 | Gera insights do projeto | Verificar saida | Metricas relevantes exibidas | `[x]` |
-
-### 3.8 notifier.py (P2)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.8.1 | Teste basico | `python3 .agents/scripts/notifier.py test` | Notificacao enviada (macOS) | `[x]` |
-| 3.8.2 | Funciona sem macOS (graceful) | Executar em Linux | Nao gera excecao fatal | `[-]` |
-
-### 3.9 validate_traceability.py (P2)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.9.1 | Executa sem erros | `python3 .agents/scripts/validate_traceability.py` | Relatorio de rastreabilidade | `[x]` |
-| 3.9.2 | Valida cobertura de skills nos agentes | Verificar saida | Lista de skills referenciadas vs existentes | `[x]` |
-
-### 3.10 checklist.py e verify_all.py (P1)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.10.1 | checklist.py executa | `python3 .agents/scripts/checklist.py .` | Checklist de validacao | `[x]` |
-| 3.10.2 | verify_all.py executa | `python3 .agents/scripts/verify_all.py .` | Verificacao completa | `[x]` |
-
-### 3.11 Outros Scripts (P2)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 3.11.1 | `sync_tracker.py` importavel | `python3 -c "import sync_tracker"` | Sem erros | `[x]` |
-| 3.11.2 | `auto_finish.py` importavel | `python3 -c "import auto_finish"` | Sem erros | `[x]` |
-| 3.11.3 | `auto_preview.py` importavel | `python3 -c "import auto_preview"` | Sem erros | `[x]` |
-| 3.11.4 | `reminder_system.py` importavel | `python3 -c "import reminder_system"` | Sem erros | `[x]` |
-| 3.11.5 | `project_analyzer.py` importavel | `python3 -c "import project_analyzer"` | Sem erros | `[x]` |
+| # | Teste | Comando/Acao | Esperado | Status |
+|---|-------|--------------|----------|--------|
+| 1.5.1 | Frances como idioma padrao (web/) | Carregar web/ app | `i18n.language === "fr"` | [ ] |
+| 1.5.2 | Chaves de traducao resolvem | Verificar textos na home | Texto frances renderizado, nao chave | [ ] |
+| 1.5.3 | Idioma nao suportado cai para FR | Browser em `de-DE` | Fallback para `"fr"` | [ ] |
+| 1.5.4 | `<html lang="fr">` no web/ | Inspecionar tag HTML | `lang="fr"` presente | [ ] |
 
 ---
 
-## 4. Agentes (21)
+# 2. AUTENTICACAO & PERFIL (P0)
 
-### 4.1 Existencia de Arquivos (P0)
+## Story 2.1: Login Social & E-mail
 
-| # | Agente | Arquivo | Status |
-|---|--------|---------|--------|
-| 4.1.1 | Orchestrator | `.agents/agents/orchestrator.md` | `[x]` |
-| 4.1.2 | Project Planner | `.agents/agents/project-planner.md` | `[x]` |
-| 4.1.3 | Product Manager | `.agents/agents/product-manager.md` | `[x]` |
-| 4.1.4 | Product Owner | `.agents/agents/product-owner.md` | `[x]` |
-| 4.1.5 | Frontend Specialist | `.agents/agents/frontend-specialist.md` | `[x]` |
-| 4.1.6 | Backend Specialist | `.agents/agents/backend-specialist.md` | `[x]` |
-| 4.1.7 | Database Architect | `.agents/agents/database-architect.md` | `[x]` |
-| 4.1.8 | Mobile Developer | `.agents/agents/mobile-developer.md` | `[x]` |
-| 4.1.9 | Game Developer | `.agents/agents/game-developer.md` | `[x]` |
-| 4.1.10 | Security Auditor | `.agents/agents/security-auditor.md` | `[x]` |
-| 4.1.11 | Penetration Tester | `.agents/agents/penetration-tester.md` | `[x]` |
-| 4.1.12 | Debugger | `.agents/agents/debugger.md` | `[x]` |
-| 4.1.13 | DevOps Engineer | `.agents/agents/devops-engineer.md` | `[x]` |
-| 4.1.14 | Test Engineer | `.agents/agents/test-engineer.md` | `[x]` |
-| 4.1.15 | QA Automation Engineer | `.agents/agents/qa-automation-engineer.md` | `[x]` |
-| 4.1.16 | Performance Optimizer | `.agents/agents/performance-optimizer.md` | `[x]` |
-| 4.1.17 | Documentation Writer | `.agents/agents/documentation-writer.md` | `[x]` |
-| 4.1.18 | Code Archaeologist | `.agents/agents/code-archaeologist.md` | `[x]` |
-| 4.1.19 | SEO Specialist | `.agents/agents/seo-specialist.md` | `[x]` |
-| 4.1.20 | Explorer Agent | `.agents/agents/explorer-agent.md` | `[x]` |
-| 4.1.21 | UX Researcher | `.agents/agents/ux-researcher.md` | `[x]` |
+### Testes Funcionais
 
-### 4.2 Estrutura dos Agentes (P1)
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 2.1.1 | Pagina login renderiza corretamente | Nao autenticado | Navegar `/login` | Heading "Connexion", inputs email/senha, botoes submit e Google, link signup | [ ] |
+| 2.1.2 | Login email com sucesso | Conta valida | Preencher email+senha, clicar "Se connecter" | "Connexion...", redireciona `/dashboard` | [ ] |
+| 2.1.3 | Login email credenciais invalidas | Conta inexistente | Email/senha errados | "Identifiants incorrects. Veuillez reassayer." | [ ] |
+| 2.1.4 | Login email senha incorreta | Conta existe | Email correto, senha errada | "Mot de passe incorrect." | [ ] |
+| 2.1.5 | Muitas tentativas de login | 5+ falhas | Continuar errado | "Trop de tentatives. Reassayez plus tard." | [ ] |
+| 2.1.6 | Login Google com sucesso | Conta Google | Clicar "Continuer avec Google" | Popup, sucesso redireciona `/dashboard` | [ ] |
+| 2.1.7 | Login Google cancelado | Popup aberto | Fechar popup | "Connexion annulee." | [ ] |
+| 2.1.8 | Signup renderiza | Nao autenticado | Navegar `/signup` | "Creer un compte", campos nome/email/senha | [ ] |
+| 2.1.9 | Signup com sucesso | Conta inexistente | Preencher, submeter | "Creation...", redireciona `/profile-setup`, doc Firestore | [ ] |
+| 2.1.10 | Signup email duplicado | Conta existe | Email existente | "Cet e-mail est deja utilise." | [ ] |
+| 2.1.11 | Signup senha fraca | Email novo | < 6 chars | "Le mot de passe doit contenir au moins 6 caracteres." | [ ] |
+| 2.1.12 | Signup email invalido | Formulario | "notanemail" | "Adresse e-mail invalide." | [ ] |
+| 2.1.13 | Nav Login -> Signup | Login page | Clicar "Creer un compte" | Navega `/signup` | [ ] |
+| 2.1.14 | Nav Signup -> Login | Signup page | Clicar "Se connecter" | Navega `/login` | [ ] |
+| 2.1.15 | Logout | Settings | Clicar "Se deconnecter" | signOut, estado limpo, redirect `/login` | [ ] |
 
-> Cada agente deve conter: frontmatter YAML, role definition, skills list, decision framework.
+### Edge Cases
 
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 4.2.1 | Todos agentes tem frontmatter YAML | Inicia com `---` e contem campos `name`, `description` | `[x]` |
-| 4.2.2 | Todos agentes referenciam skills | Campo `skills:` no frontmatter | `[x]` |
-| 4.2.3 | Skills referenciadas existem | Cada skill no frontmatter tem diretorio em `.agents/skills/` | `[x]` |
-| 4.2.4 | Nenhum agente esta vazio | Tamanho > 500 bytes | `[x]` |
-| 4.2.5 | Agentes tem role definition | Contem secao de definicao de papel/persona | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 2.1.E1 | Form vazio submit | Login page | Submit sem preencher | HTML5 required impede | [ ] |
+| 2.1.E2 | Google signup cria perfil | Sem perfil Firestore | Login Google | setDoc cria perfil | [ ] |
+| 2.1.E3 | Google displayName uma palavra | "Madonna" | Login Google | firstName="Madonna", lastName="" | [ ] |
+| 2.1.E4 | Google displayName null | Sem displayName | Login Google | firstName="", lastName="" | [ ] |
+| 2.1.E5 | Erro nao-Firebase | Offline | Submeter | "Une erreur est survenue." | [ ] |
+| 2.1.E6 | useAuth fora AuthProvider | Teste unitario | useAuth() | Throws Error | [ ] |
 
-### 4.3 Validacao Cruzada Agente-Skill (P1)
+## Story 2.2: Gestao de Perfil
 
-| # | Teste | Procedimento | Status |
-|---|-------|--------------|--------|
-| 4.3.1 | `frontend-specialist` referencia `frontend-design` | Verificar frontmatter | `[x]` |
-| 4.3.2 | `frontend-specialist` referencia `tailwind-patterns` | Verificar frontmatter | `[x]` |
-| 4.3.3 | `backend-specialist` referencia `api-patterns` | Verificar frontmatter | `[x]` |
-| 4.3.4 | `backend-specialist` referencia `nodejs-best-practices` | Verificar frontmatter | `[x]` |
-| 4.3.5 | `database-architect` referencia `database-design` | Verificar frontmatter | `[x]` |
-| 4.3.6 | `security-auditor` referencia `vulnerability-scanner` | Verificar frontmatter | `[x]` |
-| 4.3.7 | `test-engineer` referencia `testing-patterns` | Verificar frontmatter | `[x]` |
-| 4.3.8 | `debugger` referencia `systematic-debugging` | Verificar frontmatter | `[x]` |
-| 4.3.9 | `devops-engineer` referencia `deployment-procedures` | Verificar frontmatter | `[x]` |
-| 4.3.10 | `seo-specialist` referencia `seo-fundamentals` | Verificar frontmatter | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 2.2.1 | UserProfile todos campos | Revisao codigo | Inspecionar types/index.ts | uid, email, firstName, lastName, phoneNumber, locale, region, optInSMS, timestamps | [ ] |
+| 2.2.2 | Fetch perfil retorna dados corretos | User no Firestore | Login | Campos mapeados, Timestamp -> Date | [ ] |
+| 2.2.3 | Defaults campos ausentes | Doc parcial | Fetch | email="", locale="fr-FR", optInSMS=false | [ ] |
+| 2.2.4 | Doc inexistente retorna null | User auth sem doc | fetchUserProfile | null | [ ] |
+| 2.2.5 | Locale fixo fr-FR | Criacao perfil | Criar | locale="fr-FR" | [ ] |
 
----
+## Story 2.3: Consentimento SMS (RGPD)
 
-## 5. Skills (40)
-
-### 5.1 Existencia de Skills (P0)
-
-| # | Skill | Diretorio | Status |
-|---|-------|-----------|--------|
-| 5.1.1 | Frontend Design | `.agents/skills/frontend-design/` | `[x]` |
-| 5.1.2 | Tailwind Patterns | `.agents/skills/tailwind-patterns/` | `[x]` |
-| 5.1.3 | Web Design Guidelines | `.agents/skills/web-design-guidelines/` | `[x]` |
-| 5.1.4 | API Patterns | `.agents/skills/api-patterns/` | `[x]` |
-| 5.1.5 | Node.js Best Practices | `.agents/skills/nodejs-best-practices/` | `[x]` |
-| 5.1.6 | Python Patterns | `.agents/skills/python-patterns/` | `[x]` |
-| 5.1.7 | Database Design | `.agents/skills/database-design/` | `[x]` |
-| 5.1.8 | Testing Patterns | `.agents/skills/testing-patterns/` | `[x]` |
-| 5.1.9 | Webapp Testing | `.agents/skills/webapp-testing/` | `[x]` |
-| 5.1.10 | TDD Workflow | `.agents/skills/tdd-workflow/` | `[x]` |
-| 5.1.11 | Lint and Validate | `.agents/skills/lint-and-validate/` | `[x]` |
-| 5.1.12 | Vulnerability Scanner | `.agents/skills/vulnerability-scanner/` | `[x]` |
-| 5.1.13 | Red Team Tactics | `.agents/skills/red-team-tactics/` | `[x]` |
-| 5.1.14 | App Builder | `.agents/skills/app-builder/` | `[x]` |
-| 5.1.15 | Architecture | `.agents/skills/architecture/` | `[x]` |
-| 5.1.16 | Plan Writing | `.agents/skills/plan-writing/` | `[x]` |
-| 5.1.17 | Brainstorming | `.agents/skills/brainstorming/` | `[x]` |
-| 5.1.18 | Clean Code | `.agents/skills/clean-code/` | `[x]` |
-| 5.1.19 | Performance Profiling | `.agents/skills/performance-profiling/` | `[x]` |
-| 5.1.20 | Systematic Debugging | `.agents/skills/systematic-debugging/` | `[x]` |
-| 5.1.21 | Deployment Procedures | `.agents/skills/deployment-procedures/` | `[x]` |
-| 5.1.22 | Server Management | `.agents/skills/server-management/` | `[x]` |
-| 5.1.23 | Mobile Design | `.agents/skills/mobile-design/` | `[x]` |
-| 5.1.24 | Game Development | `.agents/skills/game-development/` | `[x]` |
-| 5.1.25 | SEO Fundamentals | `.agents/skills/seo-fundamentals/` | `[x]` |
-| 5.1.26 | GEO Fundamentals | `.agents/skills/geo-fundamentals/` | `[x]` |
-| 5.1.27 | Bash Linux | `.agents/skills/bash-linux/` | `[x]` |
-| 5.1.28 | PowerShell Windows | `.agents/skills/powershell-windows/` | `[x]` |
-| 5.1.29 | Behavioral Modes | `.agents/skills/behavioral-modes/` | `[x]` |
-| 5.1.30 | Parallel Agents | `.agents/skills/parallel-agents/` | `[x]` |
-| 5.1.31 | MCP Builder | `.agents/skills/mcp-builder/` | `[x]` |
-| 5.1.32 | Documentation Templates | `.agents/skills/documentation-templates/` | `[x]` |
-| 5.1.33 | i18n Localization | `.agents/skills/i18n-localization/` | `[x]` |
-| 5.1.34 | Intelligent Routing | `.agents/skills/intelligent-routing/` | `[x]` |
-| 5.1.35 | Next.js/React Expert | `.agents/skills/nextjs-react-expert/` | `[x]` |
-| 5.1.36 | Doc Review | `.agents/skills/doc-review/` | `[x]` |
-| 5.1.37 | GAP Analysis | `.agents/skills/gap-analysis/` | `[x]` |
-| 5.1.38 | System Design | `.agents/skills/system-design/` | `[x]` |
-| 5.1.39 | UX Research | `.agents/skills/ux-research/` | `[x]` |
-| 5.1.40 | Code Review Checklist | `.agents/skills/code-review-checklist/` | `[x]` |
-
-### 5.2 Estrutura de Skills (P1)
-
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 5.2.1 | Todas skills tem `SKILL.md` | `test -f .agents/skills/*/SKILL.md` | `[x]` |
-| 5.2.2 | Nenhum `SKILL.md` esta vazio | Tamanho > 100 bytes | `[x]` |
-| 5.2.3 | Skills com scripts/ tem scripts validos | Verificar `.py` ou `.sh` em scripts/ | `[x]` |
-| 5.2.4 | Skills com references/ tem arquivos | Verificar diretorio nao vazio | `[x]` |
-
-### 5.3 Skills Complexas (Enhanced) (P1)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 5.3.1 | `app-builder/` tem templates | `ls .agents/skills/app-builder/templates/` | >= 5 templates | `[x]` |
-| 5.3.2 | Cada template tem `TEMPLATE.md` | Verificar cada subdiretorio | Arquivo presente | `[x]` |
-| 5.3.3 | `api-patterns/` tem referencias | `ls .agents/skills/api-patterns/` | Multiplos arquivos .md | `[x]` |
-| 5.3.4 | `testing-patterns/` tem scripts | `ls .agents/skills/testing-patterns/scripts/` | Scripts de teste | `[x]` |
-| 5.3.5 | `performance-profiling/` tem scripts | `ls .agents/skills/performance-profiling/scripts/` | Scripts de profiling | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 2.3.1 | ProfileSetup renderiza | Auth, perfil incompleto | `/profile-setup` | Heading, phone, CGU checkbox, SMS opt-in, submit | [ ] |
+| 2.3.2 | Telefone opcional | profile-setup | Vazio, aceitar CGU | Sucesso, phoneNumber="" | [ ] |
+| 2.3.3 | CGU obrigatorio | profile-setup | CGU desmarcado | "Vous devez accepter les CGU pour continuer." | [ ] |
+| 2.3.4 | SMS opt-in desmarcado padrao | profile-setup | Estado inicial | optInSMS desmarcado | [ ] |
+| 2.3.5 | SMS opt-in persiste | profile-setup | Marcar, submeter | optInSMS=true no Firestore | [ ] |
+| 2.3.6 | Links CGU/Privacy nova aba | profile-setup | Clicar links | target="_blank" rel="noopener noreferrer" | [ ] |
+| 2.3.7 | Sucesso navega dashboard | profile-setup | CGU aceito, submeter | Navega `/dashboard` | [ ] |
+| 2.3.8 | Placeholder telefone FR | profile-setup | Inspecionar | "+33 6 12 34 56 78" | [ ] |
 
 ---
 
-## 6. Workflows (21)
+# 3. DIAGNOSTICO IA (P0)
 
-### 6.1 Existencia de Workflows (P0)
+## Story 3.1: Upload de Fotos
 
-| # | Workflow | Arquivo | Status |
-|---|---------|---------|--------|
-| 6.1.1 | Define | `.agents/workflows/define.md` | `[x]` |
-| 6.1.2 | Journeys | `.agents/workflows/journeys.md` | `[x]` |
-| 6.1.3 | Context | `.agents/workflows/context.md` | `[x]` |
-| 6.1.4 | Readiness | `.agents/workflows/readiness.md` | `[x]` |
-| 6.1.5 | Brainstorm | `.agents/workflows/brainstorm.md` | `[x]` |
-| 6.1.6 | Create | `.agents/workflows/create.md` | `[x]` |
-| 6.1.7 | Debug | `.agents/workflows/debug.md` | `[x]` |
-| 6.1.8 | Enhance | `.agents/workflows/enhance.md` | `[x]` |
-| 6.1.9 | Deploy | `.agents/workflows/deploy.md` | `[x]` |
-| 6.1.10 | Test | `.agents/workflows/test.md` | `[x]` |
-| 6.1.11 | Plan | `.agents/workflows/plan.md` | `[x]` |
-| 6.1.12 | Track | `.agents/workflows/track.md` | `[x]` |
-| 6.1.13 | Status | `.agents/workflows/status.md` | `[x]` |
-| 6.1.14 | Finish | `.agents/workflows/finish.md` | `[x]` |
-| 6.1.15 | Log | `.agents/workflows/log.md` | `[x]` |
-| 6.1.16 | Preview | `.agents/workflows/preview.md` | `[x]` |
-| 6.1.17 | Orchestrate | `.agents/workflows/orchestrate.md` | `[x]` |
-| 6.1.18 | UI/UX Pro Max | `.agents/workflows/ui-ux-pro-max.md` | `[x]` |
-| 6.1.19 | Review | `.agents/workflows/review.md` | `[x]` |
-| 6.1.20 | Test-Book | `.agents/workflows/test-book.md` | `[x]` |
-| 6.1.21 | Release | `.agents/workflows/release.md` | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.1.1 | Request valido parse OK | Schema | userId, photoUrls, context | Sucesso | [ ] |
+| 3.1.2 | userId vazio rejeitado | Schema | userId="" | Erro min length | [ ] |
+| 3.1.3 | photoUrls vazio rejeitado | Schema | photoUrls=[] | Erro min 1 | [ ] |
+| 3.1.4 | > 5 fotos rejeitado | Schema | 6 URLs | Erro max 5 | [ ] |
+| 3.1.5 | URL nao-Firebase rejeitada | Schema | evil.com | "Only Firebase Storage URLs" | [ ] |
+| 3.1.6 | URL Firebase Storage aceita | Schema | firebasestorage.googleapis.com | Sucesso | [ ] |
+| 3.1.7 | ScalpType invalido | Schema | "curly" | Erro enum | [ ] |
+| 3.1.8 | currentComplaints > 500 chars | Schema | 501 chars | Erro max 500 | [ ] |
+| 3.1.9 | Context opcional | Schema | Sem context | Sucesso | [ ] |
 
-### 6.2 Estrutura dos Workflows (P1)
+## Story 3.2: Integracao Gemini 3 Flash
 
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 6.2.1 | Todos workflows tem frontmatter YAML | Inicia com `---` e campo `description` | `[x]` |
-| 6.2.2 | Todos workflows tem regras criticas | Contem secao "Regras" ou "Rules" | `[x]` |
-| 6.2.3 | Todos workflows tem fluxo de execucao | Contem secao "Fluxo" ou "Flow" | `[x]` |
-| 6.2.4 | Nenhum workflow esta vazio | Tamanho > 200 bytes | `[x]` |
+### Parser
 
----
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.2.1 | Parse JSON valido | Nenhum | JSON completo | Resultado estruturado | [ ] |
+| 3.2.2 | Extrai JSON de markdown fences | Nenhum | ```json ... ``` | Parse correto | [ ] |
+| 3.2.3 | Normaliza "sec" -> "dry" | Nenhum | hairType: "sec" | hairType: "dry" | [ ] |
+| 3.2.4 | Normaliza "gras" -> "oily" | Nenhum | hairType: "gras" | hairType: "oily" | [ ] |
+| 3.2.5 | Normaliza "abime" -> "damaged" | Nenhum | hairType: "abime" | hairType: "damaged" | [ ] |
+| 3.2.6 | Normaliza "faible" -> "low" | Nenhum | porosity: "faible" | porosity: "low" | [ ] |
+| 3.2.7 | Normaliza "elevee" -> "high" | Nenhum | porosity: "elevee" | porosity: "high" | [ ] |
+| 3.2.8 | Texto nao-JSON -> ParseError | Nenhum | "Not JSON" | ParseError fase "extract" | [ ] |
+| 3.2.9 | JSON invalido -> ParseError | Nenhum | "{invalid}" | ParseError fase "json" | [ ] |
+| 3.2.10 | Campos obrigatorios ausentes | Nenhum | Faltam 3 campos | ParseError fase "validate" | [ ] |
+| 3.2.11 | recommendedAction < 10 chars | Nenhum | "short" | ParseError fase "validate" | [ ] |
 
-## 7. Roteamento Inteligente
+### Analyzer (Retry & Fallback)
 
-### 7.1 Deteccao de Dominio (P0)
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.2.12 | Sucesso 1a tentativa | Gemini OK | analyzeHairWithGemini | isFallback: false | [ ] |
+| 3.2.13 | 1a falha, retry OK | Invalido 1o, valido 2o | analyzeHairWithGemini | isFallback: false (retry) | [ ] |
+| 3.2.14 | Ambas falham, fallback | Gemini erro x2 | analyzeHairWithGemini | isFallback: true | [ ] |
+| 3.2.15 | Vertex AI europe-west1 | Qualquer | Constructor | location: "europe-west1" | [ ] |
+| 3.2.16 | Temperature 0.3 | Qualquer | generationConfig | temperature: 0.3 | [ ] |
+| 3.2.17 | Fallback sem context | x2 falhas, sem context | Resultado | normal/medium | [ ] |
+| 3.2.18 | Fallback chemical -> damaged/high | x2 falhas, chemicalTreatments | Resultado | damaged/high | [ ] |
 
-> Testar que as palavras-chave corretas ativam os agentes corretos.
+### Handler (POST /analyzeHair)
 
-| # | Input do Usuario | Dominio Esperado | Agente Esperado | Status |
-|---|-----------------|------------------|-----------------|--------|
-| 7.1.1 | "Criar componente de login" | Frontend | `frontend-specialist` | `[-]` |
-| 7.1.2 | "Fazer uma pagina de dashboard" | Frontend | `frontend-specialist` | `[-]` |
-| 7.1.3 | "Criar endpoint de autenticacao" | Backend | `backend-specialist` | `[-]` |
-| 7.1.4 | "Construir API REST para usuarios" | Backend | `backend-specialist` | `[-]` |
-| 7.1.5 | "Criar schema do banco de dados" | Database | `database-architect` | `[-]` |
-| 7.1.6 | "Fazer migracao do Prisma" | Database | `database-architect` | `[-]` |
-| 7.1.7 | "Desenvolver app para iOS" | Mobile | `mobile-developer` | `[-]` |
-| 7.1.8 | "Auditar seguranca da aplicacao" | Security | `security-auditor` | `[-]` |
-| 7.1.9 | "O login nao funciona, debug" | Debug | `debugger` | `[-]` |
-| 7.1.10 | "Configurar CI/CD no GitHub Actions" | DevOps | `devops-engineer` | `[-]` |
-| 7.1.11 | "Escrever testes E2E" | Testing | `qa-automation-engineer` | `[-]` |
-| 7.1.12 | "Definir requisitos do MVP" | Product | `product-owner` | `[-]` |
-| 7.1.13 | "Otimizar performance do site" | Performance | `performance-optimizer` | `[-]` |
-| 7.1.14 | "Melhorar SEO das paginas" | SEO | `seo-specialist` | `[-]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.2.19 | Analise sucesso | Auth, body OK, Gemini OK | POST | 200, diagnosticId + resultado | [ ] |
+| 3.2.20 | Nao-POST rejeitado | - | GET | 405 | [ ] |
+| 3.2.21 | Nao autenticado | Sem token | POST | 401 | [ ] |
+| 3.2.22 | Body invalido | Auth | userId="" | 400 | [ ] |
+| 3.2.23 | IDOR userId mismatch | Token A, body B | POST | 403 | [ ] |
+| 3.2.24 | Rate limit 5/dia | 5 hoje | POST | 429 | [ ] |
+| 3.2.25 | Rate limit permite 5o | 4 hoje | POST | 200 | [ ] |
+| 3.2.26 | Status "pending" antes Gemini | Auth, body OK | POST | Doc pending no Firestore | [ ] |
+| 3.2.27 | Status "completed" no sucesso | Gemini OK | POST | Doc completed no Firestore | [ ] |
 
-### 7.2 Ativacao de Agente (P0)
+## Story 3.3: Parser de Resultados
 
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 7.2.1 | Agente ativado le arquivo `.md` correspondente | Arquivo do agente e lido antes de responder | `[-]` |
-| 7.2.2 | Skills do agente sao carregadas | Skills listadas no frontmatter sao lidas | `[-]` |
-| 7.2.3 | Persona do agente e aplicada | Resposta reflete o estilo do agente | `[-]` |
-| 7.2.4 | Mensagem de ativacao exibida | "Ativando @{agente}..." na resposta | `[-]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.3.1 | Formato inesperado -> failed | Gemini invalido | Parser | status: "failed", erro logado | [ ] |
+| 3.3.2 | Mensagem FR para usuario | Falha | UI | "Analyse indisponible. Veuillez reassayer." | [ ] |
 
-### 7.3 Multi-Dominio (P1)
+## Story 3.4: UI Wizard
 
-| # | Teste | Input | Agentes Esperados | Status |
-|---|-------|-------|-------------------|--------|
-| 7.3.1 | Security + Backend | "Implementar autenticacao segura" | `security-auditor` + `backend-specialist` | `[-]` |
-| 7.3.2 | Frontend + Backend | "Criar formulario que envia para API" | `frontend-specialist` + `backend-specialist` | `[-]` |
-| 7.3.3 | Database + Backend | "Criar endpoint com query otimizada" | `database-architect` + `backend-specialist` | `[-]` |
-
----
-
-## 8. Sistema Dual-Agent
-
-### 8.1 Identificacao de Fonte (P0)
-
-| # | Teste | Variavel de Ambiente | Resultado Esperado | Status |
-|---|-------|---------------------|-------------------|--------|
-| 8.1.1 | Detecta Claude Code | `CLAUDE_CODE_SESSION=1` | `get_agent_source() == "claude_code"` | `[x]` |
-| 8.1.2 | Detecta Antigravity | `GEMINI_SESSION=1` | `get_agent_source() == "antigravity"` | `[x]` |
-| 8.1.3 | Detecta via AGENT_SOURCE | `AGENT_SOURCE=custom` | `get_agent_source() == "custom"` | `[x]` |
-| 8.1.4 | Fallback sem variavel | Nenhuma variavel definida | Retorna valor padrao | `[x]` |
-
-### 8.2 Ownership de Epics (P0)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 8.2.1 | Parse ownership `[OWNER: claude_code]` | `check_epic_ownership(...)` | Owner correto extraido | `[x]` |
-| 8.2.2 | Parse ownership `[OWNER: antigravity]` | `check_epic_ownership(...)` | Owner correto extraido | `[x]` |
-| 8.2.3 | Epic sem owner permite qualquer agente | Epic sem tag `[OWNER:]` | `allow = True` | `[x]` |
-| 8.2.4 | Agente correto tem permissao | agent=claude_code, owner=claude_code | `allow = True` | `[x]` |
-| 8.2.5 | Agente errado e bloqueado | agent=antigravity, owner=claude_code | `allow = False` | `[x]` |
-| 8.2.6 | `--force` sobrescreve bloqueio | force=True com owner errado | `allow = True` com warning | `[x]` |
-
-### 8.3 Concorrencia de Locks (P1)
-
-| # | Teste | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 8.3.1 | Dois agentes nao editam mesmo recurso | Agent A adquire lock, Agent B tenta | Agent B bloqueado | `[x]` |
-| 8.3.2 | Lock liberado apos conclusao | Agent A finaliza, Agent B tenta | Agent B consegue lock | `[x]` |
-| 8.3.3 | Lock expira e libera automaticamente | Lock com timeout curto | Recurso disponivel apos timeout | `[x]` |
-| 8.3.4 | Cleanup remove locks orfaos | Locks de processos mortos | `cleanup_stale_locks()` remove | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 3.4.1 | Pagina placeholder | Auth | `/diagnostic` | ScanFace, "Diagnostic capillaire" | [ ] |
+| 3.4.2 | CTA Dashboard | Dashboard | "Lancer le diagnostic" | Navega `/diagnostic` | [ ] |
+| 3.4.3 | BottomNav | Pagina protegida | Tap "Diagnostic" | Navega, icone gold | [ ] |
+| 3.4.4 | Service envia Auth token | Codigo | analyzeHair() | Bearer token header | [ ] |
+| 3.4.5 | URL prod correta | Prod | URL | europe-west1 cloudfunctions.net | [ ] |
+| 3.4.6 | URL emulador dev | Dev | URL | localhost:5001 | [ ] |
 
 ---
 
-## 9. Web Application (Next.js)
+# 4. CRONOGRAMA CAPILAR (P0)
 
-### 9.1 Build e Configuracao (P0)
+## Story 4.1: Gerador H/N/R
 
-| # | Teste | Comando | Resultado Esperado | Status |
-|---|-------|---------|-------------------|--------|
-| 9.1.1 | Dependencias instaladas | `cd web && npm install` | Sem erros | `[x]` |
-| 9.1.2 | Build compila sem erros | `cd web && npm run build` | Build success | `[x]` |
-| 9.1.3 | Lint passa | `cd web && npm run lint` | Sem erros criticos | `[x]` |
-| 9.1.4 | Dev server inicia | `cd web && npm run dev` | Servidor em http://localhost:3000 | `[-]` |
-| 9.1.5 | TypeScript compila | `cd web && npx tsc --noEmit` | Sem erros de tipo | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 4.1.1 | 3/sem x 4 sem = 12 sessoes | - | generateSequence("normal","medium",3) | Length 12 | [ ] |
+| 4.1.2 | Valores validos H/N/R | - | generateSequence("damaged","high",5) | Cada in ["H","N","R"] | [ ] |
+| 4.1.3 | Seco prioriza H | - | generateSequence("dry","medium",6) | H > R | [ ] |
+| 4.1.4 | Danificado prioriza R | - | generateSequence("damaged","medium",6) | R > H | [ ] |
+| 4.1.5 | Normal/medium equilibrado | - | generateSequence("normal","medium",3) | H=N=R=4 | [ ] |
+| 4.1.6 | Alta porosidade +R | - | Comparar high vs medium | High mais R | [ ] |
+| 4.1.7 | Baixa porosidade +N | - | Comparar low vs medium | Low mais N | [ ] |
+| 4.1.8 | sessionsPerWeek=0 | - | generateSequence(any,any,0) | Array vazio | [ ] |
+| 4.1.9 | Labels FR | Calendario | Inspecionar | H=Hydratation, N=Nutrition, R=Reconstruction | [ ] |
 
-### 9.2 Paginas (P1)
+## Story 4.2: Visualizacao Calendario
 
-| # | Pagina | Rota | Teste | Status |
-|---|--------|------|-------|--------|
-| 9.2.1 | Home | `/` | Renderiza sem erros, conteudo visivel | `[x]` |
-| 9.2.2 | Docs | `/docs` | Pagina de documentacao acessivel | `[x]` |
-| 9.2.3 | Agents | `/docs/agents` | Lista de 21 agentes exibida | `[x]` |
-| 9.2.4 | Skills | `/docs/skills` | Lista de skills exibida | `[x]` |
-| 9.2.5 | Workflows | `/docs/workflows` | Lista de workflows exibida | `[x]` |
-| 9.2.6 | CLI | `/docs/cli` | Documentacao do CLI | `[x]` |
-| 9.2.7 | Installation | `/docs/installation` | Guia de instalacao | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 4.2.1 | Loading state | Auth, schedule | `/calendrier` | Spinner + "Chargement..." | [ ] |
+| 4.2.2 | Empty state | Sem schedule | `/calendrier` | "Completez d'abord votre diagnostic..." | [ ] |
+| 4.2.3 | Com eventos | Schedule ativo | `/calendrier` | "Mon Chronogramme", eventos agrupados por semana | [ ] |
+| 4.2.4 | Cores tratamento | H, N, R | Ver | H=blue, N=green, R=amber | [ ] |
+| 4.2.5 | Datas fr-FR | Eventos | Ver | "mer. 12 mars" | [ ] |
+| 4.2.6 | Dias abreviados FR | Dias | Ver | Dim,Lun,Mar,Mer,Jeu,Ven,Sam | [ ] |
+| 4.2.7 | Ordem por semana | Multi-semanas | Ver | Semana 1 primeiro | [ ] |
+| 4.2.8 | Erro state | Firestore falha | `/calendrier` | Banner vermelho | [ ] |
+| 4.2.9 | Jour de repos | Dia sem sessao | Ver | "Jour de repos" + icone | [ ] |
 
-### 9.3 Exemplos de Workflows (P2)
+## Story 4.3: Sincronizacao
 
-| # | Exemplo | Rota | Status |
-|---|---------|------|--------|
-| 9.3.1 | Brainstorm | `/docs/guide/examples/brainstorm` | `[x]` |
-| 9.3.2 | Create | `/docs/guide/examples/create` | `[x]` |
-| 9.3.3 | Debug | `/docs/guide/examples/debugging` | `[x]` |
-| 9.3.4 | Deployment | `/docs/guide/examples/deployment` | `[x]` |
-| 9.3.5 | New Feature | `/docs/guide/examples/new-feature` | `[x]` |
-| 9.3.6 | Orchestration | `/docs/guide/examples/orchestration` | `[x]` |
-| 9.3.7 | Plan | `/docs/guide/examples/plan` | `[x]` |
-| 9.3.8 | Preview | `/docs/guide/examples/preview` | `[x]` |
-| 9.3.9 | Status | `/docs/guide/examples/status` | `[x]` |
-| 9.3.10 | Test | `/docs/guide/examples/test` | `[x]` |
-| 9.3.11 | UI Design | `/docs/guide/examples/ui-design` | `[x]` |
+### Frontend
 
-### 9.4 Componentes (P2)
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 4.3.1 | Botao Google Calendar | Schedule | Ver | "Synchroniser avec Google Calendar" | [ ] |
+| 4.3.2 | Botao .ics | Schedule | Ver | "Telecharger .ics" | [ ] |
+| 4.3.3 | Google Calendar abre aba | Schedule | Clicar | calendar.google.com nova aba | [ ] |
+| 4.3.4 | Download .ics | Schedule | Clicar | "cronocapilar-chronogramme.ics" baixado | [ ] |
+| 4.3.5 | Download falha | Servidor erro | Clicar | Mensagem erro FR | [ ] |
 
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 9.4.1 | Componentes MDX renderizam | `StepList`, `Terminal`, `Callout` funcionam | `[-]` |
-| 9.4.2 | Theme Provider funciona | Dark/Light mode alterna | `[-]` |
-| 9.4.3 | Syntax highlighting funciona | Blocos de codigo com cores (Shiki) | `[-]` |
-| 9.4.4 | Navegacao lateral funciona | Links de docs navegam corretamente | `[-]` |
+### Backend ICS
 
-### 9.5 Dados JSON Gerados (P1)
-
-| # | Teste | Arquivo | Criterio | Status |
-|---|-------|---------|----------|--------|
-| 9.5.1 | agents.json valido | `web/src/data/generated/agents.json` | JSON parseavel, 21 agentes consistentes com `.agents/agents/` | `[x]` |
-| 9.5.2 | skills.json valido | `web/src/data/generated/skills.json` | JSON parseavel, dados consistentes com `.agents/skills/` | `[x]` |
-| 9.5.3 | workflows.json valido | `web/src/data/generated/workflows.json` | JSON parseavel, 21 workflows consistentes com `.agents/workflows/` | `[x]` |
-| 9.5.4 | generate_web_data.py funciona | `python3 .agents/scripts/generate_web_data.py` | Gera JSONs sem erros | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 4.3.6 | VCALENDAR valido | Eventos | generateICS | BEGIN/END corretos | [ ] |
+| 4.3.7 | DTSTART Europe/Paris | Evento | ICS | TZID=Europe/Paris | [ ] |
+| 4.3.8 | Duracao 30min | Evento 09:00 | ICS | DTEND 09:30 | [ ] |
+| 4.3.9 | Alarme 1h | Evento | ICS | TRIGGER:-PT1H | [ ] |
+| 4.3.10 | Handler GET sucesso | Token valido | GET /syncCalendar | 200 text/calendar | [ ] |
+| 4.3.11 | Token HMAC invalido | Token errado | GET | 403 | [ ] |
+| 4.3.12 | Token timing-safe | Codigo | Verificar | crypto.timingSafeEqual | [ ] |
 
 ---
 
-## 10. Integracao End-to-End
+# 5. NOTIFICACOES & RECOMPRA (P1)
 
-### 10.1 Fluxo Completo: Novo Projeto (P0)
+## Story 5.1: Consumo Virtual
 
-| # | Passo | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 10.1.1 | Criar diretorio temporario | `mkdir /tmp/test-project && cd /tmp/test-project && git init` | Dir criado e inicializado | `[x]` |
-| 10.1.2 | Executar CLI init | `npx @inove-ai/inove-ai-framework init` | Framework instalado | `[x]` |
-| 10.1.3 | Validar instalacao | `python3 .agents/scripts/validate_installation.py` | Todos componentes presentes | `[x]` |
-| 10.1.4 | Iniciar sessao | `python3 .agents/scripts/auto_session.py start` | Sessao iniciada | `[x]` |
-| 10.1.5 | Ver dashboard | `python3 .agents/scripts/dashboard.py` | Dashboard exibido sem erros | `[x]` |
-| 10.1.6 | Encerrar sessao | `python3 .agents/scripts/auto_session.py end` | Sessao encerrada | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 5.1.1 | 0 sessoes = volume total | 300ml, 15ml/s | Calcular | remaining:300, lowStock:false | [ ] |
+| 5.1.2 | 10 sessoes | 300ml, 15ml/s, 10s | Calcular | remaining:150 | [ ] |
+| 5.1.3 | Low stock 2 sessoes | 300ml, 15ml/s, 18s | Calcular | remaining:30, lowStock:true | [ ] |
+| 5.1.4 | Depleted | 300ml, 15ml/s, 20s | Calcular | remaining:0, depleted | [ ] |
+| 5.1.5 | Clamped a 0 | 25 sessoes | Calcular | remaining:0 (nao negativo) | [ ] |
+| 5.1.6 | H -> hydration | - | treatmentToProductType("H") | "hydration" | [ ] |
+| 5.1.7 | N -> nutrition | - | treatmentToProductType("N") | "nutrition" | [ ] |
+| 5.1.8 | R -> reconstruction | - | treatmentToProductType("R") | "reconstruction" | [ ] |
+| 5.1.9 | Registro sucesso | Auth, body OK | POST /registerProduct | 201 | [ ] |
+| 5.1.10 | Tipo invalido rejeitado | "shampoo" | POST | 400 | [ ] |
+| 5.1.11 | Volume > 5000ml rejeitado | 6000 | POST | 400 | [ ] |
+| 5.1.12 | Update sucesso | Produto in_use | POST /updateProductUsage | 200, sessions+1 | [ ] |
+| 5.1.13 | Produto depleted rejeitado | depleted | POST update | 400 | [ ] |
 
-### 10.2 Fluxo Completo: Gerenciar Backlog (P0)
+## Story 5.2: Twilio SMS
 
-| # | Passo | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 10.2.1 | Criar backlog com Epic | Escrever `docs/BACKLOG.md` com 1 Epic, 3 Stories | Arquivo criado | `[x]` |
-| 10.2.2 | Verificar progresso 0% | `python3 .agents/scripts/progress_tracker.py` | Barra 0% | `[x]` |
-| 10.2.3 | Marcar Story 1.1 como concluida | `python3 .agents/scripts/finish_task.py "1.1"` | Story marcada [x] | `[x]` |
-| 10.2.4 | Verificar progresso ~33% | `python3 .agents/scripts/progress_tracker.py` | Barra ~33% | `[x]` |
-| 10.2.5 | Marcar Story 1.2 como concluida | `python3 .agents/scripts/finish_task.py "1.2"` | Story marcada [x] | `[x]` |
-| 10.2.6 | Marcar Story 1.3 como concluida | `python3 .agents/scripts/finish_task.py "1.3"` | Story marcada [x] | `[x]` |
-| 10.2.7 | Verificar progresso 100% | `python3 .agents/scripts/progress_tracker.py` | Barra 100% | `[x]` |
-| 10.2.8 | Dashboard reflete progresso | `python3 .agents/scripts/dashboard.py` | Progresso 100% no dashboard | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 5.2.1 | Template rebuy_alert | firstName, productName | renderTemplate | Contem nome e produto | [ ] |
+| 5.2.2 | Template welcome | firstName | renderTemplate | "Bienvenue" + nome | [ ] |
+| 5.2.3 | SMS sucesso | Twilio OK | sendSMS | success:true, sid | [ ] |
+| 5.2.4 | Phone mascarado logs | Qualquer | Verificar | +336****5678 | [ ] |
+| 5.2.5 | Notificacao SMS sucesso | Auth, opt-in=true | POST /sendNotification | 200, sent | [ ] |
+| 5.2.6 | Sem consent rejeitado | opt-in=false | POST SMS | 403 no-consent | [ ] |
+| 5.2.7 | Rate limit 3/dia | 3 SMS hoje | POST | 429 | [ ] |
+| 5.2.8 | Idempotencia | Mesmo tipo hoje | POST | already_sent | [ ] |
+| 5.2.9 | Retry sucesso | Failed, nextRetry<=now | Handler | Status sent | [ ] |
+| 5.2.10 | Max retries | retryCount=4 | Handler | Status failed, null | [ ] |
+| 5.2.11 | Delays escalonam | 0->3 | Verificar | 1m,5m,15m,1h | [ ] |
 
-### 10.3 Fluxo Completo: Dual-Agent Concorrencia (P1)
+## Story 5.3: Tracking Bit.ly
 
-| # | Passo | Procedimento | Resultado Esperado | Status |
-|---|-------|--------------|-------------------|--------|
-| 10.3.1 | Agent A adquire lock no backlog | `AGENT_SOURCE=claude_code python3 finish_task.py "1.1"` | Lock adquirido, task marcada | `[x]` |
-| 10.3.2 | Agent B bloqueado durante edicao | Simular acesso concorrente | Lock impede edicao | `[x]` |
-| 10.3.3 | Lock liberado apos conclusao | Verificar `.agents/locks/` | Nenhum lock ativo | `[x]` |
-| 10.3.4 | Agent B consegue editar apos | `AGENT_SOURCE=antigravity python3 finish_task.py "1.2"` | Sucesso | `[x]` |
-
-### 10.4 CLAUDE.md Loading (P0)
-
-| # | Teste | Criterio | Status |
-|---|-------|----------|--------|
-| 10.4.1 | `CLAUDE.md` e carregado automaticamente | Claude Code reconhece instrucoes do framework | `[x]` |
-| 10.4.2 | Protocolo de roteamento funciona | Dominio detectado corretamente na conversa | `[x]` |
-| 10.4.3 | Workflows (slash commands) reconhecidos | `/status`, `/track`, `/create` funcionam | `[x]` |
-| 10.4.4 | Mensagem de inicializacao exibida | "Project Instructions carregadas" | `[x]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 5.3.1 | Fallback URL original | Bit.ly falha | SMS prepara link | URL original, warning logado | [ ] |
 
 ---
 
-## 11. Regressao e Edge Cases
+# 6. DASHBOARD ADMIN (P2)
 
-### 11.1 Resiliencia dos Scripts (P1)
-
-| # | Teste | Cenario | Resultado Esperado | Status |
-|---|-------|---------|-------------------|--------|
-| 11.1.1 | Dashboard sem sessao ativa | Nenhuma sessao iniciada | Exibe "Nenhuma sessao ativa" sem crash | `[x]` |
-| 11.1.2 | Dashboard sem backlog | Sem `docs/BACKLOG.md` | Exibe N/A no progresso sem crash | `[x]` |
-| 11.1.3 | Progress tracker com backlog vazio | `BACKLOG.md` sem Epics | Mensagem informativa, exit 1 | `[x]` |
-| 11.1.4 | Finish task com backlog corrompido | Caracteres invalidos no BACKLOG | Erro tratado graciosamente | `[x]` |
-| 11.1.5 | Lock manager com diretorio ausente | `.agents/locks/` removido | Recriado automaticamente | `[x]` |
-| 11.1.6 | Lock file com JSON invalido | Escrever lixo em `.lock` | Tratado como lock invalido, removido | `[x]` |
-
-### 11.2 Limites e Boundaries (P2)
-
-| # | Teste | Cenario | Resultado Esperado | Status |
-|---|-------|---------|-------------------|--------|
-| 11.2.1 | Backlog com 100+ Stories | Backlog grande | Parse funciona sem timeout | `[-]` |
-| 11.2.2 | Task ID com caracteres especiais | `finish_task.py "1.1-beta"` | Tratado corretamente | `[-]` |
-| 11.2.3 | Nome de recurso com espacos no lock | `acquire_lock("meu recurso")` | Lock criado corretamente | `[-]` |
-| 11.2.4 | Multiplos Epics com mesmo owner | 5 Epics com `[OWNER: claude_code]` | Todos processados corretamente | `[-]` |
-| 11.2.5 | Barra de progresso com percentual fracionario | 1/3 tarefas = 33.33% | Barra renderiza corretamente | `[-]` |
-
-### 11.3 Compatibilidade (P2)
-
-| # | Teste | Cenario | Resultado Esperado | Status |
-|---|-------|---------|-------------------|--------|
-| 11.3.1 | Scripts rodam com Python 3.10+ | `python3 --version` >= 3.10 | Todos scripts funcionam | `[x]` |
-| 11.3.2 | CLI roda com Node.js 18+ | `node --version` >= 18 | CLI funciona | `[x]` |
-| 11.3.3 | Web app roda com Node.js 18+ | `npm run build` | Build sucesso | `[x]` |
-| 11.3.4 | Scripts funcionam no macOS | Executar suite completa | Sem erros OS-specific | `[x]` |
-| 11.3.5 | Scripts funcionam no Linux | Executar suite completa | Sem erros OS-specific | `[-]` |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 6.1.1 | Admin recupera stats | role admin_chs | GET /getAdminStats | 200 { period, summary, daily } | [ ] |
+| 6.1.2 | Non-admin rejeitado | Regular user | GET | 403 | [ ] |
+| 6.1.3 | Params ausentes | Sem query | GET | 400 | [ ] |
+| 6.2.1 | Agregacao diaria | Dados existem | aggregateDailyMetrics | KPIs populados | [ ] |
+| 6.2.2 | Queries paralelas | Qualquer | Rodar | Promise.allSettled 6 queries | [ ] |
+| 6.2.3 | Falha parcial | 1/6 falha | Rodar | status: "partial" | [ ] |
+| 6.2.4 | Idempotencia skip | Doc success existe | Handler | Sem reagregar | [ ] |
 
 ---
 
-## Resumo de Metricas
+# 7. REFINAMENTO UX IA (P1)
 
-| Secao | Total de Testes | Aprovados | Pendentes | N/A |
-|-------|----------------|-----------|-----------|-----|
-| 1. Estrutura/Integridade | 24 | 24 | 0 | 0 |
-| 2. CLI | 16 | 15 | 0 | 1 |
-| 3. Scripts Python | 56 | 51 | 0 | 5 |
-| 4. Agentes (21) | 26 | 26 | 0 | 0 |
-| 5. Skills (40) | 49 | 49 | 0 | 0 |
-| 6. Workflows | 25 | 25 | 0 | 0 |
-| 7. Roteamento | 21 | 0 | 0 | 21 |
-| 8. Dual-Agent | 14 | 14 | 0 | 0 |
-| 9. Web Application | 29 | 25 | 0 | 4 |
-| 10. Integracao E2E | 20 | 20 | 0 | 0 |
-| 11. Regressao/Edge | 16 | 11 | 0 | 5 |
-| **TOTAL** | **296** | **260** | **0** | **36** |
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 7.1.1 | Prompt 5 etapas | - | buildDiagnosticPrompt | "Protocole d'Analyse en 5 Etapes" | [ ] |
+| 7.1.2 | Prompt inclui context | scalpType:"oily" | buildDiagnosticPrompt | "cuir chevelu gras" | [ ] |
+| 7.1.3 | Prompt exclui context | Sem context | buildDiagnosticPrompt | Sem "Contexte fourni" | [ ] |
+| 7.2.1 | Spinner ProtectedRoute | Auth loading | Rota protegida | Spinner gold tela cheia | [ ] |
+| 7.2.2 | Loading calendario | Fetching | `/calendrier` | Loader2 gold + texto | [ ] |
+| 7.2.3 | Loading login | Submetendo | Se connecter | "Connexion..." | [ ] |
+| 7.2.4 | Loading signup | Submetendo | Creer | "Creation..." | [ ] |
+| 7.3.1 | 3-tier fallback funciona | Gemini falha x2 | Diagnostico | Fallback textual retornado | [ ] |
 
 ---
 
-## Procedimento de Execucao
+# 8. MONETIZACAO & CHECKOUT (P0)
 
-### Execucao Rapida (Smoke Test) - P0 apenas
+## Story 8.1: Stripe
 
-```bash
-# 1. Validar instalacao
-python3 .agents/scripts/validate_installation.py
-
-# 2. Contar componentes (esperado: 21, 40, 18, 20)
-echo "Agents: $(ls .agents/agents/*.md | wc -l)"
-echo "Skills: $(ls -d .agents/skills/*/ | wc -l)"
-echo "Workflows: $(ls .agents/workflows/*.md | wc -l)"
-echo "Scripts: $(ls .agents/scripts/*.py | wc -l)"
-
-# 3. Testar scripts core
-python3 .agents/scripts/dashboard.py
-python3 .agents/scripts/progress_tracker.py
-python3 .agents/scripts/lock_manager.py list
-
-# 4. Build web
-cd web && npm install && npm run build
-
-# 5. CLI
-node bin/cli.js help
-
-# 6. Verificacao completa
-python3 .agents/scripts/verify_all.py .
-```
-
-### Execucao Completa
-
-1. Executar todos os testes P0 primeiro
-2. Se P0 100%, prosseguir para P1
-3. Se P1 100%, prosseguir para P2
-4. Documentar falhas com:
-   - Numero do teste
-   - Saida obtida vs esperada
-   - Stack trace (se aplicavel)
-   - Steps para reproduzir
+| # | Cenario | Pre-condicao | Passos | Resultado Esperado | Status |
+|---|---------|--------------|--------|-------------------|--------|
+| 8.1.1 | Preco 990 cents (9.90 EUR) | - | PREMIUM_PLAN | priceMonthly:990, eur, month | [ ] |
+| 8.1.2 | URL prod aceita | - | isAllowedRedirectUrl(cronocapilar.web.app) | true | [ ] |
+| 8.1.3 | URL evil rejeitada | - | isAllowedRedirectUrl(evil.com) | false | [ ] |
+| 8.1.4 | javascript: rejeitado | - | isAllowedRedirectUrl(javascript:) | false | [ ] |
+| 8.1.5 | Subdomain spoof rejeitado | - | fake.cronocapilar.web.app | false | [ ] |
+| 8.1.6 | Checkout sucesso | Auth, sem assinatura | POST /createCheckoutSession | 200 sessionId, url | [ ] |
+| 8.1.7 | Ja assinante rejeitado | Assinatura ativa | POST | 400 already-subscribed | [ ] |
+| 8.1.8 | Redirect invalida | evil.com | POST | 400 invalid-redirect | [ ] |
+| 8.1.9 | Portal sucesso | Auth, stripeCustomerId | POST /createPortalSession | 200 url | [ ] |
+| 8.1.10 | Sem customer | Sem stripeCustomerId | POST portal | 400 no-customer | [ ] |
+| 8.1.11 | Webhook sem signature | Sem header | POST /stripeWebhook | 400 | [ ] |
+| 8.1.12 | Webhook signature falsa | Forjada | POST | 400 | [ ] |
+| 8.1.13 | checkout.completed -> premium | Webhook valido | POST | isPremium=true | [ ] |
+| 8.1.14 | subscription.deleted -> cancel | Webhook valido | POST | isPremium=false | [ ] |
+| 8.1.15 | invoice.payment_failed -> log | Webhook valido | POST | Erro logado | [ ] |
+| 8.1.16 | Preco server-controlled | Codigo | Verificar | PREMIUM_PRICE_ID no servidor | [ ] |
+| 8.1.17 | Secrets sem hardcode | Buscar sk_live_ | Nenhum | Tudo via defineSecret | [ ] |
 
 ---
 
-## Historico de Execucao
+# 9. SEGURANCA (P0)
 
-| Data | Executor | Total Pass | N/A | Falhas | Notas |
-|------|----------|------------|-----|--------|-------|
-| 2026-02-01 | Claude Code (Opus 4.5) | 216/286 | 62 | 8 | Rodada 1: 8 falhas, 62 N/A (requerem backlog/interativo/Linux) |
-| 2026-02-01 | Claude Code (Opus 4.5) | 246/312 | 66 | 0 | Rodada 2: 0 falhas. Corrigidos: metrics.py, lint web, checklist.py, verify_all.py, validate_traceability.py, 13 workflows padronizados. |
-| 2026-02-01 | Claude Code (Opus 4.5) | 250/286 | 36 | 0 | Rodada 3: Usando BACKLOG.md do inove-ai-dev (6 Epics, 14 Stories, 100%). Testes E2E de backlog, dual-agent concurrency, progress tracker e finish_task todos aprovados. 36 N/A (interativo/Linux). |
-| 2026-02-05 | Claude Code (Opus 4) | 257/293 | 36 | 0 | Rodada 4 (Re-auditoria): Migrado .agent/ -> .agents/. Adicionados: ux-researcher (21o agente), 5 skills novas (doc-review, gap-analysis, system-design, ux-research, code-review-checklist). Corrigido: validate_installation.py (referencia removida a IMPLEMENTACAO_FASES_3_4.md). Removidos: JSONs legados em web/src/services/ (web usa data/generated/). |
+## SEC-1: Autenticacao & Autorizacao
+
+| # | Teste | Resultado Esperado | Sev | Status |
+|---|-------|-------------------|-----|--------|
+| SEC-1.01 | Todos endpoints sem auth -> 401 | 401 em todos | P0 | [ ] |
+| SEC-1.02 | JWT expirado -> 401 | Rejeitado | P0 | [ ] |
+| SEC-1.03 | JWT malformado -> 401 | Rejeitado | P0 | [ ] |
+| SEC-1.04 | IDOR diagnostico cross-user -> 403 | Bloqueado | P0 | [ ] |
+| SEC-1.05 | IDOR schedule cross-user -> 403 | Bloqueado | P0 | [ ] |
+| SEC-1.06 | IDOR product cross-user -> 403 | Bloqueado | P0 | [ ] |
+| SEC-1.07 | IDOR notification cross-user -> 403 | Bloqueado | P0 | [ ] |
+| SEC-1.08 | Escalacao admin -> 403 | Bloqueado | P0 | [ ] |
+| SEC-1.09 | ProtectedRoute sem auth -> /login | Redirect | P0 | [ ] |
+| SEC-1.10 | **[CRITICAL] Sem verificacao email** | Acessam tudo sem verificar | P0 | [!] |
+| SEC-1.11 | **[HIGH] Token revoked nao verificado** | checkRevoked faltando | P1 | [!] |
+
+## SEC-2: Firestore Rules
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| SEC-2.01 | users READ sem auth -> NEGADO | Bloqueado | [ ] |
+| SEC-2.02 | users READ proprio -> PERMITIDO | OK | [ ] |
+| SEC-2.03 | users READ outro -> NEGADO | Bloqueado | [ ] |
+| SEC-2.04 | users CREATE campos obrigatorios | OK | [ ] |
+| SEC-2.05 | users UPDATE permitidos | firstName, phoneNumber, optInSMS | [ ] |
+| SEC-2.06 | users UPDATE email -> NEGADO | Bloqueado | [ ] |
+| SEC-2.07 | users UPDATE isPremium -> NEGADO | Bloqueado | [ ] |
+| SEC-2.08 | users DELETE proprio (RGPD) | PERMITIDO | [ ] |
+| SEC-2.09 | diagnostics UPDATE -> NEGADO (sempre) | Bloqueado | [ ] |
+| SEC-2.10 | diagnostics DELETE proprio | PERMITIDO | [ ] |
+| SEC-2.11 | products UPDATE -> NEGADO (sempre) | Bloqueado | [ ] |
+| SEC-2.12 | notifications CREATE/UPDATE -> NEGADO | Bloqueado | [ ] |
+| SEC-2.13 | analytics READ non-admin -> NEGADO | Bloqueado | [ ] |
+| SEC-2.14 | Catch-all colecao desconhecida -> NEGADO | Bloqueado | [ ] |
+
+## SEC-3: Storage Rules
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| SEC-3.01 | READ sem auth -> NEGADO | Bloqueado | [ ] |
+| SEC-3.02 | WRITE JPEG < 10MB -> OK | Permitido | [ ] |
+| SEC-3.03 | WRITE PDF -> NEGADO | Bloqueado | [ ] |
+| SEC-3.04 | WRITE > 10MB -> NEGADO | Bloqueado | [ ] |
+| SEC-3.05 | WRITE outro user -> NEGADO | Bloqueado | [ ] |
+| SEC-3.06 | **[HIGH] Content-Type spoofing** | Regras checam header nao magic bytes | [!] |
+
+## SEC-4: API Security
+
+| # | Teste | Resultado Esperado | Sev | Status |
+|---|-------|-------------------|-----|--------|
+| SEC-4.01 | GET em POST-only -> 405 | Rejeitado | P0 | [ ] |
+| SEC-4.02 | Rate limit diagnosticos 5/dia | 429 no 6o | P0 | [ ] |
+| SEC-4.03 | Rate limit SMS 3/dia | 429 no 4o | P0 | [ ] |
+| SEC-4.04 | CORS evil.com -> rejeitado | Bloqueado | P0 | [ ] |
+| SEC-4.05 | Validacao E.164 telefone | Injection rejeitada | P0 | [ ] |
+| SEC-4.06 | **[CRITICAL] App Check nao enforced** | Functions acessiveis sem reCAPTCHA | P0 | [!] |
+| SEC-4.07 | **[HIGH] Sem rate limit global** | Falta Cloud Armor | P1 | [!] |
+
+## SEC-5: RGPD
+
+| # | Teste | Resultado Esperado | Sev | Status |
+|---|-------|-------------------|-----|--------|
+| SEC-5.01 | Erasure users, diagnostics, schedules, products, notifications | PERMITIDO em todos | P0 | [ ] |
+| SEC-5.02 | **[CRITICAL] Sem cascade delete** | Cloud Function faltando | P0 | [!] |
+| SEC-5.03 | **[CRITICAL] Sem Storage cleanup** | Fotos permanecem | P0 | [!] |
+| SEC-5.04 | **[CRITICAL] Sem link privacy login/signup** | RGPD Art. 13 | P0 | [!] |
+| SEC-5.05 | Consent SMS verificado antes envio | 403 se false | P0 | [ ] |
+| SEC-5.06 | Phone mascarado logs | +336****5678 | P0 | [ ] |
+| SEC-5.07 | Dados europe-west1 | Tudo na UE | P0 | [ ] |
+| SEC-5.08 | **[HIGH] Sem cleanup Stripe** | Customer persiste | P1 | [!] |
+| SEC-5.09 | **[HIGH] Sem portabilidade dados** | RGPD Art. 20 | P1 | [!] |
+| SEC-5.10 | **[HIGH] Retry sem re-checar consent** | Pode enviar apos revogacao | P1 | [!] |
+
+## SEC-6: Stripe
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| SEC-6.01 | Webhook signature verificada | constructEvent valida | [ ] |
+| SEC-6.02 | Open redirect bloqueado | isAllowedRedirectUrl | [ ] |
+| SEC-6.03 | isPremium client-side -> NEGADO | Firestore rules bloqueiam | [ ] |
+| SEC-6.04 | Preco server-controlled | PREMIUM_PRICE_ID no servidor | [ ] |
+| SEC-6.05 | Secrets via defineSecret | Sem hardcode | [ ] |
+
+## SEC-7: SMS/Twilio
+
+| # | Teste | Resultado Esperado | Sev | Status |
+|---|-------|-------------------|-----|--------|
+| SEC-7.01 | Credentials via defineSecret | Sem hardcode | P0 | [ ] |
+| SEC-7.02 | E.164 validation | Regex rejeita formatos invalidos | P0 | [ ] |
+| SEC-7.03 | Rate limit 3/dia | Enforced | P0 | [ ] |
+| SEC-7.04 | **[HIGH] productLink sem domain trust** | URL phishing possivel | P1 | [!] |
+| SEC-7.05 | **[MEDIUM] Template injection firstName** | Newlines concatenadas | P2 | [!] |
+
+## SEC-8: CI/CD
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| SEC-8.01 | deploy.yml SHA-pinned | Todos pinned | [ ] |
+| SEC-8.02 | **[HIGH] preview.yml TAG-pinned** | Vulneravel supply chain | [!] |
+| SEC-8.03 | frozen-lockfile no CI | Presente | [ ] |
+| SEC-8.04 | **[MEDIUM] Sem npm audit CI** | Faltando | [!] |
+
+## SEC-9: Client-Side
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| SEC-9.01 | .env nao comitado | Gitignored | [ ] |
+| SEC-9.02 | CSP configurado | firebase.json presente | [ ] |
+| SEC-9.03 | HSTS 2 anos + preload | Configurado | [ ] |
+| SEC-9.04 | X-Frame-Options DENY | Configurado | [ ] |
+| SEC-9.05 | Assets cache imutavel | max-age=31536000 | [ ] |
+| SEC-9.06 | index.html no-cache | Configurado | [ ] |
 
 ---
 
-*Gerado automaticamente pelo Inove AI Framework - Caderno de Testes v1.1*
+# 10. ACESSIBILIDADE WCAG AA (P2)
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| A11Y.01 | Inputs com labels | htmlFor/id pareados | [ ] |
+| A11Y.02 | Focus visible | ring-2 ring-offset-2 | [ ] |
+| A11Y.03 | Contraste texto principal | 16.15:1 AAA | [ ] |
+| A11Y.04 | **[CRITICAL] Gold on white** | ~2.4:1 (falha AA 4.5:1) | [!] |
+| A11Y.05 | Navegacao teclado completa | Tab funcional | [ ] |
+| A11Y.06 | **[HIGH] Spinners sem role="status"** | Screen readers nao detectam | [!] |
+| A11Y.07 | **[HIGH] Erros sem role="alert"** | Screen readers nao anunciam | [!] |
+| A11Y.08 | BottomNav semantico `<nav>` | Presente | [ ] |
+| A11Y.09 | Legal pages h1 unico | Presente | [ ] |
+| A11Y.10 | **[HIGH] Sem lang="fr" app/** | Verificar index.html | [!] |
+| A11Y.11 | **[MEDIUM] Sem titulo por rota** | document.title nao muda | [!] |
+
+---
+
+# 11. i18n & LOCALIZACAO
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| I18N.01 | Todo texto app/ em frances | Textos FR corretos | [ ] |
+| I18N.02 | Erros Firebase em FR | Mensagens traduzidas | [ ] |
+| I18N.03 | Datas fr-FR | "mer. 12 mars" | [ ] |
+| I18N.04 | Dias FR | Dim,Lun,Mar... | [ ] |
+| I18N.05 | web/ lang="fr" | Presente | [ ] |
+| I18N.06 | Locale restrito fr-FR | type Locale = "fr-FR" | [ ] |
+| I18N.07 | **[LOW] Footer web/ ingles** | Deveria ser FR | [!] |
+
+---
+
+# 12. RESPONSIVIDADE
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| RES.01 | Mobile 375px | Sem scroll horizontal | [ ] |
+| RES.02 | Tablet 768px | Grid 3 colunas | [ ] |
+| RES.03 | min-h-dvh | Preenche viewport | [ ] |
+| RES.04 | BottomNav fixo | Nav no fundo ao scrollar | [ ] |
+| RES.05 | Padding BottomNav | Conteudo nao escondido | [ ] |
+| RES.06 | Safe area iOS | pb safe-area-inset | [ ] |
+| RES.07 | 320px | Sem overflow | [ ] |
+| RES.08 | Desktop 2560px | Centralizado max-w | [ ] |
+| RES.09 | Landscape | Acessivel | [ ] |
+
+---
+
+# 13. NAVEGACAO & ROTAS
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| NAV.01 | Sem auth /dashboard -> /login | Redirect | [ ] |
+| NAV.02 | Sem auth /diagnostic -> /login | Redirect | [ ] |
+| NAV.03 | Sem auth /calendrier -> /login | Redirect | [ ] |
+| NAV.04 | Auth sem perfil -> /profile-setup | Redirect | [ ] |
+| NAV.05 | Rota inexistente -> / | Redirect | [ ] |
+| NAV.06 | Rotas publicas acessiveis | Sem redirect | [ ] |
+| NAV.07 | BottomNav 4 items | Accueil, Diagnostic, Calendrier, Parametres | [ ] |
+| NAV.08 | Active state gold | Item ativo gold-500 | [ ] |
+| NAV.09 | Dashboard "Bonjour, {nome}" | Greeting correto | [ ] |
+| NAV.10 | Dashboard CTA diagnostico | Botao "Lancer le diagnostic" | [ ] |
+| NAV.11 | Settings info user | Avatar, nome, email | [ ] |
+| NAV.12 | Landing hero + CTA | "IA", Commencer, Se connecter | [ ] |
+| NAV.13 | Landing features | 3 cards | [ ] |
+| NAV.14 | Landing footer legal | 3 links legais | [ ] |
+| NAV.15 | Legal pages renderizam | Conteudo CHS, RGPD | [ ] |
+| NAV.16 | Legal botao retour | Navega / | [ ] |
+| NAV.17 | **[MEDIUM] Conteudo legal incompleto** | Placeholders presentes | [!] |
+
+---
+
+# 14. PERFORMANCE
+
+| # | Teste | Resultado Esperado | Status |
+|---|-------|-------------------|--------|
+| PERF.01 | **[MEDIUM] Sem code splitting** | Imports estaticos | [!] |
+| PERF.02 | Bundle < 200KB | Build producao | [ ] |
+| PERF.03 | useCallback AuthContext | Memoizado | [ ] |
+| PERF.04 | Testes unitarios passam | 63 tests OK | [ ] |
+
+---
+
+# ISSUES CRITICOS (Pre-Release Blockers)
+
+## CRITICAL (6 - Bloqueia Release)
+
+| # | Issue | Arquivo | Descricao |
+|---|-------|---------|-----------|
+| CRIT-01 | Sem verificacao email | AuthContext.tsx | Usuarios acessam sem verificar email |
+| CRIT-02 | App Check nao enforced | index.ts | Cloud Functions sem reCAPTCHA |
+| CRIT-03 | Sem delecao cascata RGPD | Firestore | Deletar perfil nao cascateia |
+| CRIT-04 | Sem cleanup Storage RGPD | Storage | Fotos nao deletadas |
+| CRIT-05 | Sem link privacy login/signup | Login.tsx, Signup.tsx | RGPD Art. 13 |
+| CRIT-06 | Contraste gold on white | Todas paginas | ~2.4:1 (min 4.5:1) |
+
+## HIGH (11 - Corrigir antes Producao)
+
+| # | Issue | Arquivo | Descricao |
+|---|-------|---------|-----------|
+| HIGH-01 | Token revoked nao verificado | auth.ts | Falta checkRevoked: true |
+| HIGH-02 | Content-Type spoofing | storage.rules | Header vs magic bytes |
+| HIGH-03 | Sem rate limit global | index.ts | Falta Cloud Armor |
+| HIGH-04 | Sem cleanup Stripe RGPD | billing | Customer persiste |
+| HIGH-05 | Sem portabilidade dados | - | RGPD Art. 20 |
+| HIGH-06 | Retry SMS sem re-checar consent | handler.ts | Envia apos revogacao |
+| HIGH-07 | productLink sem domain trust | schemas.ts | URL phishing em SMS |
+| HIGH-08 | preview.yml TAG nao SHA | preview.yml | Supply chain |
+| HIGH-09 | Spinners sem role="status" | ProtectedRoute | Acessibilidade |
+| HIGH-10 | Erros sem role="alert" | Login, Signup | Acessibilidade |
+| HIGH-11 | Sem lang="fr" app/ | main.tsx | Acessibilidade |
+
+---
+
+# Rastreabilidade: Criterios -> Testes
+
+| Story | Criterio | Teste(s) | Coberto? |
+|-------|----------|----------|----------|
+| 1.1 | Servidor dev sem erros | 1.2.1 | [x] |
+| 1.1 | Tokens design | 1.4.1-1.4.3 | [x] |
+| 1.2 | Firebase europe-west1 | 1.3.1, SEC-5.07 | [x] |
+| 1.2 | Firestore Rules | SEC-2.01-SEC-2.14 | [x] |
+| 1.3 | Troca idioma | 1.5.1-1.5.4 | [x] |
+| 1.4 | Deploy auto | 1.2.1-1.2.5 | [x] |
+| 2.1 | Login Google | 2.1.6 | [x] |
+| 2.2 | Perfil completo | 2.2.1-2.2.5 | [x] |
+| 2.3 | OptInSMS + timestamp | 2.3.5 | [x] |
+| 3.1 | Upload Storage | 3.1.6, SEC-3.02 | [x] |
+| 3.1 | Validacao formato | 3.1.4-3.1.8, SEC-3.03-3.04 | [x] |
+| 3.2 | Gemini JSON | 3.2.1-3.2.11 | [x] |
+| 3.3 | Doc diagnostics | 3.2.26-3.2.27 | [x] |
+| 3.3 | Formato inesperado | 3.3.1-3.3.2 | [x] |
+| 3.4 | Wizard | 3.4.1-3.4.3 | [x] |
+| 4.1 | Dry prioriza H | 4.1.3 | [x] |
+| 4.2 | Proximos 7 dias | 4.2.3-4.2.7 | [x] |
+| 4.2 | Jour de repos | 4.2.9 | [x] |
+| 4.3 | Google Calendar | 4.3.1, 4.3.3 | [x] |
+| 4.3 | Download .ics | 4.3.2, 4.3.4, 4.3.6-4.3.9 | [x] |
+| 5.1 | depletionDate | 5.1.1-5.1.5 | [x] |
+| 5.1 | lowStock 2 sessoes | 5.1.3 | [x] |
+| 5.2 | Fallback email | 5.2.12 | [x] |
+| 5.3 | Bit.ly fallback | 5.3.1 | [x] |
+| 6.1 | Dashboard KPIs | 6.1.1 | [x] |
+| 6.2 | Agregacao 02:00 UTC | 6.2.1-6.2.2 | [x] |
+
+**Cobertura:** 100% dos criterios de aceite mapeados para >= 1 teste.
+
+---
+
+# Gaps de Testes Automatizados
+
+| Modulo | Testes Existentes | Acao |
+|--------|------------------|------|
+| diagnostic/analyzer.ts | 0 | Criar testes retry/fallback |
+| diagnostic/prompt.ts | 0 | Criar testes prompt |
+| diagnostic/handler.ts | 0 | Criar testes handler |
+| schedule/handler.ts | 0 | Criar testes handler |
+| calendar/handler.ts | 0 | Criar testes ICS download |
+| calendar/ics-generator.ts | 0 | Criar testes RFC 5545 |
+| calendar/token.ts | 0 | Criar testes HMAC |
+| products/handler.ts | 0 | Criar testes register/update |
+| notifications/handler.ts | 0 | Criar testes consent/rate/retry |
+| notifications/sender.ts | 0 | Criar testes Twilio |
+| notifications/templates.ts | 0 | Criar testes render |
+| analytics/aggregator.ts | 0 | Criar testes KPIs |
+| analytics/handler.ts | 0 | Criar testes admin stats |
+| billing/handler.ts | 2 (redirect) | Expandir checkout/portal/webhook |
+| firestore.rules | 0 | @firebase/rules-unit-testing |
+| storage.rules | 0 | @firebase/rules-unit-testing |
+
+---
+
+# Historico de Execucao
+
+| Data | Executor | Pass | Fail | N/A | Notas |
+|------|----------|------|------|-----|-------|
+| 2026-02-09 | @backend + @frontend + @security + @explorer | 0 | 0 | 0 | Geracao inicial v2.0 |
+
+---
+
+# Metricas de Qualidade
+
+| Metrica | Alvo | Atual | Status |
+|---------|------|-------|--------|
+| Cobertura Stories | 100% | 100% (25/25) | OK |
+| Cobertura Criterios Aceite | 100% | 100% | OK |
+| Taxa Aprovacao | > 95% | 0% (nao executado) | Pendente |
+| CRITICAL issues | 0 | 6 | Bloqueia |
+| HIGH issues | 0 | 11 | Requer fix |
+| Total Cenarios | - | 561 | - |

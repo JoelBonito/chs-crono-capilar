@@ -48,7 +48,7 @@ def parse_backlog(content: str) -> list[Epic]:
     # Regex para encontrar Epics com ownership e model opcionais
     # Captura: nome do epic, owner (se existir) e model (se existir)
     epic_pattern = re.compile(
-        r"^##\s+Epic\s+\d+:\s+(.+?)\s*(?:\[OWNER:\s*(.+?)\])?\s*(?:\[MODEL:\s*(.+?)\])?\s*(?:[✅🔴⏳].*)?$",
+        r"^#{2,3}\s+Epic\s+\d+:\s+(.+?)\s*(?:\[OWNER:\s*(.+?)\])?\s*(?:\[MODEL:\s*(.+?)\])?\s*(?:[✅🔴⏳].*)?$",
         re.MULTILINE
     )
 
