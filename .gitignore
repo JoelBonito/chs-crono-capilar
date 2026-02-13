@@ -46,3 +46,5 @@ web/
 # Secrets
 **/service-account-*.json
 **/.secret.local
+.vercel
+.env*.local
