@@ -3,7 +3,8 @@ import { onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { REGION } from "./shared/config";
 import { ALLOWED_ORIGINS } from "./shared/cors";
-import { withAppCheck } from "./shared/appcheck";
+// TODO: Re-enable App Check after configuring reCAPTCHA v3 correctly
+// import { withAppCheck } from "./shared/appcheck";
 import { handleAnalyzeHair } from "./diagnostic/handler";
 import { handleGenerateSchedule } from "./schedule/handler";
 import { handleSyncCalendar } from "./calendar/handler";
@@ -37,7 +38,7 @@ export const analyzeHair = onRequest(
     timeoutSeconds: 120,
     memory: "512MiB",
   },
-  withAppCheck(handleAnalyzeHair),
+  handleAnalyzeHair,
 );
 
 // Schedule: generate H/N/R cycle from diagnostic
@@ -48,7 +49,7 @@ export const generateSchedule = onRequest(
     timeoutSeconds: 30,
     secrets: [calendarTokenSecret],
   },
-  withAppCheck(handleGenerateSchedule),
+  handleGenerateSchedule,
 );
 
 // Calendar: export .ics for Google Calendar / Apple Calendar / Outlook
@@ -58,7 +59,7 @@ export const syncCalendar = onRequest(
     cors: ALLOWED_ORIGINS,
     secrets: [calendarTokenSecret],
   },
-  withAppCheck(handleSyncCalendar),
+  handleSyncCalendar,
 );
 
 // Products: register a product with volume tracking
@@ -68,7 +69,7 @@ export const registerProduct = onRequest(
     cors: ALLOWED_ORIGINS,
     timeoutSeconds: 30,
   },
-  withAppCheck(handleRegisterProduct),
+  handleRegisterProduct,
 );
 
 // Products: update consumption after a treatment session
@@ -78,7 +79,7 @@ export const updateProductUsage = onRequest(
     cors: ALLOWED_ORIGINS,
     timeoutSeconds: 30,
   },
-  withAppCheck(handleUpdateProductUsage),
+  handleUpdateProductUsage,
 );
 
 // Notifications: send SMS via Twilio
@@ -89,7 +90,7 @@ export const sendNotification = onRequest(
     timeoutSeconds: 30,
     secrets: [twilioAccountSid, twilioAuthToken, twilioFromNumber],
   },
-  withAppCheck(handleSendNotification),
+  handleSendNotification,
 );
 
 // Notifications: retry failed SMS every 5 minutes (scheduler — no App Check)
@@ -121,7 +122,7 @@ export const getAdminStats = onRequest(
     cors: ALLOWED_ORIGINS,
     timeoutSeconds: 30,
   },
-  withAppCheck(handleGetAdminStats),
+  handleGetAdminStats,
 );
 
 // Billing: create Stripe Checkout session for Premium subscription
@@ -132,7 +133,7 @@ export const createCheckoutSession = onRequest(
     timeoutSeconds: 30,
     secrets: [stripeSecretKey],
   },
-  withAppCheck(handleCreateCheckout),
+  handleCreateCheckout,
 );
 
 // Billing: create Stripe Customer Portal session
@@ -143,7 +144,7 @@ export const createPortalSession = onRequest(
     timeoutSeconds: 30,
     secrets: [stripeSecretKey],
   },
-  withAppCheck(handleCreatePortal),
+  handleCreatePortal,
 );
 
 // Account: RGPD Art. 17 — cascade delete all user data
@@ -153,7 +154,7 @@ export const deleteAccount = onRequest(
     cors: ALLOWED_ORIGINS,
     timeoutSeconds: 120,
   },
-  withAppCheck(handleDeleteAccount),
+  handleDeleteAccount,
 );
 
 // Billing: Stripe webhook handler (no CORS, no App Check — Stripe POSTs directly)
