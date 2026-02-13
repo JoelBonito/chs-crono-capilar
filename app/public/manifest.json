@@ -1,0 +1,31 @@
+{
+  "name": "CronoCapilar - CHS",
+  "short_name": "CronoCapilar",
+  "description": "Assistant digital de chronogramme capillaire",
+  "lang": "fr-FR",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#D4AF37",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "scope": "/"
+}
