@@ -28,12 +28,29 @@
 
 ---
 
-## Protocolo de Roteamento Inteligente
+## 📥 Classificação de Requisição (STEP 0 — OBRIGATÓRIO)
+
+**Antes de QUALQUER ação, classificar a requisição:**
+
+| Tipo                 | Palavras-chave                                    | Tiers Ativos                   | Resultado                        |
+| -------------------- | ------------------------------------------------- | ------------------------------ | -------------------------------- |
+| **PERGUNTA**         | "o que é", "como funciona", "explique"            | TIER 0 apenas                  | Resposta textual                 |
+| **ANÁLISE/INTEL**    | "analise", "liste arquivos", "overview"           | TIER 0 + Explorer              | Intel de sessão (sem editar)     |
+| **EDIT SIMPLES**     | "corrige", "adiciona", "muda" (1 arquivo)         | TIER 0 + TIER 1 (lite)         | Edição inline                    |
+| **CÓDIGO COMPLEXO**  | "construa", "crie", "implemente", "refatore"      | TIER 0 + TIER 1 (full) + Agent | **{task-slug}.md obrigatório**   |
+| **DESIGN/UI**        | "design", "UI", "página", "dashboard"             | TIER 0 + TIER 1 + Agent        | **{task-slug}.md obrigatório**   |
+| **SLASH CMD**        | /create, /orchestrate, /debug, /define            | Fluxo do comando               | Variável                         |
+
+> 🔴 **Regra:** NÃO ative agentes ou skills para perguntas simples. Responda diretamente.
+
+---
+
+## Protocolo de Roteamento Inteligente (STEP 1)
 
 ### 1. Detecção de Domínio (AUTOMÁTICO)
 
 | Palavras-chave | Domínio | Agente Primário |
-|----------------|---------|-----------------|
+|----------------|---------|-----------------| 
 | "UI", "componente", "página", "frontend" | Frontend | `frontend-specialist` |
 | "API", "endpoint", "backend", "servidor" | Backend | `backend-specialist` |
 | "database", "schema", "query", "migração" | Database | `database-architect` |
@@ -45,7 +62,17 @@
 | "requisitos", "user story", "backlog", "MVP" | Product | `product-owner` |
 | "UX", "user flow", "wireframe", "jornada", "usabilidade" | UX Research | `ux-researcher` |
 
-### 2. Ativação de Agente (OBRIGATÓRIO)
+### 2. Roteamento por Tipo de Projeto
+
+| Tipo                                   | Agente Primário       | Skills                        |
+| -------------------------------------- | --------------------- | ----------------------------- |
+| **MOBILE** (iOS, Android, RN, Flutter) | `mobile-developer`    | mobile-design                 |
+| **WEB** (Next.js, React web)           | `frontend-specialist` | frontend-design               |
+| **BACKEND** (API, server, DB)          | `backend-specialist`  | api-patterns, database-design |
+
+> 🔴 **Mobile + frontend-specialist = ERRADO.** Mobile = `mobile-developer` APENAS.
+
+### 3. Ativação de Agente (OBRIGATÓRIO)
 
 Quando um domínio for detectado:
 
@@ -57,6 +84,27 @@ Quando um domínio for detectado:
    ```
 3. **Carregar skills** do frontmatter do agente
 4. **Aplicar persona e regras** do agente
+
+### 4. Regras de Ativação
+
+1. **Análise silenciosa**: Sem meta-comentários verbosos ("Estou analisando...").
+2. **Override explícito**: Se o usuário mencionar `@agent`, usar esse agente.
+3. **Tarefas complexas**: Para multi-domínio, usar `orchestrator` e fazer perguntas Socráticas primeiro.
+
+---
+
+## 🧠 Read → Understand → Apply (OBRIGATÓRIO)
+
+```
+❌ ERRADO: Ler agente → Começar a codar
+✅ CORRETO: Ler → Entender PORQUÊ → Aplicar PRINCÍPIOS → Codar
+```
+
+**Antes de codar, responder internamente:**
+
+1. Qual é o OBJETIVO deste agente/skill?
+2. Quais PRINCÍPIOS devo aplicar?
+3. Como isso DIFERE de output genérico?
 
 ---
 
@@ -95,7 +143,28 @@ Quando um domínio for detectado:
 
 ---
 
-## Protocolo Auto-Finish (OBRIGATÓRIO)
+## 🛑 Socratic Gate (OBRIGATÓRIO)
+
+**Para requisições complexas, PARAR e PERGUNTAR primeiro:**
+
+| Tipo de Requisição        | Estratégia       | Ação Obrigatória                                          |
+| ------------------------- | ---------------- | --------------------------------------------------------- |
+| **Nova Feature / Build**  | Deep Discovery   | PERGUNTAR mínimo 3 questões estratégicas                  |
+| **Edit / Bug Fix**        | Context Check    | Confirmar entendimento + perguntas de impacto             |
+| **Vago / Simples**        | Clarificação     | Perguntar Propósito, Usuários e Escopo                    |
+| **Orquestração Full**     | Gatekeeper       | **PARAR** subagentes até confirmar plano                  |
+| **"Prossiga" direto**     | Validação        | Mesmo assim, perguntar 2 questões de Edge Case            |
+
+**Protocolo:**
+
+1. **Nunca assumir:** Se 1% estiver indefinido, PERGUNTAR.
+2. **Respostas em lista:** NÃO pular o gate. Perguntar sobre Trade-offs e Edge Cases.
+3. **Esperar:** NÃO escrever código até o usuário liberar o gate.
+4. **Referência:** Protocolo completo em `.agents/skills/brainstorming/SKILL.md`.
+
+---
+
+## ✅ Protocolo Auto-Finish (OBRIGATÓRIO)
 
 Após completar QUALQUER tarefa do `docs/BACKLOG.md`:
 
@@ -110,6 +179,107 @@ Informar ao usuário:
 📊 Progresso atualizado: {percentual}%
 🎯 Próxima tarefa: {nome_proxima_tarefa}
 ```
+
+> 🔴 **Regra:** Você é RESPONSÁVEL por atualizar o status no backlog. Não peça ao usuário para fazer isso.
+
+---
+
+## 🏁 Final Checklist Protocol (OBRIGATÓRIO)
+
+**Trigger:** Quando o usuário pede "verificações finais", "final checks", ou antes de deploy/release.
+
+**Comando principal:**
+
+```bash
+python .agents/scripts/checklist.py .                   # Auditoria manual
+python .agents/scripts/checklist.py . --url <URL>       # Full Suite + Performance + E2E
+```
+
+**Ordem de execução prioritizada:**
+
+| Prioridade | Etapa        | Script                                                                  | Quando Usar         |
+| ---------- | ------------ | ----------------------------------------------------------------------- | ------------------- |
+| 1          | **Security** | `python .agents/skills/vulnerability-scanner/scripts/security_scan.py`  | Sempre em deploy    |
+| 2          | **Lint**     | `python .agents/skills/lint-and-validate/scripts/lint_runner.py`        | Cada mudança        |
+| 3          | **Schema**   | `python .agents/skills/database-design/scripts/schema_validator.py`     | Após mudança no DB  |
+| 4          | **Tests**    | `python .agents/skills/testing-patterns/scripts/test_runner.py`         | Após mudança lógica |
+| 5          | **UX**       | `python .agents/skills/frontend-design/scripts/ux_audit.py`            | Após mudança UI     |
+| 6          | **SEO**      | `python .agents/skills/seo-fundamentals/scripts/seo_checker.py`        | Após mudança página |
+| 7          | **Perf**     | `python .agents/skills/performance-profiling/scripts/lighthouse_audit.py` | Antes de deploy   |
+
+**Regras:**
+
+- Uma tarefa NÃO está completa até `checklist.py` retornar sucesso.
+- Se falhar, corrigir blockers **Critical** primeiro (Security/Lint).
+
+---
+
+## 📝 Registro de Sessões de Trabalho (OBRIGATÓRIO)
+
+### Objetivo
+Rastrear sessões de trabalho e gerar um relatório diário consolidado em Markdown.
+
+### Local e Nome
+Salvar em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md` (ex.: `docs/08-Logs-Sessoes/2026/2026-02-13.md`).
+
+### Regras de Operação
+
+1. **Abertura de Sessão (Início):**
+   - Ao iniciar uma sessão, criar (ou abrir) o arquivo do dia.
+   - Se o arquivo não existir, criar com o cabeçalho diário (ver Modelo).
+   - Registrar hora de início no bloco "Sessões" com uma entrada provisória.
+
+2. **Encerramento de Sessão (Fim):**
+   - Ao encerrar, completar a entrada com hora de fim, calcular duração (fim - início).
+   - Descrever o que foi feito (bullet points objetivos).
+
+3. **Consolidação Diária (Resumo do Dia):**
+   - Atualizar o bloco "Resumo do Dia" contendo:
+     - Hora de início do dia (menor hora de início).
+     - Hora de fim do dia (maior hora de fim).
+     - Tempo total trabalhado (soma de todas as sessões).
+   - Atualizar ao final da última sessão do dia.
+
+4. **Limites e Bordas:**
+   - Se uma sessão ultrapassar 23:59, encerrar no dia D e abrir nova no dia D+1 às 00:00.
+   - Não registrar dados sensíveis ou tokens. Descrever apenas tarefas/artefatos técnicos.
+
+5. **Índice:**
+   - Manter/atualizar `docs/08-Logs-Sessoes/README.md` com links para cada arquivo diário.
+
+### Modelo de Arquivo Diário
+
+```markdown
+# LOG DIÁRIO — AAAA-MM-DD
+- Projeto: <NOME_DO_PROJETO>
+- Fuso: America/Sao_Paulo
+
+## Sessões
+1. HH:MM — HH:MM (HH:MM)
+   - Atividades: <bullets curtos e objetivos>
+
+2. HH:MM — HH:MM (HH:MM)
+   - Atividades: <...>
+
+## Resumo do Dia
+- Início do dia: HH:MM
+- Fim do dia: HH:MM
+- Tempo total: HH:MM
+```
+
+### Comandos
+
+- `/log-start "descrição breve"` → Abre item em "Sessões" com hora de início.
+- `/log-end` → Fecha a sessão atual, calcula duração e atualiza "Resumo do Dia".
+- `/log-daily close` → Força consolidação do "Resumo do Dia" ao encerrar o expediente.
+
+### Critérios de Qualidade
+
+- PT-BR consistente. Sem código comentado/console.log em descrições de atividades.
+- Durações corretas e soma exata no resumo diário.
+- Nomes de arquivos e diretórios exatamente conforme especificação.
+- Formato: horários em 24h (HH:MM), data ISO (AAAA-MM-DD), duração em HH:MM.
+- Fuso horário: America/Sao_Paulo.
 
 ---
 
@@ -143,14 +313,23 @@ Todo código DEVE seguir `.agents/skills/clean-code/SKILL.md`:
 - **Comentários de código** → Sempre em inglês
 - **Variáveis/funções** → Sempre em inglês
 
-### Socratic Gate
+### Dependência entre Arquivos
 
-Para requisições complexas, PERGUNTAR antes de implementar:
+**Antes de modificar QUALQUER arquivo:**
 
-- Propósito e escopo
-- Casos de borda
-- Implicações de performance
-- Considerações de segurança
+1. Verificar `CODEBASE.md` → File Dependencies
+2. Identificar arquivos dependentes
+3. Atualizar TODOS os arquivos afetados juntos
+
+### Leitura do Mapa do Sistema
+
+> 🔴 **OBRIGATÓRIO:** Ler `ARCHITECTURE.md` no início da sessão para entender Agents, Skills e Scripts.
+
+**Paths:**
+
+- Agents: `.agents/agents/`
+- Skills: `.agents/skills/`
+- Runtime Scripts: `.agents/skills/<skill>/scripts/`
 
 ---
 
@@ -217,7 +396,7 @@ Formato no BACKLOG.md:
 ```
 
 | Campo | Descrição | Valores |
-|-------|-----------|---------|
+|-------|-----------|---------| 
 | `OWNER` | Agente/ferramenta responsável | `claude_code`, `antigravity`, `codex` |
 | `MODEL` | Modelo AI preferencial | `opus-4-5`, `sonnet`, `haiku`, `gemini-2.0` |
 
@@ -252,9 +431,12 @@ Toda conversa começa com:
 ✅ 40 skills disponíveis
 ✅ 21 workflows disponíveis
 ✅ Roteamento inteligente habilitado
+📝 Log de sessão iniciado
 
 🎯 Pronto para trabalhar. O que devo fazer?
 ```
+
+> 🔴 **OBRIGATÓRIO:** Criar/abrir o arquivo de log diário ao inicializar a sessão.
 
 ---
 
@@ -291,15 +473,17 @@ Toda conversa começa com:
 **Usuário:** "Implementar Epic 1: Autenticação de Usuários"
 
 **Claude:**
-1. Domínio detectado: Security + Backend
-2. Ativando agentes:
+1. Classificação: CÓDIGO COMPLEXO → TIER 0 + TIER 1 (full) + Agent
+2. Domínio detectado: Security + Backend
+3. Ativando agentes:
    - @security-auditor (líder)
    - @backend-specialist (suporte)
-3. Carregando skills: vulnerability-scanner, api-patterns
-4. [Implementa código seguindo regras dos agentes]
-5. Implementação completa
-6. Executando: `python .agents/scripts/finish_task.py "Epic 1"`
-7. Progresso: 25% (1/4 epics concluídos)
+4. Read → Understand → Apply: Ler regras dos agentes, entender princípios, aplicar
+5. Socratic Gate: Perguntar sobre escopo, edge cases, integrações
+6. [Implementa código seguindo regras dos agentes]
+7. Executando: `python .agents/scripts/finish_task.py "Epic 1"`
+8. Progresso: 25% (1/4 epics concluídos)
+9. Log de sessão atualizado
 
 **Usuário:** `/define App de gestão de tarefas`
 
