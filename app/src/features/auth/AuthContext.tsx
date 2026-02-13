@@ -78,10 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = useCallback(async () => {
     console.log("[Auth] Starting Google sign-in...");
-    console.log("[Auth] Auth config:", {
-      authDomain: auth.config.authDomain,
-      projectId: auth.config.projectId,
-    });
 
     try {
       console.log("[Auth] Opening popup...");
