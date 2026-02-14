@@ -27,6 +27,27 @@ Agent activated → Check frontmatter "skills:" → Read SKILL.md (INDEX) → Re
 
 ---
 
+## 🚫 Regra Zero — Never Edit Without Approval (ABSOLUTE)
+
+> 🔴 **This rule overrides ALL others. No exceptions.**
+
+1. **NEVER use file modification tools without EXPLICIT user approval.**
+2. **"Analyze" ≠ "Edit".** When user asks to analyze, investigate, or check — respond with TEXT DIAGNOSIS only. Do not touch any file.
+3. **"Fix" or "Change" ≠ automatic permission.** Mandatory flow: diagnose → propose → wait for approval → only then edit.
+
+**Mandatory Flow:**
+```
+1. READ     → Read relevant files
+2. ANALYZE  → Understand the problem and context
+3. PROPOSE  → Present diagnosis + proposed change to user
+4. WAIT     → Do NOT touch code. Wait for user to say "apply", "do it", "OK"
+5. EDIT     → Only now use file modification tools
+```
+
+> 🔴 **When in doubt, ASK.** It is always better to ask than to edit without permission.
+
+---
+
 ## 📥 REQUEST CLASSIFIER (STEP 1)
 
 **Before ANY action, classify the request:**
@@ -96,7 +117,7 @@ When user's prompt is NOT in English:
 
 **Before modifying ANY file:**
 
-1. Check `CODEBASE.md` → File Dependencies
+1. Use search tools to verify file dependencies before modifying.
 2. Identify dependent files
 3. Update ALL affected files together
 
@@ -172,7 +193,7 @@ When user's prompt is NOT in English:
 
 ### 🏁 Final Checklist Protocol
 
-**Trigger:** When the user says "son kontrolleri yap", "final checks", "çalıştır tüm testleri", or similar phrases.
+**Trigger:** When the user says "final checks", "verificações finais", "run all tests", or similar phrases.
 
 | Task Stage       | Command                                            | Purpose                        |
 | ---------------- | -------------------------------------------------- | ------------------------------ |
@@ -232,8 +253,8 @@ When user's prompt is NOT in English:
 
 | Task         | Read                            |
 | ------------ | ------------------------------- |
-| Web UI/UX    | `.agents/frontend-specialist.md` |
-| Mobile UI/UX | `.agents/mobile-developer.md`    |
+| Web UI/UX    | `.agents/agents/frontend-specialist.md` |
+| Mobile UI/UX | `.agents/agents/mobile-developer.md`    |
 
 **These agents contain:**
 

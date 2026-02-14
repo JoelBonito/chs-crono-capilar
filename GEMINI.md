@@ -33,8 +33,8 @@ Agent activated → Check frontmatter "skills:" → Read SKILL.md (INDEX) → Re
 ```
 .agents/
 ├── agents/           # 21 agentes especializados
-├── skills/           # 40 módulos de conhecimento
-├── workflows/        # 18 workflows (slash commands)
+├── skills/           # 41 módulos de conhecimento
+├── workflows/        # 21 workflows (slash commands)
 ├── scripts/          # Automação Python
 ├── config/           # Configurações por plataforma
 └── ARCHITECTURE.md   # Documentação técnica
@@ -126,7 +126,7 @@ When user's prompt is NOT in English:
 
 **Before modifying ANY file:**
 
-1. Check `CODEBASE.md` → File Dependencies
+1. Use Grep to verify file dependencies before modifying.
 2. Identify dependent files
 3. Update ALL affected files together
 
@@ -177,6 +177,42 @@ When user's prompt is NOT in English:
 | Finish | `python .agents/scripts/finish_task.py "Epic-1"` | Marcar completo |
 | Checklist | `python .agents/scripts/checklist.py .` | Auditoria do projeto |
 | Validar | `python .agents/scripts/validate_installation.py` | Verificar setup |
+
+---
+
+## 📝 Registro de Sessões de Trabalho (OBRIGATÓRIO)
+
+**Rastrear toda sessão em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md`.**
+
+**Comandos:**
+```bash
+python .agents/scripts/auto_session.py start                          # Abrir sessão
+python .agents/scripts/auto_session.py start --agent antigravity      # Abrir com agente específico
+python .agents/scripts/auto_session.py end --activities "ativ1; ativ2"  # Fechar sessão
+python .agents/scripts/auto_session.py end --quick                    # Fechar sem atividades
+python .agents/scripts/auto_session.py status                        # Ver sessão ativa
+```
+
+**Regras:**
+1. **Fonte Única:** SEMPRE usar `auto_session.py` para abrir/fechar sessões. NUNCA criar ou editar logs manualmente.
+2. **Consolidação:** O script calcula e gera o "Resumo do Dia" automaticamente ao encerrar.
+3. **Índice:** Manter `docs/08-Logs-Sessoes/README.md` atualizado.
+
+**Formato gerado pelo script:**
+```markdown
+# LOG DIÁRIO — AAAA-MM-DD
+- Projeto: <NOME_DO_PROJETO>
+- Fuso: America/Sao_Paulo
+
+## Sessões
+1. HH:MM — HH:MM (HH:MM) [🤖 antigravity]
+   - Atividades: <bullets curtos e objetivos>
+
+## Resumo do Dia
+- Início do dia: HH:MM
+- Fim do dia: HH:MM
+- Tempo total: HH:MM
+```
 
 ---
 

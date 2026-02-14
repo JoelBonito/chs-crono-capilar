@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Auto Session Manager - Inove AI Framework
-Gerencia sessões automaticamente com detecção inteligente.
+Gerencia sessoes automaticamente com deteccao inteligente.
 
 Uso:
     python .agents/scripts/auto_session.py start [--agent antigravity|claude_code]
@@ -23,7 +23,7 @@ SESSION_FILE = Path(".agents/.session_state.json")
 
 
 def load_session():
-    """Carrega estado da sessão atual."""
+    """Carrega estado da sessao atual."""
     if SESSION_FILE.exists():
         try:
             return json.loads(SESSION_FILE.read_text())
@@ -33,115 +33,244 @@ def load_session():
 
 
 def save_session(data):
-    """Salva estado da sessão."""
+    """Salva estado da sessao."""
     SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
     SESSION_FILE.write_text(json.dumps(data, indent=2))
 
 
 def clear_session():
-    """Limpa sessão atual."""
+    """Limpa sessao atual."""
     if SESSION_FILE.exists():
         SESSION_FILE.unlink()
 
 
 def get_project_name() -> str:
-    """Detecta o nome do projeto a partir do diretório."""
-    cwd = Path.cwd()
-    return cwd.name
+    """Detecta o nome do projeto a partir do diretorio."""
+    return Path.cwd().name
+
+
+def _agent_badge(agent: str) -> str:
+    """Returns the badge string for a given agent."""
+    if agent == "antigravity":
+        return "\U0001f916 antigravity"
+    return f"\U0001f535 {agent}"
+
+
+def _parse_sessions(content: str) -> list:
+    """
+    Parses all session entries from the log content.
+
+    Returns a list of dicts with keys:
+        number, start, end (or None), duration (or None), badge, activities
+    """
+    sessions = []
+
+    # Match both completed and in-progress sessions
+    # Completed: 1. 14:30 -- 15:45 (01:15) [badge]
+    # In progress: 2. 16:00 -- *(em andamento)* [badge]
+    entry_pattern = re.compile(
+        r'^(\d+)\.\s+'
+        '(\\d{1,2}:\\d{2})\\s+\u2014\\s+'
+        r'(?:(\d{1,2}:\d{2})\s+\((\d{2}:\d{2})\)|'
+        r'\*\(em andamento\)\*)'
+        r'\s+\[(.+?)\]',
+        re.MULTILINE
+    )
+
+    for match in entry_pattern.finditer(content):
+        number = int(match.group(1))
+        start = match.group(2)
+        end = match.group(3)  # None if in progress
+        duration = match.group(4)  # None if in progress
+        badge = match.group(5)
+
+        # Extract activities block following this entry
+        entry_end = match.end()
+        next_entry = entry_pattern.search(content, entry_end)
+        # Also stop before "## Resumo do Dia"
+        resumo_match = re.search(r'^## Resumo do Dia', content[entry_end:], re.MULTILINE)
+
+        if next_entry:
+            block_end = next_entry.start()
+        elif resumo_match:
+            block_end = entry_end + resumo_match.start()
+        else:
+            block_end = len(content)
+
+        activities_block = content[entry_end:block_end]
+        activities = []
+        for line in activities_block.split('\n'):
+            stripped = line.strip()
+            if stripped.startswith('- ') and stripped != '- Atividades:':
+                activity = stripped[2:].strip()
+                if activity:
+                    activities.append(activity)
+
+        sessions.append({
+            'number': number,
+            'start': start,
+            'end': end,
+            'duration': duration,
+            'badge': badge,
+            'activities': activities
+        })
+
+    return sessions
+
+
+def _build_resumo(sessions: list) -> str:
+    """
+    Builds the 'Resumo do Dia' section from parsed sessions.
+
+    Only completed sessions (with end time and duration) contribute
+    to the summary.
+    """
+    completed = [s for s in sessions if s['end'] is not None]
+    if not completed:
+        return ""
+
+    all_starts = [s['start'] for s in sessions]
+    all_ends = [s['end'] for s in completed]
+
+    earliest = min(all_starts)
+    latest = max(all_ends)
+
+    total_minutes = 0
+    for s in completed:
+        if s['duration']:
+            parts = s['duration'].split(':')
+            total_minutes += int(parts[0]) * 60 + int(parts[1])
+
+    total_h = total_minutes // 60
+    total_m = total_minutes % 60
+
+    lines = [
+        "",
+        "## Resumo do Dia",
+        f"- Início do dia: {earliest}",
+        f"- Fim do dia: {latest}",
+        f"- Tempo total: {total_h:02d}:{total_m:02d}",
+        ""
+    ]
+    return '\n'.join(lines)
 
 
 def update_daily_log_start(session: dict):
-    """Atualiza o log diário com início de sessão."""
+    """Atualiza o log diario com inicio de sessao."""
     logs_dir = find_logs_dir(auto_create=True)
     year_dir = logs_dir / session['date'][:4]
     year_dir.mkdir(parents=True, exist_ok=True)
 
     log_file = year_dir / f"{session['date']}.md"
 
-    agent_emoji = "🤖" if session['agent'] == "antigravity" else "🔵"
+    badge = _agent_badge(session['agent'])
 
     if log_file.exists():
         content = log_file.read_text(encoding='utf-8')
 
-        # Encontra o último número de sessão
+        # Remove existing "Resumo do Dia" section (will be rebuilt on end)
+        content = re.sub(
+            r'\n## Resumo do Dia\n.*',
+            '',
+            content,
+            flags=re.DOTALL
+        )
+
+        # Find next session number
         session_numbers = re.findall(r'^(\d+)\.\s+\d{1,2}:\d{2}', content, re.MULTILINE)
         next_number = max([int(n) for n in session_numbers], default=0) + 1
 
-        # Adiciona nova sessão ao final (antes do rodapé se existir)
-        footer_pattern = r'\n---\n\*Última atualização:.*?\*\n?$'
-        if re.search(footer_pattern, content):
-            content = re.sub(footer_pattern, '', content)
+        # Strip trailing whitespace
+        content = content.rstrip('\n')
 
-        new_entry = f"\n{next_number}. {session['start_time']} — *(em andamento)* [{agent_emoji} {session['agent']}]\n   - Atividades:\n     - *(sessão ativa)*\n"
+        new_entry = (
+            f"\n\n{next_number}. {session['start_time']}"
+            f" \u2014 *(em andamento)* [{badge}]\n"
+            f"   - Atividades:\n"
+            f"     - *(sessao ativa)*\n"
+        )
         content += new_entry
 
-        # Adiciona rodapé atualizado
-        content += f"\n---\n*Última atualização: {datetime.now().strftime('%Y-%m-%d %H:%M')}*\n"
-
     else:
-        # Cria novo arquivo de log
-        content = f"""# 📝 LOG DIÁRIO — {session['date']}
-
-- **Data:** {datetime.strptime(session['date'], '%Y-%m-%d').strftime('%d/%m/%Y')}
-- **Projeto:** {session['project']}
-
----
-
-## Sessões
-
-1. {session['start_time']} — *(em andamento)* [{agent_emoji} {session['agent']}]
-   - Atividades:
-     - *(sessão ativa)*
-
----
-*Última atualização: {datetime.now().strftime('%Y-%m-%d %H:%M')}*
-"""
+        content = (
+            f"# LOG DI\u00c1RIO \u2014 {session['date']}\n"
+            f"- Projeto: {session['project']}\n"
+            f"- Fuso: America/Sao_Paulo\n"
+            f"\n"
+            f"## Sessoes\n"
+            f"\n"
+            f"1. {session['start_time']}"
+            f" \u2014 *(em andamento)* [{badge}]\n"
+            f"   - Atividades:\n"
+            f"     - *(sessao ativa)*\n"
+        )
 
     log_file.write_text(content, encoding='utf-8')
 
 
 def update_daily_log_end(session: dict):
-    """Atualiza o log diário com fim de sessão."""
+    """Atualiza o log diario com fim de sessao e gera Resumo do Dia."""
     logs_dir = find_logs_dir(auto_create=True)
     year_dir = logs_dir / session['date'][:4]
     log_file = year_dir / f"{session['date']}.md"
 
     if not log_file.exists():
-        print(f"⚠️ Arquivo de log não encontrado: {log_file}")
+        print(f"Arquivo de log nao encontrado: {log_file}")
         return
 
     content = log_file.read_text(encoding='utf-8')
 
-    agent_emoji = "🤖" if session['agent'] == "antigravity" else "🔵"
+    badge = _agent_badge(session['agent'])
 
-    # Encontra a sessão em andamento (última com "em andamento")
-    pattern = rf'(\d+\.\s+{re.escape(session["start_time"])})\s+—\s+\*\(em andamento\)\*\s+\[{agent_emoji}\s+{session["agent"]}\]\s+- Atividades:\s+- \*\(sessão ativa\)\*'
+    # Remove existing "Resumo do Dia" section before editing
+    content = re.sub(
+        r'\n## Resumo do Dia\n.*',
+        '',
+        content,
+        flags=re.DOTALL
+    )
+
+    # Build pattern to find the in-progress session entry
+    escaped_badge = re.escape(badge)
+    pattern = (
+        rf'(\d+\.\s+{re.escape(session["start_time"])})'
+        '\\s+\u2014\\s+\\*\\(em andamento\\)\\*'
+        rf'\s+\[{escaped_badge}\]'
+        r'\s+- Atividades:\s+- \*\(sess[aã]o ativa\)\*'
+    )
 
     if re.search(pattern, content):
-        # Monta lista de atividades
-        activities_text = "\n     - ".join(session.get('activities', ['Nenhuma atividade registrada']))
+        activities_list = session.get('activities', ['Nenhuma atividade registrada'])
+        activities_text = "\n     - ".join(activities_list)
 
-        replacement = rf'\1 — {session["end_time"]} ({session["duration"]}) [{agent_emoji} {session["agent"]}]\n   - Atividades:\n     - {activities_text}'
-
-        content = re.sub(pattern, replacement, content)
-
-        # Atualiza rodapé
-        content = re.sub(
-            r'\*Última atualização:.*?\*',
-            f'*Última atualização: {datetime.now().strftime("%Y-%m-%d %H:%M")}*',
-            content
+        replacement = (
+            f'\\1 \u2014 {session["end_time"]}'
+            f' ({session["duration"]}) [{badge}]\n'
+            f'   - Atividades:\n'
+            f'     - {activities_text}'
         )
 
-        log_file.write_text(content, encoding='utf-8')
+        content = re.sub(pattern, replacement, content)
     else:
-        print(f"⚠️ Sessão iniciada às {session['start_time']} não encontrada no log")
+        print(f"Sessao iniciada as {session['start_time']} nao encontrada no log")
+        return
+
+    # Parse all sessions and build Resumo do Dia
+    parsed = _parse_sessions(content)
+    resumo = _build_resumo(parsed)
+
+    content = content.rstrip('\n') + '\n'
+    if resumo:
+        content += resumo
+
+    log_file.write_text(content, encoding='utf-8')
 
 
 def start_session(agent_override: str = None) -> bool:
-    """Inicia nova sessão."""
+    """Inicia nova sessao."""
     existing = load_session()
     if existing and not existing.get("ended"):
-        print(f"⚠️ Sessão já em andamento desde {existing['start_time']}")
+        print(f"Sessao ja em andamento desde {existing['start_time']}")
         print(f"   Agente: {existing['agent']}")
         print(f"   Use 'auto_session.py status' para ver detalhes")
         return False
@@ -160,21 +289,20 @@ def start_session(agent_override: str = None) -> bool:
     }
     save_session(session)
 
-    # Atualizar arquivo de log do dia
     update_daily_log_start(session)
 
-    agent_emoji = "🤖" if agent == "antigravity" else "🔵"
-    print(f"✅ Sessão iniciada às {session['start_time']}")
-    print(f"   {agent_emoji} Agente: {agent}")
-    print(f"   📁 Projeto: {session['project']}")
+    badge = _agent_badge(agent)
+    print(f"Sessao iniciada as {session['start_time']}")
+    print(f"   [{badge}]")
+    print(f"   Projeto: {session['project']}")
     return True
 
 
 def end_session(activities: str = None, quick: bool = False) -> bool:
-    """Encerra sessão atual."""
+    """Encerra sessao atual."""
     session = load_session()
     if not session or session.get("ended"):
-        print("⚠️ Nenhuma sessão ativa para encerrar.")
+        print("Nenhuma sessao ativa para encerrar.")
         return False
 
     now = datetime.now()
@@ -185,37 +313,35 @@ def end_session(activities: str = None, quick: bool = False) -> bool:
     if activities:
         session["activities"] = [a.strip() for a in activities.split(";") if a.strip()]
     elif not quick:
-        session["activities"] = ["Nenhuma atividade específica registrada"]
+        session["activities"] = ["Nenhuma atividade especifica registrada"]
 
-    # Calcular duração
+    # Calculate duration
     start = datetime.fromisoformat(session["start_datetime"])
     duration = now - start
     hours, remainder = divmod(int(duration.total_seconds()), 3600)
     minutes = remainder // 60
     session["duration"] = f"{hours:02d}:{minutes:02d}"
 
-    # Atualizar arquivo de log do dia
     update_daily_log_end(session)
 
-    # Limpar estado
     clear_session()
 
-    agent_emoji = "🤖" if session['agent'] == "antigravity" else "🔵"
-    print(f"✅ Sessão encerrada às {session['end_time']}")
-    print(f"   {agent_emoji} Agente: {session['agent']}")
-    print(f"   ⏱️ Duração: {session['duration']}")
+    badge = _agent_badge(session['agent'])
+    print(f"Sessao encerrada as {session['end_time']}")
+    print(f"   [{badge}]")
+    print(f"   Duracao: {session['duration']}")
     if session.get('activities'):
-        print(f"   📝 Atividades registradas: {len(session['activities'])}")
+        print(f"   Atividades registradas: {len(session['activities'])}")
     return True
 
 
 def get_status():
-    """Retorna status da sessão atual."""
+    """Retorna status da sessao atual."""
     session = load_session()
     if not session or session.get("ended"):
-        print("📭 Nenhuma sessão ativa.")
+        print("Nenhuma sessao ativa.")
         print()
-        print("💡 Para iniciar uma sessão: python .agents/scripts/auto_session.py start")
+        print("Para iniciar: python .agents/scripts/auto_session.py start")
         return None
 
     now = datetime.now()
@@ -224,16 +350,16 @@ def get_status():
     hours, remainder = divmod(int(elapsed.total_seconds()), 3600)
     minutes = remainder // 60
 
-    agent_emoji = "🤖" if session['agent'] == "antigravity" else "🔵"
+    badge = _agent_badge(session['agent'])
 
-    print("📝 Sessão Ativa")
+    print("Sessao Ativa")
     print()
-    print(f"   {agent_emoji} Agente: {session['agent']}")
-    print(f"   📁 Projeto: {session['project']}")
-    print(f"   🕐 Início: {session['start_time']}")
-    print(f"   ⏱️ Tempo decorrido: {hours:02d}:{minutes:02d}")
+    print(f"   [{badge}]")
+    print(f"   Projeto: {session['project']}")
+    print(f"   Inicio: {session['start_time']}")
+    print(f"   Tempo decorrido: {hours:02d}:{minutes:02d}")
     print()
-    print("💡 Para encerrar: python .agents/scripts/auto_session.py end")
+    print("Para encerrar: python .agents/scripts/auto_session.py end")
 
     return session
 
@@ -266,9 +392,9 @@ def main():
         get_status()
 
     else:
-        print(f"❌ Comando desconhecido: {cmd}")
+        print(f"Comando desconhecido: {cmd}")
         print()
-        print("Comandos disponíveis: start, end, status")
+        print("Comandos disponiveis: start, end, status")
         sys.exit(1)
 
 

@@ -27,8 +27,8 @@ Este projeto usa o **Inove AI Framework** com estrutura unificada:
 ```
 .agents/
 ├── agents/      # 21 agentes especializados
-├── skills/      # 40 skills modulares
-├── workflows/   # 18 workflows (via /prompts:)
+├── skills/      # 41 skills modulares
+├── workflows/   # 21 workflows (via /prompts:)
 ├── scripts/     # Scripts de automação Python
 └── config/      # Configurações por plataforma
 ```
@@ -38,6 +38,16 @@ Este projeto usa o **Inove AI Framework** com estrutura unificada:
 ## ⚠️ REGRAS INVIOLÁVEIS (Mesmo sem ler INSTRUCTIONS.md)
 
 As regras abaixo DEVEM ser seguidas em TODAS as sessões, sem exceção.
+
+### 🚫 Regra Zero — NUNCA Editar Sem Aprovação (ABSOLUTO)
+
+> 🔴 **Esta regra prevalece sobre TODAS as outras. Sem exceções.**
+
+1. **NUNCA usar ferramentas de modificação de arquivos sem aprovação EXPLÍCITA do usuário.**
+2. **"Analisar" ≠ "Editar".** Quando o usuário pede para analisar, investigar ou verificar — responder com DIAGNÓSTICO TEXTUAL apenas.
+3. **Fluxo obrigatório:** LER → ANALISAR → PROPOR → ESPERAR aprovação → EDITAR.
+
+> 🔴 **Na dúvida, PERGUNTE.** É sempre melhor perguntar do que editar sem permissão.
 
 ### 📥 Classificação de Requisição (STEP 0)
 
@@ -87,20 +97,28 @@ Informar: `✅ Task {task_id} marcada como completa | 📊 Progresso: {%}`
 
 **Rastrear toda sessão em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md`.**
 
-**Regras:**
-1. **Ao iniciar sessão:** Criar/abrir arquivo do dia, registrar hora de início.
-2. **Ao encerrar sessão:** Completar hora de fim, calcular duração, descrever atividades.
-3. **Consolidação:** Atualizar "Resumo do Dia" com totais (início, fim, tempo total).
-4. **Índice:** Manter `docs/08-Logs-Sessoes/README.md` atualizado.
+**Comandos:**
+```bash
+python .agents/scripts/auto_session.py start                  # Abrir sessão
+python .agents/scripts/auto_session.py start --agent codex    # Abrir com agente específico
+python .agents/scripts/auto_session.py end --activities "ativ1; ativ2"  # Fechar sessão
+python .agents/scripts/auto_session.py end --quick            # Fechar sem atividades
+python .agents/scripts/auto_session.py status                 # Ver sessão ativa
+```
 
-**Modelo:**
+**Regras:**
+1. **Fonte Única:** SEMPRE usar `auto_session.py` para abrir/fechar sessões. NUNCA criar ou editar logs manualmente.
+2. **Consolidação:** O script calcula e gera o "Resumo do Dia" automaticamente ao encerrar.
+3. **Índice:** Manter `docs/08-Logs-Sessoes/README.md` atualizado.
+
+**Formato gerado pelo script:**
 ```markdown
 # LOG DIÁRIO — AAAA-MM-DD
 - Projeto: <NOME_DO_PROJETO>
 - Fuso: America/Sao_Paulo
 
 ## Sessões
-1. HH:MM — HH:MM (HH:MM)
+1. HH:MM — HH:MM (HH:MM) [🔵 codex]
    - Atividades: <bullets curtos e objetivos>
 
 ## Resumo do Dia
@@ -116,6 +134,49 @@ Informar: `✅ Task {task_id} marcada como completa | 📊 Progresso: {%}`
 - **Prompt em PT-BR** → Responder em PT-BR
 - **Comentários de código** → Sempre em inglês
 - **Variáveis/funções** → Sempre em inglês
+
+### 🏁 Final Checklist Protocol
+
+**Trigger:** Antes de deploy ou quando o usuário pedir "verificações finais".
+
+```bash
+python .agents/scripts/checklist.py .                   # Auditoria do projeto
+python .agents/scripts/checklist.py . --url <URL>       # Full Suite + Performance + E2E
+```
+
+**Ordem:** Security → Lint → Schema → Tests → UX → SEO → Perf
+
+### 🤖 Roteamento Inteligente de Agentes
+
+| Palavras-chave | Domínio | Agente |
+|----------------|---------|--------|
+| "UI", "componente", "página", "frontend" | Frontend | `frontend-specialist` |
+| "API", "endpoint", "backend", "servidor" | Backend | `backend-specialist` |
+| "database", "schema", "query", "migração" | Database | `database-architect` |
+| "auth", "segurança", "vulnerabilidade" | Security | `security-auditor` |
+| "bug", "erro", "não funciona", "debug" | Debug | `debugger` |
+| "teste", "E2E", "CI/CD" | Testing | `qa-automation-engineer` |
+| "deploy", "docker", "infraestrutura" | DevOps | `devops-engineer` |
+
+### 🔄 Sistema Multi-Agent
+
+```bash
+python .agents/scripts/lock_manager.py list      # Ver locks ativos
+python .agents/scripts/lock_manager.py cleanup   # Limpar locks expirados
+```
+
+Formato de ownership no BACKLOG.md: `## Epic 1 [OWNER: codex] [MODEL: gpt-4]`
+
+### 📋 Scripts Úteis
+
+| Script | Comando | Descrição |
+|--------|---------|-----------|
+| Dashboard | `python .agents/scripts/dashboard.py` | Visão consolidada |
+| Progresso | `python .agents/scripts/progress_tracker.py` | Atualizar barra |
+| Sessão | `python .agents/scripts/auto_session.py start` | Iniciar sessão |
+| Finish | `python .agents/scripts/finish_task.py "Epic-1"` | Marcar completo |
+| Checklist | `python .agents/scripts/checklist.py .` | Auditoria do projeto |
+| Validar | `python .agents/scripts/validate_installation.py` | Verificar setup |
 
 ---
 

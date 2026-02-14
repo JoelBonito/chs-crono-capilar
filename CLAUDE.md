@@ -8,7 +8,7 @@
 **Inove AI Framework** é um kit de desenvolvimento AI com sistema multi-agent (Claude Code + Codex CLI + Antigravity/Gemini) que fornece:
 
 - **21 Agentes Especializados** para diferentes domínios
-- **40 Skills Modulares** carregadas sob demanda
+- **41 Skills Modulares** carregadas sob demanda
 - **21 Workflows** (slash commands) para processos estruturados
 - **Sistema Multi-Agent** com sincronização de locks e ownership
 
@@ -19,7 +19,7 @@
 ```
 .agents/
 ├── agents/           # 21 agentes especializados
-├── skills/           # 40 módulos de conhecimento
+├── skills/           # 41 módulos de conhecimento
 ├── workflows/        # 21 workflows (slash commands)
 ├── scripts/          # Automação Python
 ├── config/           # Configurações por plataforma
@@ -239,6 +239,11 @@ python .agents/scripts/checklist.py . --url <URL>       # Full Suite + Performan
 | 5          | **UX**       | `python .agents/skills/frontend-design/scripts/ux_audit.py`            | Após mudança UI     |
 | 6          | **SEO**      | `python .agents/skills/seo-fundamentals/scripts/seo_checker.py`        | Após mudança página |
 | 7          | **Perf**     | `python .agents/skills/performance-profiling/scripts/lighthouse_audit.py` | Antes de deploy   |
+| 8          | **Deps**     | `python .agents/skills/vulnerability-scanner/scripts/dependency_analyzer.py` | Semanal / Deploy |
+| 9          | **A11y**     | `python .agents/skills/frontend-design/scripts/accessibility_checker.py` | Após mudança UI |
+| 10         | **Bundle**   | `python .agents/skills/performance-profiling/scripts/bundle_analyzer.py` | Antes de deploy |
+| 11         | **Mobile**   | `python .agents/skills/mobile-design/scripts/mobile_audit.py`           | Após mudança mobile |
+| 12         | **E2E**      | `python .agents/skills/webapp-testing/scripts/playwright_runner.py`     | Antes de deploy |
 
 **Regras:**
 
@@ -280,6 +285,11 @@ Salvar em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md` (ex.: `docs/08-Logs-Sesso
 5. **Índice:**
    - Manter/atualizar `docs/08-Logs-Sessoes/README.md` com links para cada arquivo diário.
 
+6. **Fonte Única:**
+   - SEMPRE usar `auto_session.py` para abrir/fechar sessões.
+   - NUNCA criar ou editar logs manualmente com Write/Edit.
+   - Se o script falhar, reportar o erro ao usuário em vez de criar log manual.
+
 ### Modelo de Arquivo Diário
 
 ```markdown
@@ -288,10 +298,10 @@ Salvar em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md` (ex.: `docs/08-Logs-Sesso
 - Fuso: America/Sao_Paulo
 
 ## Sessões
-1. HH:MM — HH:MM (HH:MM)
+1. HH:MM — HH:MM (HH:MM) [🔵 claude_code]
    - Atividades: <bullets curtos e objetivos>
 
-2. HH:MM — HH:MM (HH:MM)
+2. HH:MM — HH:MM (HH:MM) [🤖 antigravity]
    - Atividades: <...>
 
 ## Resumo do Dia
@@ -302,9 +312,13 @@ Salvar em `docs/08-Logs-Sessoes/{ANO}/{AAAA-MM-DD}.md` (ex.: `docs/08-Logs-Sesso
 
 ### Comandos
 
-- `/log-start "descrição breve"` → Abre item em "Sessões" com hora de início.
-- `/log-end` → Fecha a sessão atual, calcula duração e atualiza "Resumo do Dia".
-- `/log-daily close` → Força consolidação do "Resumo do Dia" ao encerrar o expediente.
+```bash
+python .agents/scripts/auto_session.py start                      # Abrir sessão
+python .agents/scripts/auto_session.py start --agent antigravity  # Abrir com agente específico
+python .agents/scripts/auto_session.py end --activities "ativ1; ativ2"  # Fechar sessão
+python .agents/scripts/auto_session.py end --quick                # Fechar sem atividades
+python .agents/scripts/auto_session.py status                     # Ver sessão ativa
+```
 
 ### Critérios de Qualidade
 
@@ -350,7 +364,7 @@ Todo código DEVE seguir `.agents/skills/clean-code/SKILL.md`:
 
 **Antes de modificar QUALQUER arquivo:**
 
-1. Verificar `CODEBASE.md` → File Dependencies
+1. Usar Grep/Glob para verificar dependências entre arquivos
 2. Identificar arquivos dependentes
 3. Atualizar TODOS os arquivos afetados juntos
 
@@ -461,7 +475,7 @@ Toda conversa começa com:
 ✅ Project Instructions carregadas
 ✅ Protocolo Inove AI Framework ativo
 ✅ 21 agentes disponíveis
-✅ 40 skills disponíveis
+✅ 41 skills disponíveis
 ✅ 21 workflows disponíveis
 ✅ Roteamento inteligente habilitado
 📝 Log de sessão iniciado
