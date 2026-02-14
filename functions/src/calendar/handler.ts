@@ -14,6 +14,8 @@ const db = admin.firestore();
  * Query params:
  *   - scheduleId: Firestore schedule document ID
  *   - token: HMAC-SHA256 authentication token
+ *   - disposition: "inline" | "attachment" (default: "attachment")
+ *     Use "inline" for iOS Safari native "Add to Calendar" dialog.
  */
 export async function handleSyncCalendar(req: Request, res: Response): Promise<void> {
   if (req.method !== "GET") {
@@ -90,9 +92,11 @@ export async function handleSyncCalendar(req: Request, res: Response): Promise<v
   });
 
   // Return as iCalendar file
+  // iOS Safari requires "inline" disposition to trigger native "Add to Calendar"
+  const dispositionType = req.query.disposition === "inline" ? "inline" : "attachment";
   res.set({
     "Content-Type": "text/calendar; charset=utf-8",
-    "Content-Disposition": `attachment; filename="cronocapilar-chronogramme.ics"`,
+    "Content-Disposition": `${dispositionType}; filename="cronocapilar-chronogramme.ics"`,
     "Cache-Control": "no-cache, no-store, must-revalidate",
   });
   res.status(200).send(icsContent);

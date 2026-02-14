@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-import { Calendar, Download, ExternalLink, Loader2 } from "lucide-react";
+import { Calendar, Download, ExternalLink, Loader2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { downloadICSFile, syncToCalendar } from "@/services/calendarSync";
+import { downloadICSFile, syncToCalendar, type SyncResult } from "@/services/calendarSync";
 import { getDeviceInfo } from "@/lib/device";
 import { generateSchedule } from "@/services/schedule";
 
@@ -157,12 +157,21 @@ export default function CalendarPage() {
   }
 
   const [syncing, setSyncing] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+
+  const device = useMemo(() => getDeviceInfo(), []);
+
+  const dismissToast = useCallback(() => setToastVisible(false), []);
 
   async function handleSyncCalendar() {
     if (!schedule) return;
     setSyncing(true);
     try {
-      await syncToCalendar(schedule.id, schedule.calendarToken);
+      const result: SyncResult = await syncToCalendar(schedule.id, schedule.calendarToken);
+      if (result.showToast) {
+        setToastVisible(true);
+        setTimeout(dismissToast, 8_000);
+      }
     } catch {
       setError(t("calendar:errors.syncFailed"));
     } finally {
@@ -394,39 +403,77 @@ export default function CalendarPage() {
           ))}
       </div>
 
-      {/* Export buttons */}
+      {/* Export buttons — platform-aware */}
       <div className="mt-8 space-y-3">
-        <Button
-          variant="primary"
-          className="w-full gap-2"
-          onClick={handleSyncCalendar}
-          disabled={syncing}
-        >
-          {syncing ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <ExternalLink className="h-5 w-5" />
-          )}
-          {getDeviceInfo().isMobile
-            ? t("calendar:sync.mobile")
-            : t("calendar:sync.desktop")}
-        </Button>
-        <Button
-          variant="secondary"
-          className="w-full gap-2"
-          onClick={handleDownloadICS}
-          disabled={downloading}
-        >
-          {downloading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Download className="h-5 w-5" />
-          )}
-          {getDeviceInfo().isMobile
-            ? t("calendar:download.mobile")
-            : t("calendar:download.desktop")}
-        </Button>
+        {device.isMobile ? (
+          // Mobile: single context-aware button (iOS or Android)
+          <Button
+            variant="primary"
+            className="w-full gap-2"
+            onClick={handleSyncCalendar}
+            disabled={syncing}
+          >
+            {syncing ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : device.isIOS ? (
+              <Calendar className="h-5 w-5" />
+            ) : (
+              <Download className="h-5 w-5" />
+            )}
+            {device.isIOS
+              ? t("calendar:sync.mobile")
+              : t("calendar:sync.android")}
+          </Button>
+        ) : (
+          // Desktop: two buttons (Google Calendar + .ics download)
+          <>
+            <Button
+              variant="primary"
+              className="w-full gap-2"
+              onClick={handleSyncCalendar}
+              disabled={syncing}
+            >
+              {syncing ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <ExternalLink className="h-5 w-5" />
+              )}
+              {t("calendar:sync.desktop")}
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full gap-2"
+              onClick={handleDownloadICS}
+              disabled={downloading}
+            >
+              {downloading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Download className="h-5 w-5" />
+              )}
+              {t("calendar:download.desktop")}
+            </Button>
+          </>
+        )}
       </div>
+
+      {/* Android download toast */}
+      {toastVisible && (
+        <div
+          role="status"
+          className="mt-3 flex items-start gap-3 rounded-md border border-blue-200 bg-blue-50 p-3 text-body-sm text-blue-800"
+        >
+          <p className="flex-1">{t("calendar:download.toast")}</p>
+          <button
+            type="button"
+            onClick={dismissToast}
+            aria-label={t("common:close")}
+            className="shrink-0 rounded p-0.5 transition-colors hover:bg-blue-100"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

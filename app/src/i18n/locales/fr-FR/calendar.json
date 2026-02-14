@@ -19,11 +19,12 @@
   },
   "sync": {
     "mobile": "Ajouter au calendrier",
+    "android": "Télécharger le calendrier",
     "desktop": "Synchroniser avec Google Calendar"
   },
   "download": {
-    "mobile": "Sauvegarder le fichier .ics",
-    "desktop": "Télécharger .ics"
+    "desktop": "Télécharger .ics",
+    "toast": "Fichier téléchargé ! Appuyez sur la notification pour l'ajouter à votre agenda."
   },
   "errors": {
     "loadFailed": "Impossible de charger votre chronogramme.",

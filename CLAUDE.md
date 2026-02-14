@@ -28,6 +28,38 @@
 
 ---
 
+## 🚫 Regra Zero — NUNCA Editar Sem Aprovação (ABSOLUTO)
+
+> 🔴 **Esta regra prevalece sobre TODAS as outras. Sem exceções.**
+
+### Proibições Absolutas
+
+1. **NUNCA usar Edit, Write ou qualquer ferramenta que modifique código sem aprovação EXPLÍCITA do usuário.**
+2. **"Analisar" ≠ "Editar".** Quando o usuário pede para analisar, investigar, verificar ou olhar — a resposta é um DIAGNÓSTICO TEXTUAL. Não tocar em nenhum arquivo.
+3. **"Corrigir" ou "Mudar" ≠ permissão automática.** Mesmo quando o usuário descreve um problema, o fluxo obrigatório é: diagnosticar → propor → esperar aprovação → só então editar.
+
+### Fluxo Obrigatório para QUALQUER Modificação de Código
+
+```
+1. LER     → Ler os arquivos relevantes (Read/Glob/Grep)
+2. ANALISAR → Entender o problema e o contexto
+3. PROPOR   → Apresentar diagnóstico + proposta de mudança ao usuário
+4. ESPERAR  → NÃO tocar em código. Aguardar o usuário dizer "aplica", "faz", "pode editar", "OK"
+5. EDITAR   → Só agora usar Edit/Write, seguindo STEP 0 + STEP 1
+```
+
+### Gatilhos de Aprovação (palavras que LIBERAM edição)
+
+- "aplica", "faz", "pode editar", "sim", "OK", "vai", "manda", "prossiga com a edição"
+
+### Gatilhos que NÃO liberam edição
+
+- "analise", "vamos ver", "vamos analisar", "olha isso", "o que acha", "investigue"
+
+> 🔴 **Na dúvida, PERGUNTE.** É sempre melhor perguntar do que editar sem permissão.
+
+---
+
 ## 📥 Classificação de Requisição (STEP 0 — OBRIGATÓRIO)
 
 **Antes de QUALQUER ação, classificar a requisição:**
@@ -145,12 +177,12 @@ Quando um domínio for detectado:
 
 ## 🛑 Socratic Gate (OBRIGATÓRIO)
 
-**Para requisições complexas, PARAR e PERGUNTAR primeiro:**
+**Para TODAS as requisições que envolvam código, PARAR e PERGUNTAR primeiro:**
 
 | Tipo de Requisição        | Estratégia       | Ação Obrigatória                                          |
 | ------------------------- | ---------------- | --------------------------------------------------------- |
 | **Nova Feature / Build**  | Deep Discovery   | PERGUNTAR mínimo 3 questões estratégicas                  |
-| **Edit / Bug Fix**        | Context Check    | Confirmar entendimento + perguntas de impacto             |
+| **Edit / Bug Fix**        | Diagnóstico      | Apresentar DIAGNÓSTICO + PROPOSTA → **esperar aprovação** → só então editar |
 | **Vago / Simples**        | Clarificação     | Perguntar Propósito, Usuários e Escopo                    |
 | **Orquestração Full**     | Gatekeeper       | **PARAR** subagentes até confirmar plano                  |
 | **"Prossiga" direto**     | Validação        | Mesmo assim, perguntar 2 questões de Edge Case            |
@@ -160,7 +192,8 @@ Quando um domínio for detectado:
 1. **Nunca assumir:** Se 1% estiver indefinido, PERGUNTAR.
 2. **Respostas em lista:** NÃO pular o gate. Perguntar sobre Trade-offs e Edge Cases.
 3. **Esperar:** NÃO escrever código até o usuário liberar o gate.
-4. **Referência:** Protocolo completo em `.agents/skills/brainstorming/SKILL.md`.
+4. **Regra Zero:** Mesmo para edits simples, apresentar proposta e esperar "OK" (ver seção Regra Zero acima).
+5. **Referência:** Protocolo completo em `.agents/skills/brainstorming/SKILL.md`.
 
 ---
 
