@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -8,12 +8,17 @@ import Logo from "@/components/Logo";
 
 export default function Login() {
   const { t } = useTranslation("auth");
-  const { signInWithGoogle, signInWithEmail } = useAuth();
+  const { signInWithGoogle, signInWithEmail, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect after Google OAuth redirect returns and auth state resolves
+  useEffect(() => {
+    if (!authLoading && user) navigate("/dashboard", { replace: true });
+  }, [user, authLoading, navigate]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -38,14 +43,13 @@ export default function Login() {
     setLoading(true);
     try {
       await signInWithGoogle();
-      navigate("/dashboard");
+      // Page navigates away to Google OAuth — redirect back handled by useEffect above
     } catch (err) {
       if (err instanceof FirebaseError) {
         setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
         setError(t("errors.generic"));
       }
-    } finally {
       setLoading(false);
     }
   }

@@ -137,6 +137,7 @@ i18n
     fallbackLng: "fr-FR",
     supportedLngs: [...SUPPORTED_LANGS],
     defaultNS: "common",
+    debug: false,
     ns: ["common", "auth", "diagnostic", "calendar", "dashboard", "settings", "landing"],
     detection: {
       order: ["normalizedDetector"],

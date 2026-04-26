@@ -9,7 +9,8 @@ import {
 } from "react";
 import {
   onAuthStateChanged,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -95,31 +96,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  // AUTH-02 + AUTH-03: single fetchUserProfile call; onAuthStateChanged sets user state
-  const signInWithGoogle = useCallback(async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const fbUser = result.user;
-      const existing = await fetchUserProfile(fbUser.uid);
+  // Handle redirect result on page load (called after Google OAuth redirect returns)
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (!result?.user) return;
+        const fbUser = result.user;
+        const existing = await fetchUserProfile(fbUser.uid);
+        if (!existing) {
+          await setDoc(doc(db, "users", fbUser.uid), {
+            email: fbUser.email,
+            firstName: fbUser.displayName?.split(" ")[0] ?? "",
+            lastName: fbUser.displayName?.split(" ").slice(1).join(" ") ?? "",
+            phoneNumber: "",
+            locale: i18n.language as Locale,
+            region: "europe-west1",
+            optInSMS: false,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        }
+        // onAuthStateChanged fires after this and sets user state
+      })
+      .catch((error) => {
+        if (import.meta.env.DEV) console.log("[Auth] Redirect result error:", error);
+      });
+  }, []);
 
-      if (!existing) {
-        await setDoc(doc(db, "users", fbUser.uid), {
-          email: fbUser.email,
-          firstName: fbUser.displayName?.split(" ")[0] ?? "",
-          lastName: fbUser.displayName?.split(" ").slice(1).join(" ") ?? "",
-          phoneNumber: "",
-          locale: i18n.language as Locale,
-          region: "europe-west1",
-          optInSMS: false,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      }
-      // onAuthStateChanged is the single source of truth for setUser
-    } catch (error) {
-      if (import.meta.env.DEV) console.log("[Auth] Google sign-in error:", error);
-      throw error;
-    }
+  // Initiates Google OAuth via redirect (no popup — avoids COOP header conflicts)
+  const signInWithGoogle = useCallback(async () => {
+    await signInWithRedirect(auth, googleProvider);
+    // Page navigates away here; result handled by getRedirectResult on return
   }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
