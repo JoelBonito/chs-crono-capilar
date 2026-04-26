@@ -1,6 +1,18 @@
 import type { AnalyzeHairRequest } from "./schemas";
 
 /**
+ * Sanitize user-provided strings before inserting into Gemini prompts.
+ * Prevents prompt injection via newlines or markup characters.
+ */
+function sanitizeForPrompt(input: string): string {
+  return input
+    .replace(/\n/g, " ")
+    .replace(/[<>{}[\]]/g, "")
+    .trim()
+    .slice(0, 500);
+}
+
+/**
  * Build the structured prompt for Gemini hair analysis.
  * Produces a detailed, premium-grade trichological diagnostic in French.
  */
@@ -34,7 +46,7 @@ export function buildDiagnosticPrompt(request: AnalyzeHairRequest): string {
   }
 
   if (request.context?.currentComplaints) {
-    contextLines.push(`- Préoccupations actuelles : ${request.context.currentComplaints}`);
+    contextLines.push(`- Préoccupations actuelles : ${sanitizeForPrompt(request.context.currentComplaints)}`);
   }
 
   const contextBlock = contextLines.length > 0

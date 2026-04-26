@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useCallback, useEffect } from "react";
+import { useReducer, useMemo, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { doc, setDoc, serverTimestamp, collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
@@ -134,6 +134,7 @@ export default function Diagnostic() {
   const navigate = useNavigate();
   const { t } = useTranslation(["diagnostic", "common"]);
   const { translatedQuestions, translatedBridges } = useTranslatedQuestions();
+  const processingRef = useRef(false);
 
   // Restore saved progress on mount
   useEffect(() => {
@@ -199,6 +200,17 @@ export default function Diagnostic() {
     [visibleQuestionIds, questionMap],
   );
 
+  // DIAG-01: guard against out-of-bounds questionIndex (must be after visibleQuestions declaration)
+  useEffect(() => {
+    if (
+      state.step === "questions" &&
+      visibleQuestions.length > 0 &&
+      state.questionIndex >= visibleQuestions.length
+    ) {
+      dispatch({ type: "GO_TO_PHOTO" });
+    }
+  }, [state.step, state.questionIndex, visibleQuestions.length]);
+
   const currentQuestion = visibleQuestions[state.questionIndex] ?? null;
   const isLastQuestion = state.questionIndex >= visibleQuestions.length - 1;
   const currentAnswer = currentQuestion ? state.answers[currentQuestion.id] : undefined;
@@ -228,7 +240,17 @@ export default function Diagnostic() {
   async function processDiagnostic(photos: File[]) {
     if (!user || !firebaseUser) return;
 
-    try {
+    // DIAG-02: prevent double invocation from onSubmit + onSkip
+    if (processingRef.current) return;
+    processingRef.current = true;
+
+    // Capture narrowed refs for use inside nested async functions
+    const currentUser = user;
+    const currentFirebaseUser = firebaseUser;
+
+    const TIMEOUT_MS = 30_000;
+
+    async function runProcessing() {
       // 1. Calculate questionnaire scores
       const raw = accumulateScores(state.answers);
       let result = normalizeScores(raw);
@@ -238,22 +260,20 @@ export default function Diagnostic() {
       let photoAnalysis: Record<string, unknown> | null = null;
 
       if (photos.length > 0) {
-        // Upload to Firebase Storage
         const timestamp = Date.now();
         const uploadPromises = photos.map(async (file, i) => {
-          const path = `users/${user.uid}/diagnostics/${timestamp}/photo_${i}.jpg`;
+          const path = `users/${currentUser.uid}/diagnostics/${timestamp}/photo_${i}.jpg`;
           const storageRef = ref(storage, path);
           await uploadBytes(storageRef, file);
           return getDownloadURL(storageRef);
         });
         photoUrls = await Promise.all(uploadPromises);
 
-        // Call Gemini analysis
         try {
-          const idToken = await firebaseUser.getIdToken();
+          const idToken = await currentFirebaseUser.getIdToken();
           const aiResult = await analyzeHair(
             {
-              userId: user.uid,
+              userId: currentUser.uid,
               photoUrls,
               context: {
                 washingFrequency: mapWashingFrequency(state.answers["Q04"] as string),
@@ -264,26 +284,22 @@ export default function Diagnostic() {
           );
 
           photoAnalysis = aiResult as unknown as Record<string, unknown>;
-
-          // Combine questionnaire (70%) + AI (30%)
           const aiNeeds = mapAiResultToNeeds(aiResult);
           result = combineWithPhotoAnalysis(result, aiNeeds);
         } catch {
-          // Photo analysis failed -- use questionnaire-only result
-          console.warn("Photo analysis failed, using questionnaire-only result");
+          // Photo analysis failed — use questionnaire-only result
         }
       }
 
       // 3. Validate
       if (!validateResult(result)) {
-        // Re-normalize if validation fails (safety net)
         result = normalizeScores(raw);
       }
 
       // 4. Save to Firestore
-      const diagnosticId = `diag_${user.uid}_${Date.now()}`;
+      const diagnosticId = `diag_${currentUser.uid}_${Date.now()}`;
       await setDoc(doc(db, "diagnostics", diagnosticId), {
-        userId: user.uid,
+        userId: currentUser.uid,
         level: "adaptive",
         answers: state.answers,
         scores: raw,
@@ -303,16 +319,26 @@ export default function Diagnostic() {
         analyzedAt: serverTimestamp(),
       });
 
-      // Clear auto-save on success
       clearProgress();
-
       dispatch({ type: "SET_RESULT", result, diagnosticId });
+    }
+
+    try {
+      // UX-02: enforce 30s timeout on the full processing pipeline
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), TIMEOUT_MS),
+      );
+      await Promise.race([runProcessing(), timeoutPromise]);
     } catch (err) {
-      console.error("Diagnostic processing failed:", err);
+      const isTimeout = err instanceof Error && err.message === "timeout";
       dispatch({
         type: "SET_ERROR",
-        error: t("diagnostic:error.processing"),
+        error: isTimeout
+          ? t("diagnostic:error.timeout", { defaultValue: t("diagnostic:error.processing") })
+          : t("diagnostic:error.processing"),
       });
+    } finally {
+      processingRef.current = false;
     }
   }
 
@@ -364,11 +390,8 @@ export default function Diagnostic() {
   }
 
   // --- Questions step ---
-  if (!currentQuestion) {
-    // All questions answered, go to photo step
-    dispatch({ type: "GO_TO_PHOTO" });
-    return null;
-  }
+  // currentQuestion may be null while the useEffect above transitions to photo step
+  if (!currentQuestion) return null;
 
   return (
     <div className="px-4 pb-20 pt-8">
@@ -447,10 +470,10 @@ export default function Diagnostic() {
 function mapWashingFrequency(answer?: string): "daily" | "every_2_days" | "every_3_days" | "weekly" | undefined {
   if (!answer) return undefined;
   switch (answer) {
-    case "1x": return "weekly";
-    case "2x": return "every_3_days";
-    case "3x": return "every_2_days";
-    case "more_than_3x_week": return "daily";
+    case "1x": return "weekly";              // 1x/week → weekly
+    case "2x": return "every_3_days";        // 2x/week → roughly every 3 days
+    case "3x": return "every_2_days";        // 3x/week → roughly every 2 days
+    case "more_than_3x_week": return "daily"; // >3x/week → daily
     default: return undefined;
   }
 }

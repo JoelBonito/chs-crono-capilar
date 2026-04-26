@@ -36,22 +36,13 @@ export default function Login() {
   async function handleGoogle() {
     setError("");
     setLoading(true);
-    console.log("[Login] Google button clicked");
-
     try {
-      console.log("[Login] Calling signInWithGoogle...");
       await signInWithGoogle();
-      console.log("[Login] Sign-in successful, navigating to dashboard");
       navigate("/dashboard");
     } catch (err) {
-      console.error("[Login] Error during Google sign-in:", err);
-
       if (err instanceof FirebaseError) {
-        console.error("[Login] Firebase error code:", err.code);
-        console.error("[Login] Firebase error message:", err.message);
         setError(t(`errors.${err.code}`, { defaultValue: t("errors.generic") }));
       } else {
-        console.error("[Login] Non-Firebase error:", err);
         setError(t("errors.generic"));
       }
     } finally {

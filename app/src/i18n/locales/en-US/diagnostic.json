@@ -1,0 +1,408 @@
+{
+  "progressBar": {
+    "title": "Hair Diagnostic",
+    "counter": "{{current}} of {{total}}"
+  },
+  "questionCard": {
+    "selected": "{{count}}/{{max}} selected"
+  },
+  "processing": {
+    "title": "Analysis in progress...",
+    "subtitle": "Calculating your hair profile"
+  },
+  "error": {
+    "processing": "An error occurred during processing. Please try again."
+  },
+  "photoUpload": {
+    "title": "Photo analysis",
+    "subtitle": "Add photos of your hair for a more precise diagnostic (optional).",
+    "aiNote": "AI will analyze your photos and refine the questionnaire result.",
+    "overview": "Overview",
+    "closeup": "Close-up",
+    "add": "Add",
+    "analyze": "Analyze {{count}} photo",
+    "analyzePlural": "Analyze {{count}} photos",
+    "skip": "Skip this step"
+  },
+  "result": {
+    "title": "Your diagnostic",
+    "dominantH": "Your hair mainly needs hydration. It lacks water and flexibility.",
+    "dominantN": "Your hair mainly needs nutrition. It lacks lipids and protection.",
+    "dominantR": "Your hair mainly needs reconstruction. The hair fiber is weakened.",
+    "generateSchedule": "Generate my schedule",
+    "retake": "Retake diagnostic"
+  },
+  "bridges": {
+    "Q09": "You mention breakage. Let's check your hair's elasticity:",
+    "Q15": "With chemical treatment, it's important to know your history:",
+    "Q17": "Frequent heat use can affect hair thickness:",
+    "Q08": "Your profile is a bit complex. Let's check porosity:",
+    "Q10": "Let's talk about your current routine:",
+    "Q16": "You have high porosity. Let's do a more precise test:"
+  },
+  "questions": {
+    "Q01": {
+      "question": "What is your hair type?",
+      "subtitle": "Based on the international classification",
+      "options": {
+        "straight": {
+          "text": "Straight (1A-1C)",
+          "description": "Straight hair without volume"
+        },
+        "wavy": {
+          "text": "Wavy (2A-2C)",
+          "description": "Hair with slight waves"
+        },
+        "curly": {
+          "text": "Curly (3A-3C)",
+          "description": "Well-defined curls"
+        },
+        "coily": {
+          "text": "Coily/Afro (4A-4C)",
+          "description": "Very tight or spiral curls"
+        }
+      }
+    },
+    "Q02": {
+      "question": "Have you had coloring, bleaching or chemical straightening?",
+      "options": {
+        "no": {
+          "text": "No, natural hair"
+        },
+        "coloring_lt_3_months": {
+          "text": "Yes, coloring less than 3 months ago"
+        },
+        "coloring_gte_3_months": {
+          "text": "Yes, coloring more than 3 months ago"
+        },
+        "bleach": {
+          "text": "Yes, bleaching (highlights or full)"
+        },
+        "chemical_straightening": {
+          "text": "Yes, chemical straightening (permanent or progressive)"
+        }
+      }
+    },
+    "Q03": {
+      "question": "How would you describe your hair currently?",
+      "subtitle": "You can choose multiple options",
+      "options": {
+        "dry": {
+          "text": "Dry and dull"
+        },
+        "oily": {
+          "text": "Oily (especially at the roots)"
+        },
+        "dull": {
+          "text": "Without shine"
+        },
+        "breakage_fragile": {
+          "text": "Brittle and fragile"
+        },
+        "frizz": {
+          "text": "Very frizzy"
+        },
+        "tangled": {
+          "text": "Easily tangled"
+        },
+        "split_ends": {
+          "text": "Split ends"
+        },
+        "healthy": {
+          "text": "Healthy"
+        }
+      }
+    },
+    "Q04": {
+      "question": "How often do you wash your hair?",
+      "options": {
+        "1x": {
+          "text": "Once a week"
+        },
+        "2x": {
+          "text": "Twice a week"
+        },
+        "3x": {
+          "text": "3 times a week"
+        },
+        "more_than_3x_week": {
+          "text": "More than 3 times a week"
+        }
+      }
+    },
+    "Q05": {
+      "question": "What is your hair length?",
+      "options": {
+        "short": {
+          "text": "Short (above the shoulders)"
+        },
+        "medium": {
+          "text": "Medium (to the shoulders)"
+        },
+        "long": {
+          "text": "Long (below the shoulders)"
+        },
+        "very_long": {
+          "text": "Very long (below the chest)"
+        }
+      }
+    },
+    "Q06": {
+      "question": "Do you frequently use heat tools?",
+      "subtitle": "Hair dryer, straightener, curling iron",
+      "options": {
+        "never": {
+          "text": "Never or rarely"
+        },
+        "occasional": {
+          "text": "1-2 times a week"
+        },
+        "frequent": {
+          "text": "3-4 times a week"
+        },
+        "daily": {
+          "text": "Every day"
+        }
+      }
+    },
+    "Q07": {
+      "question": "Are you often exposed to sun, sea or chlorine?",
+      "options": {
+        "no": {
+          "text": "No, rarely"
+        },
+        "sun_occasional": {
+          "text": "Yes, occasional sun"
+        },
+        "pool_frequent": {
+          "text": "Yes, chlorinated pool frequently"
+        },
+        "beach_frequent": {
+          "text": "Yes, sea and sun frequently"
+        }
+      }
+    },
+    "Q08": {
+      "question": "How does your hair react to water?",
+      "subtitle": "Simple porosity test",
+      "options": {
+        "repels": {
+          "text": "Water slides off, hard to wet",
+          "description": "Low porosity - closed cuticle"
+        },
+        "absorbs_normal": {
+          "text": "Gets wet normally",
+          "description": "Medium porosity - slightly open cuticle"
+        },
+        "absorbs_fast": {
+          "text": "Absorbs water quickly, dries fast",
+          "description": "High porosity - very open cuticle"
+        }
+      }
+    },
+    "Q09": {
+      "question": "If you stretch a wet strand, what happens?",
+      "subtitle": "Elasticity test",
+      "options": {
+        "stretches_returns": {
+          "text": "It stretches and returns to shape",
+          "description": "Good elasticity"
+        },
+        "stretches_little": {
+          "text": "Stretches little, quite stiff",
+          "description": "Lacks hydration"
+        },
+        "breaks": {
+          "text": "Breaks easily",
+          "description": "Lacks protein"
+        }
+      }
+    },
+    "Q10": {
+      "question": "What is your current hair routine?",
+      "options": {
+        "basic": {
+          "text": "Shampoo only"
+        },
+        "conditioner_only": {
+          "text": "Shampoo + conditioner"
+        },
+        "mask_occasional": {
+          "text": "Shampoo + occasional mask"
+        },
+        "complete": {
+          "text": "Complete routine (shampoo, mask, leave-in)"
+        }
+      }
+    },
+    "Q11": {
+      "question": "How would you describe the volume of your hair?",
+      "options": {
+        "fine_low_density": {
+          "text": "Fine and sparse"
+        },
+        "medium": {
+          "text": "Medium thickness"
+        },
+        "thick_high_density": {
+          "text": "Thick and dense"
+        }
+      }
+    },
+    "Q12": {
+      "question": "How long does your hair take to air dry?",
+      "options": {
+        "fast": {
+          "text": "Less than 1 hour (dries very quickly)",
+          "description": "High porosity or very fine hair"
+        },
+        "normal": {
+          "text": "1-3 hours"
+        },
+        "slow": {
+          "text": "More than 3 hours (stays damp for a long time)",
+          "description": "Low porosity or very thick hair"
+        }
+      }
+    },
+    "Q13": {
+      "question": "How does your hair react to rich products (oils, masks)?",
+      "options": {
+        "absorbs_well": {
+          "text": "Absorbs well, stays soft"
+        },
+        "gets_weighed_down": {
+          "text": "Becomes heavy and greasy",
+          "description": "Low porosity, products build up"
+        },
+        "no_effect": {
+          "text": "Little visible effect",
+          "description": "High porosity, products don't penetrate enough"
+        }
+      }
+    },
+    "Q14": {
+      "question": "What is your main goal?",
+      "options": {
+        "shine": {
+          "text": "Have more shine"
+        },
+        "frizz_control": {
+          "text": "Control frizz"
+        },
+        "less_breakage": {
+          "text": "Reduce breakage"
+        },
+        "growth": {
+          "text": "Promote growth"
+        },
+        "curl_definition": {
+          "text": "Define curls"
+        },
+        "maintenance": {
+          "text": "Maintain healthy hair"
+        }
+      }
+    },
+    "Q15": {
+      "question": "Have you had a professional hair treatment?",
+      "subtitle": "Keratin, hair botox, cauterization...",
+      "options": {
+        "no": {
+          "text": "No, never"
+        },
+        "keratin_recent": {
+          "text": "Yes, keratin less than 6 months ago"
+        },
+        "botox_recent": {
+          "text": "Yes, hair botox recently"
+        },
+        "other_old": {
+          "text": "Yes, but more than 6 months ago"
+        }
+      }
+    },
+    "Q16": {
+      "question": "Glass of water test: Place a strand in a glass. What happens?",
+      "subtitle": "Professional porosity test",
+      "options": {
+        "floats": {
+          "text": "It floats on the surface",
+          "description": "Very low porosity"
+        },
+        "middle": {
+          "text": "It stays in the middle",
+          "description": "Medium porosity"
+        },
+        "sinks": {
+          "text": "It sinks to the bottom quickly",
+          "description": "Very high porosity"
+        }
+      }
+    },
+    "Q17": {
+      "question": "What is the thickness of your individual hairs?",
+      "subtitle": "Compare with a sewing thread",
+      "options": {
+        "fine": {
+          "text": "Thinner than a thread (hard to feel)"
+        },
+        "medium": {
+          "text": "Similar to a thread"
+        },
+        "thick": {
+          "text": "Thicker than a thread"
+        }
+      }
+    },
+    "Q18": {
+      "question": "What is the density of your hair?",
+      "subtitle": "Make a ponytail and measure the circumference",
+      "options": {
+        "low": {
+          "text": "Low (less than 5 cm circumference)"
+        },
+        "medium": {
+          "text": "Medium (5-10 cm)"
+        },
+        "high": {
+          "text": "High (more than 10 cm)"
+        }
+      }
+    },
+    "Q19": {
+      "question": "Is your scalp sensitive?",
+      "options": {
+        "no": {
+          "text": "No, no sensitivity"
+        },
+        "oily": {
+          "text": "Yes, oily and with dandruff"
+        },
+        "dry": {
+          "text": "Yes, dry and itchy"
+        },
+        "sensitive": {
+          "text": "Yes, easily irritated"
+        }
+      }
+    },
+    "Q20": {
+      "question": "Does your hair change with the seasons?",
+      "options": {
+        "summer_dry": {
+          "text": "Drier in summer"
+        },
+        "winter_static": {
+          "text": "More static in winter"
+        },
+        "humidity_frizz": {
+          "text": "More frizz in humid weather"
+        },
+        "no_change": {
+          "text": "No, stays the same"
+        }
+      }
+    }
+  }
+}

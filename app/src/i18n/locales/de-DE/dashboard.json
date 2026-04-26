@@ -1,0 +1,33 @@
+{
+  "greeting": "Hallo, {{name}}",
+  "subtexts": {
+    "welcome": "Willkommen in Ihrem personalisierten Haarpflegebereich.",
+    "diagnosticReady": "Ihre Diagnose ist fertig. Erstellen Sie Ihren Zeitplan!",
+    "nextTreatment": "Ihre nächste Pflege ist für den {{date}} geplant.",
+    "completed": "Ihr Zeitplan ist abgeschlossen. Herzlichen Glückwunsch!"
+  },
+  "startDiagnostic": {
+    "title": "Diagnose starten",
+    "description": "Analysieren Sie Ihren Haartyp, um einen personalisierten Zeitplan zu erhalten.",
+    "button": "Diagnose starten"
+  },
+  "createSchedule": {
+    "title": "Ihre Diagnose ist fertig!",
+    "description": "Erstellen Sie Ihren personalisierten Zeitplan basierend auf Ihren Haarbedürfnissen.",
+    "button": "Zeitplan erstellen"
+  },
+  "profile": {
+    "title": "Ihr Profil",
+    "details": "Details anzeigen"
+  },
+  "nextTreatment": {
+    "label": "Nächste Pflege",
+    "week": "Woche {{current}}/{{total}}",
+    "remaining": "{{count}} Pflege verbleibend",
+    "remainingPlural": "{{count}} Pflegen verbleibend"
+  },
+  "scheduleCompleted": {
+    "title": "Zeitplan abgeschlossen!",
+    "description": "Sie haben alle Ihre Pflegebehandlungen abgeschlossen. Sehr gut!"
+  }
+}

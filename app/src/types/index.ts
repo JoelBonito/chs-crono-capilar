@@ -11,7 +11,7 @@ export interface UserProfile {
   updatedAt: Date;
 }
 
-export type Locale = "fr-FR" | "pt-BR";
+export type Locale = "fr-FR" | "pt-BR" | "en-US" | "es-ES" | "de-DE";
 
 export interface AuthState {
   user: UserProfile | null;

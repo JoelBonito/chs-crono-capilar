@@ -12,6 +12,8 @@ import { sendSMS } from "./sender";
 import { verifyAuth } from "../shared/auth";
 import { logInfo, logError, logWarn } from "../shared/logger";
 
+const RETRY_BATCH_SIZE = 10;
+
 const db = admin.firestore();
 
 /**
@@ -47,10 +49,12 @@ export async function handleSendNotification(req: Request, res: Response): Promi
     return;
   }
 
+  // Fetch user doc once — needed for opt-in check, phone number, and rate limit
+  const userSnap = await db.collection("users").doc(userId).get();
+  const userData = userSnap.data();
+
   // Check SMS opt-in (RGPD compliance)
   if (channel === "sms") {
-    const userSnap = await db.collection("users").doc(userId).get();
-    const userData = userSnap.data();
     if (!userData?.optInSMS) {
       res.status(403).json({
         error: "notification/no-consent",
@@ -60,21 +64,31 @@ export async function handleSendNotification(req: Request, res: Response): Promi
     }
   }
 
-  // Rate limiting: max SMS per day per user
+  // Resolve phone number from Firestore — never trust request body (M2)
+  const phoneNumber = userData?.phoneNumber as string | undefined;
+  if (channel === "sms" && !phoneNumber) {
+    res.status(400).json({
+      error: "notification/no-phone",
+      message: "Aucun numéro de téléphone enregistré.",
+    });
+    return;
+  }
+
+  // Atomic rate limiting via dedicated counter document (BACK-02)
   if (channel === "sms") {
     const today = new Date().toISOString().split("T")[0]!;
-    const todayStart = Timestamp.fromDate(new Date(`${today}T00:00:00Z`));
+    const countRef = db.doc(`sms_daily_counts/${userId}_${today}`);
 
-    const recentSMS = await db
-      .collection("notifications")
-      .where("userId", "==", userId)
-      .where("channel", "==", "sms")
-      .where("createdAt", ">=", todayStart)
-      .count()
-      .get();
+    const allowed = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(countRef);
+      const current = snap.exists ? (snap.data()?.count ?? 0) : 0;
+      if (current >= MAX_SMS_PER_DAY) return false;
+      tx.set(countRef, { count: FieldValue.increment(1), date: today }, { merge: true });
+      return true;
+    });
 
-    if (recentSMS.data().count >= MAX_SMS_PER_DAY) {
-      logWarn("notification/rate-limited", { userId, count: recentSMS.data().count });
+    if (!allowed) {
+      logWarn("notification/rate-limited", { userId });
       res.status(429).json({
         error: "notification/rate-limited",
         message: `Limite de ${MAX_SMS_PER_DAY} SMS par jour atteinte.`,
@@ -121,7 +135,7 @@ export async function handleSendNotification(req: Request, res: Response): Promi
     type,
     channel,
     status: "pending",
-    phoneNumber: data.phoneNumber,
+    phoneNumber: phoneNumber ?? null,
     messageBody,
     idempotencyKey,
     retryCount: 0,
@@ -131,7 +145,7 @@ export async function handleSendNotification(req: Request, res: Response): Promi
 
   // Send SMS
   if (channel === "sms") {
-    const result = await sendSMS({ to: data.phoneNumber, body: messageBody });
+    const result = await sendSMS({ to: phoneNumber!, body: messageBody });
 
     if (result.success) {
       await notifRef.update({
@@ -195,41 +209,43 @@ export async function handleRetryNotifications(): Promise<void> {
 
   logInfo("notification/retry-batch", { count: pendingRetries.size });
 
-  for (const doc of pendingRetries.docs) {
-    const notif = doc.data();
+  const docs = pendingRetries.docs;
+  for (let i = 0; i < docs.length; i += RETRY_BATCH_SIZE) {
+    const batch = docs.slice(i, i + RETRY_BATCH_SIZE);
+    await Promise.allSettled(batch.map(async (doc) => {
+      const notif = doc.data();
+      if (notif.channel !== "sms") return;
 
-    if (notif.channel !== "sms") continue;
+      const result = await sendSMS({ to: notif.phoneNumber, body: notif.messageBody });
+      const retryCount = (notif.retryCount ?? 0) + 1;
 
-    const result = await sendSMS({ to: notif.phoneNumber, body: notif.messageBody });
-    const retryCount = (notif.retryCount ?? 0) + 1;
-
-    if (result.success) {
-      await doc.ref.update({
-        status: "sent",
-        twilioSid: result.sid,
-        sentAt: FieldValue.serverTimestamp(),
-        retryCount,
-      });
-
-      logInfo("notification/retry-success", { notificationId: doc.id, retryCount });
-    } else {
-      const nextDelay = RETRY_DELAYS_MS[retryCount] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1]!;
-      const nextRetryAt = new Date(Date.now() + nextDelay);
-
-      const update: Record<string, unknown> = {
-        errorMessage: result.errorMessage,
-        retryCount,
-      };
-
-      if (retryCount >= MAX_RETRIES) {
-        update.status = "failed";
-        update.nextRetryAt = null;
-        logError("notification/retry-exhausted", result.errorMessage, { notificationId: doc.id });
+      if (result.success) {
+        await doc.ref.update({
+          status: "sent",
+          twilioSid: result.sid,
+          sentAt: FieldValue.serverTimestamp(),
+          retryCount,
+        });
+        logInfo("notification/retry-success", { notificationId: doc.id, retryCount });
       } else {
-        update.nextRetryAt = Timestamp.fromDate(nextRetryAt);
-      }
+        const nextDelay = RETRY_DELAYS_MS[retryCount] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1]!;
+        const nextRetryAt = new Date(Date.now() + nextDelay);
 
-      await doc.ref.update(update);
-    }
+        const update: Record<string, unknown> = {
+          errorMessage: result.errorMessage,
+          retryCount,
+        };
+
+        if (retryCount >= MAX_RETRIES) {
+          update.status = "failed";
+          update.nextRetryAt = null;
+          logError("notification/retry-exhausted", result.errorMessage, { notificationId: doc.id });
+        } else {
+          update.nextRetryAt = Timestamp.fromDate(nextRetryAt);
+        }
+
+        await doc.ref.update(update);
+      }
+    }));
   }
 }

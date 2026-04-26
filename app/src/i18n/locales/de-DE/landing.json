@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title1": "Ihre Haarpflegeroutine,",
+    "title2": "optimiert durch KI",
+    "subtitle": "CronoCapilar erstellt einen personalisierten Zeitplan für gesundes, strahlendes Haar.",
+    "cta": "Loslegen",
+    "login": "Anmelden"
+  },
+  "features": {
+    "diagnostic": {
+      "title": "KI-Diagnose",
+      "description": "Analysieren Sie Ihren Haartyp mit unserer künstlichen Intelligenz."
+    },
+    "schedule": {
+      "title": "Personalisierter Zeitplan",
+      "description": "Ein H/N/R-Kalender, zugeschnitten auf Ihre Haarpflegebedürfnisse."
+    },
+    "alerts": {
+      "title": "Intelligente Benachrichtigungen",
+      "description": "SMS-Erinnerungen, damit Sie keine Pflegesitzung verpassen."
+    }
+  },
+  "footer": {
+    "copyright": "© 2026 CronoCapilar - H.A.M LUXURY HAIR COSMETICS",
+    "legal": "Impressum",
+    "privacy": "Datenschutz",
+    "cgu": "Nutzungsbedingungen"
+  }
+}

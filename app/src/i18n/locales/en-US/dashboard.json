@@ -1,0 +1,33 @@
+{
+  "greeting": "Hello, {{name}}",
+  "subtexts": {
+    "welcome": "Welcome to your personalized hair space.",
+    "diagnosticReady": "Your diagnostic is ready. Create your schedule!",
+    "nextTreatment": "Your next care is scheduled for {{date}}.",
+    "completed": "Your schedule is complete. Congratulations!"
+  },
+  "startDiagnostic": {
+    "title": "Start your diagnostic",
+    "description": "Analyze your hair type to get a personalized schedule.",
+    "button": "Launch diagnostic"
+  },
+  "createSchedule": {
+    "title": "Your diagnostic is ready!",
+    "description": "Create your personalized schedule based on your hair needs.",
+    "button": "Create your schedule"
+  },
+  "profile": {
+    "title": "Your profile",
+    "details": "View details"
+  },
+  "nextTreatment": {
+    "label": "Next care",
+    "week": "Week {{current}}/{{total}}",
+    "remaining": "{{count}} care remaining",
+    "remainingPlural": "{{count}} cares remaining"
+  },
+  "scheduleCompleted": {
+    "title": "Schedule complete!",
+    "description": "You've completed all your cares. Well done!"
+  }
+}

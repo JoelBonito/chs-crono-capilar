@@ -71,6 +71,15 @@ export async function handleGenerateSchedule(req: Request, res: Response): Promi
 
   const { hairType, porosity } = diagnostic;
 
+  const VALID_HAIR_TYPES = ["straight", "wavy", "curly", "coily", "dry", "oily", "normal", "mixed", "damaged"] as const;
+  const VALID_POROSITY = ["low", "medium", "high"] as const;
+
+  if (!VALID_HAIR_TYPES.includes(hairType) || !VALID_POROSITY.includes(porosity)) {
+    logError("schedule/invalid-diagnostic-data", new Error("Invalid hairType or porosity"), { hairType, porosity, userId });
+    res.status(422).json({ error: "Données de diagnostic invalides." });
+    return;
+  }
+
   logInfo("schedule/generating", {
     userId, diagnosticId, hairType, porosity,
     daysOfWeek, sessionsPerWeek: daysOfWeek.length,

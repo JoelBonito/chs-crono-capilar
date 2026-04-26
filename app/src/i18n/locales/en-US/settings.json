@@ -1,0 +1,45 @@
+{
+  "title": "Settings",
+  "profile": {
+    "section": "Profile",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "phonePlaceholder": "+44 7700 900000",
+    "phoneEmpty": "Not provided",
+    "smsReminders": "SMS reminders",
+    "smsActive": "Active",
+    "smsInactive": "Inactive",
+    "smsAriaLabel": "Enable SMS reminders",
+    "saveSuccess": "Profile updated successfully.",
+    "saveError": "Unable to update profile."
+  },
+  "language": {
+    "section": "Language",
+    "fr": "Français",
+    "pt": "Português (BR)",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "legal": {
+    "section": "Legal",
+    "cgu": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "legal": "Legal Notice"
+  },
+  "account": {
+    "section": "Account",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete my account"
+  },
+  "deleteDialog": {
+    "title": "Delete your account",
+    "description": "This action is irreversible. All your data will be deleted in accordance with GDPR (Article 17).",
+    "deleteError": "Unable to delete account. Please try again."
+  },
+  "footer": {
+    "version": "CronoCapilar v1.0",
+    "author": "Made with care by CHS Paris",
+    "copyright": "2026 Cosmetic Hair Shop"
+  }
+}

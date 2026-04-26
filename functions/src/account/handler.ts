@@ -81,23 +81,27 @@ export async function handleDeleteAccount(req: Request, res: Response): Promise<
     const db = admin.firestore();
     const deletionLog: Record<string, number> = {};
 
-    // 1. Delete user profile document
-    await db.collection("users").doc(uid).delete();
-    deletionLog["users"] = 1;
-
-    // 2. Delete related documents from all collections
+    // 1. Delete related documents from all collections (data first)
     for (const collection of COLLECTIONS_WITH_USER_ID) {
       const count = await deleteCollectionDocs(db, collection, uid);
       deletionLog[collection] = count;
+      logInfo("[RGPD] Collection deleted", { uid, collection, count });
     }
 
-    // 3. Delete Storage files (photos)
+    // 2. Delete Storage files (photos)
     const filesDeleted = await deleteStorageFiles(uid);
     deletionLog["storage_files"] = filesDeleted;
+    logInfo("[RGPD] Storage files deleted", { uid, filesDeleted });
 
-    // 4. Delete Firebase Auth user
+    // 3. Delete user profile document
+    await db.collection("users").doc(uid).delete();
+    deletionLog["users"] = 1;
+    logInfo("[RGPD] User document deleted", { uid });
+
+    // 4. Delete Firebase Auth user LAST — if previous steps failed, user can retry
     await admin.auth().deleteUser(uid);
     deletionLog["auth"] = 1;
+    logInfo("[RGPD] Auth user deleted", { uid });
 
     logInfo("[RGPD] Account deletion complete", { uid, ...deletionLog });
 

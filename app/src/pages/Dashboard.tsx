@@ -17,7 +17,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -76,24 +75,8 @@ const TREATMENT_ICONS: Record<TreatmentType, typeof Droplets> = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getGreetingSubtext(
-  diagnostic: DiagnosticSummary | null,
-  schedule: ScheduleSummary | null,
-): string {
-  if (!diagnostic) {
-    return i18n.t("dashboard:subtexts.welcome");
-  }
-  if (!schedule) {
-    return i18n.t("dashboard:subtexts.diagnosticReady");
-  }
-  const next = findNextEvent(schedule.calendarEvents);
-  if (next) {
-    return i18n.t("dashboard:subtexts.nextTreatment", {
-      date: formatDateFriendly(next.date),
-    });
-  }
-  return i18n.t("dashboard:subtexts.completed");
-}
+// getGreetingSubtext is defined inline in the component to consume the `t` hook
+// and react correctly to language changes (see Dashboard component below)
 
 function findNextEvent(events: CalendarEvent[]): CalendarEvent | null {
   const now = new Date();
@@ -103,9 +86,9 @@ function findNextEvent(events: CalendarEvent[]): CalendarEvent | null {
   return upcoming[0] ?? null;
 }
 
-function formatDateFriendly(dateStr: string): string {
+function formatDateFriendly(dateStr: string, locale: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString(i18n.language, {
+  return d.toLocaleDateString(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -260,7 +243,7 @@ function DiagnosticSummaryCard({
 }
 
 function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
-  const { t } = useTranslation(["dashboard", "common"]);
+  const { t, i18n } = useTranslation(["dashboard", "common"]);
   const nextEvent = findNextEvent(schedule.calendarEvents);
   const weekProgress = getWeekProgress(schedule.calendarEvents);
 
@@ -301,7 +284,7 @@ function NextTreatmentCard({ schedule }: { schedule: ScheduleSummary }) {
               {nextEvent.label}
             </p>
             <p className="mt-0.5 text-body-sm text-gray-500">
-              {formatDateFriendly(nextEvent.date)}
+              {formatDateFriendly(nextEvent.date, i18n.language)}
             </p>
           </div>
 
@@ -357,10 +340,23 @@ function DashboardSkeleton() {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { t } = useTranslation(["dashboard", "common"]);
+  const { t, i18n } = useTranslation(["dashboard", "common"]);
   const [diagnostic, setDiagnostic] = useState<DiagnosticSummary | null>(null);
   const [schedule, setSchedule] = useState<ScheduleSummary | null>(null);
   const [loading, setLoading] = useState(true);
+
+  function getGreetingSubtext(
+    diag: DiagnosticSummary | null,
+    sched: ScheduleSummary | null,
+  ): string {
+    if (!diag) return t("dashboard:subtexts.welcome");
+    if (!sched) return t("dashboard:subtexts.diagnosticReady");
+    const next = findNextEvent(sched.calendarEvents);
+    if (next) {
+      return t("dashboard:subtexts.nextTreatment", { date: formatDateFriendly(next.date, i18n.language) });
+    }
+    return t("dashboard:subtexts.completed");
+  }
 
   useEffect(() => {
     if (!user) {
@@ -429,7 +425,7 @@ export default function Dashboard() {
     }
 
     fetchDashboardData();
-  }, [user]);
+  }, [user?.uid]);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -441,6 +437,7 @@ export default function Dashboard() {
       </h1>
       <p className="mt-2 text-body text-gray-600">
         {getGreetingSubtext(diagnostic, schedule)}
+
       </p>
 
       {/* Cards */}

@@ -1,0 +1,408 @@
+{
+  "progressBar": {
+    "title": "Haardiagnose",
+    "counter": "{{current}} von {{total}}"
+  },
+  "questionCard": {
+    "selected": "{{count}}/{{max}} ausgewählt"
+  },
+  "processing": {
+    "title": "Analyse läuft...",
+    "subtitle": "Ihr Haarprofil wird berechnet"
+  },
+  "error": {
+    "processing": "Bei der Verarbeitung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "photoUpload": {
+    "title": "Fotoanalyse",
+    "subtitle": "Fügen Sie Fotos Ihrer Haare für eine präzisere Diagnose hinzu (optional).",
+    "aiNote": "Die KI analysiert Ihre Fotos und verfeinert das Fragebogenergebnis.",
+    "overview": "Übersicht",
+    "closeup": "Nahaufnahme",
+    "add": "Hinzufügen",
+    "analyze": "{{count}} Foto analysieren",
+    "analyzePlural": "{{count}} Fotos analysieren",
+    "skip": "Diesen Schritt überspringen"
+  },
+  "result": {
+    "title": "Ihre Diagnose",
+    "dominantH": "Ihre Haare brauchen hauptsächlich Feuchtigkeit. Es fehlt an Wasser und Geschmeidigkeit.",
+    "dominantN": "Ihre Haare brauchen hauptsächlich Ernährung. Es fehlt an Lipiden und Schutz.",
+    "dominantR": "Ihre Haare brauchen hauptsächlich Reparatur. Die Haarfaser ist geschwächt.",
+    "generateSchedule": "Meinen Zeitplan erstellen",
+    "retake": "Diagnose wiederholen"
+  },
+  "bridges": {
+    "Q09": "Sie erwähnen Haarbruch. Überprüfen wir die Elastizität Ihrer Haare:",
+    "Q15": "Bei einer chemischen Behandlung ist es wichtig, Ihre Vorgeschichte zu kennen:",
+    "Q17": "Häufige Wärmeanwendung kann die Haardicke beeinflussen:",
+    "Q08": "Ihr Profil ist etwas komplex. Überprüfen wir die Porosität:",
+    "Q10": "Sprechen wir über Ihre aktuelle Routine:",
+    "Q16": "Sie haben eine hohe Porosität. Machen wir einen präziseren Test:"
+  },
+  "questions": {
+    "Q01": {
+      "question": "Was ist Ihr Haartyp?",
+      "subtitle": "Basierend auf der internationalen Klassifikation",
+      "options": {
+        "straight": {
+          "text": "Glatt (1A-1C)",
+          "description": "Glattes Haar ohne Volumen"
+        },
+        "wavy": {
+          "text": "Wellig (2A-2C)",
+          "description": "Haar mit leichten Wellen"
+        },
+        "curly": {
+          "text": "Lockig (3A-3C)",
+          "description": "Gut definierte Locken"
+        },
+        "coily": {
+          "text": "Krauses/Afro-Haar (4A-4C)",
+          "description": "Sehr enge oder spiralförmige Locken"
+        }
+      }
+    },
+    "Q02": {
+      "question": "Haben Sie Ihre Haare gefärbt, gebleicht oder chemisch geglättet?",
+      "options": {
+        "no": {
+          "text": "Nein, natürliches Haar"
+        },
+        "coloring_lt_3_months": {
+          "text": "Ja, Färbung vor weniger als 3 Monaten"
+        },
+        "coloring_gte_3_months": {
+          "text": "Ja, Färbung vor mehr als 3 Monaten"
+        },
+        "bleach": {
+          "text": "Ja, Bleichen (Strähnen oder komplett)"
+        },
+        "chemical_straightening": {
+          "text": "Ja, chemisches Glätten (permanent oder progressiv)"
+        }
+      }
+    },
+    "Q03": {
+      "question": "Wie würden Sie Ihre Haare derzeit beschreiben?",
+      "subtitle": "Sie können mehrere Optionen wählen",
+      "options": {
+        "dry": {
+          "text": "Trocken und stumpf"
+        },
+        "oily": {
+          "text": "Fettig (besonders an den Wurzeln)"
+        },
+        "dull": {
+          "text": "Ohne Glanz"
+        },
+        "breakage_fragile": {
+          "text": "Spröde und brüchig"
+        },
+        "frizz": {
+          "text": "Sehr kraus"
+        },
+        "tangled": {
+          "text": "Verfilzt sich leicht"
+        },
+        "split_ends": {
+          "text": "Gespaltene Spitzen"
+        },
+        "healthy": {
+          "text": "Gesund"
+        }
+      }
+    },
+    "Q04": {
+      "question": "Wie oft waschen Sie Ihre Haare?",
+      "options": {
+        "1x": {
+          "text": "Einmal pro Woche"
+        },
+        "2x": {
+          "text": "Zweimal pro Woche"
+        },
+        "3x": {
+          "text": "3-mal pro Woche"
+        },
+        "more_than_3x_week": {
+          "text": "Mehr als 3-mal pro Woche"
+        }
+      }
+    },
+    "Q05": {
+      "question": "Wie lang sind Ihre Haare?",
+      "options": {
+        "short": {
+          "text": "Kurz (über den Schultern)"
+        },
+        "medium": {
+          "text": "Mittellang (bis zu den Schultern)"
+        },
+        "long": {
+          "text": "Lang (unter den Schultern)"
+        },
+        "very_long": {
+          "text": "Sehr lang (unter der Brust)"
+        }
+      }
+    },
+    "Q06": {
+      "question": "Verwenden Sie häufig Hitzewerkzeuge?",
+      "subtitle": "Haartrockner, Glätteisen, Lockenstab",
+      "options": {
+        "never": {
+          "text": "Nie oder selten"
+        },
+        "occasional": {
+          "text": "1-2 Mal pro Woche"
+        },
+        "frequent": {
+          "text": "3-4 Mal pro Woche"
+        },
+        "daily": {
+          "text": "Jeden Tag"
+        }
+      }
+    },
+    "Q07": {
+      "question": "Sind Sie häufig Sonne, Meer oder Chlor ausgesetzt?",
+      "options": {
+        "no": {
+          "text": "Nein, selten"
+        },
+        "sun_occasional": {
+          "text": "Ja, gelegentlich Sonne"
+        },
+        "pool_frequent": {
+          "text": "Ja, chloriertes Schwimmbad häufig"
+        },
+        "beach_frequent": {
+          "text": "Ja, Meer und Sonne häufig"
+        }
+      }
+    },
+    "Q08": {
+      "question": "Wie reagieren Ihre Haare auf Wasser?",
+      "subtitle": "Einfacher Porositätstest",
+      "options": {
+        "repels": {
+          "text": "Wasser gleitet ab, schwer zu benetzen",
+          "description": "Niedrige Porosität - geschlossene Kutikula"
+        },
+        "absorbs_normal": {
+          "text": "Wird normal nass",
+          "description": "Mittlere Porosität - leicht geöffnete Kutikula"
+        },
+        "absorbs_fast": {
+          "text": "Nimmt Wasser schnell auf, trocknet schnell",
+          "description": "Hohe Porosität - sehr offene Kutikula"
+        }
+      }
+    },
+    "Q09": {
+      "question": "Was passiert, wenn Sie eine nasse Strähne dehnen?",
+      "subtitle": "Elastizitätstest",
+      "options": {
+        "stretches_returns": {
+          "text": "Sie dehnt sich und kehrt zur Form zurück",
+          "description": "Gute Elastizität"
+        },
+        "stretches_little": {
+          "text": "Dehnt sich kaum, ziemlich steif",
+          "description": "Mangel an Feuchtigkeit"
+        },
+        "breaks": {
+          "text": "Bricht leicht",
+          "description": "Mangel an Proteinen"
+        }
+      }
+    },
+    "Q10": {
+      "question": "Was ist Ihre aktuelle Haarpflegeroutine?",
+      "options": {
+        "basic": {
+          "text": "Nur Shampoo"
+        },
+        "conditioner_only": {
+          "text": "Shampoo + Spülung"
+        },
+        "mask_occasional": {
+          "text": "Shampoo + gelegentliche Maske"
+        },
+        "complete": {
+          "text": "Komplette Routine (Shampoo, Maske, Leave-in)"
+        }
+      }
+    },
+    "Q11": {
+      "question": "Wie würden Sie das Volumen Ihrer Haare beschreiben?",
+      "options": {
+        "fine_low_density": {
+          "text": "Fein und spärlich"
+        },
+        "medium": {
+          "text": "Mittlere Dichte"
+        },
+        "thick_high_density": {
+          "text": "Dick und dicht"
+        }
+      }
+    },
+    "Q12": {
+      "question": "Wie lange dauert es, bis Ihre Haare auf natürliche Weise trocknen?",
+      "options": {
+        "fast": {
+          "text": "Weniger als 1 Stunde (trocknet sehr schnell)",
+          "description": "Hohe Porosität oder sehr feines Haar"
+        },
+        "normal": {
+          "text": "1-3 Stunden"
+        },
+        "slow": {
+          "text": "Mehr als 3 Stunden (bleibt lange feucht)",
+          "description": "Niedrige Porosität oder sehr dickes Haar"
+        }
+      }
+    },
+    "Q13": {
+      "question": "Wie reagieren Ihre Haare auf reichhaltige Produkte (Öle, Masken)?",
+      "options": {
+        "absorbs_well": {
+          "text": "Nimmt gut auf, bleibt weich"
+        },
+        "gets_weighed_down": {
+          "text": "Wird schwer und fettig",
+          "description": "Niedrige Porosität, Produkte häufen sich an"
+        },
+        "no_effect": {
+          "text": "Wenig sichtbare Wirkung",
+          "description": "Hohe Porosität, Produkte dringen nicht genug ein"
+        }
+      }
+    },
+    "Q14": {
+      "question": "Was ist Ihr Hauptziel?",
+      "options": {
+        "shine": {
+          "text": "Mehr Glanz haben"
+        },
+        "frizz_control": {
+          "text": "Kräuselung kontrollieren"
+        },
+        "less_breakage": {
+          "text": "Haarbruch reduzieren"
+        },
+        "growth": {
+          "text": "Wachstum fördern"
+        },
+        "curl_definition": {
+          "text": "Locken definieren"
+        },
+        "maintenance": {
+          "text": "Gesundes Haar erhalten"
+        }
+      }
+    },
+    "Q15": {
+      "question": "Haben Sie bereits eine professionelle Haarbehandlung gemacht?",
+      "subtitle": "Keratin, Haar-Botox, Kauterisation...",
+      "options": {
+        "no": {
+          "text": "Nein, nie"
+        },
+        "keratin_recent": {
+          "text": "Ja, Keratin vor weniger als 6 Monaten"
+        },
+        "botox_recent": {
+          "text": "Ja, Haar-Botox kürzlich"
+        },
+        "other_old": {
+          "text": "Ja, aber vor mehr als 6 Monaten"
+        }
+      }
+    },
+    "Q16": {
+      "question": "Wasserglastest: Legen Sie eine Strähne in ein Glas. Was passiert?",
+      "subtitle": "Professioneller Porositätstest",
+      "options": {
+        "floats": {
+          "text": "Sie schwimmt an der Oberfläche",
+          "description": "Sehr niedrige Porosität"
+        },
+        "middle": {
+          "text": "Sie bleibt in der Mitte",
+          "description": "Mittlere Porosität"
+        },
+        "sinks": {
+          "text": "Sie sinkt schnell auf den Boden",
+          "description": "Sehr hohe Porosität"
+        }
+      }
+    },
+    "Q17": {
+      "question": "Wie dick sind Ihre einzelnen Haare?",
+      "subtitle": "Vergleichen Sie mit einem Nähfaden",
+      "options": {
+        "fine": {
+          "text": "Dünner als ein Faden (schwer zu spüren)"
+        },
+        "medium": {
+          "text": "Ähnlich wie ein Faden"
+        },
+        "thick": {
+          "text": "Dicker als ein Faden"
+        }
+      }
+    },
+    "Q18": {
+      "question": "Wie ist die Dichte Ihrer Haare?",
+      "subtitle": "Machen Sie einen Pferdeschwanz und messen Sie den Umfang",
+      "options": {
+        "low": {
+          "text": "Niedrig (weniger als 5 cm Umfang)"
+        },
+        "medium": {
+          "text": "Mittel (5-10 cm)"
+        },
+        "high": {
+          "text": "Hoch (mehr als 10 cm)"
+        }
+      }
+    },
+    "Q19": {
+      "question": "Ist Ihre Kopfhaut empfindlich?",
+      "options": {
+        "no": {
+          "text": "Nein, keine Empfindlichkeit"
+        },
+        "oily": {
+          "text": "Ja, fettig und mit Schuppen"
+        },
+        "dry": {
+          "text": "Ja, trocken und juckend"
+        },
+        "sensitive": {
+          "text": "Ja, leicht gereizt"
+        }
+      }
+    },
+    "Q20": {
+      "question": "Verändern sich Ihre Haare je nach Jahreszeit?",
+      "options": {
+        "summer_dry": {
+          "text": "Trockener im Sommer"
+        },
+        "winter_static": {
+          "text": "Mehr statisch im Winter"
+        },
+        "humidity_frizz": {
+          "text": "Mehr Kräuselung bei feuchtem Wetter"
+        },
+        "no_change": {
+          "text": "Nein, bleiben konstant"
+        }
+      }
+    }
+  }
+}

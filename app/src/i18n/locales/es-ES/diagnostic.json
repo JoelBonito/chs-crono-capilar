@@ -1,0 +1,408 @@
+{
+  "progressBar": {
+    "title": "Diagnóstico capilar",
+    "counter": "{{current}} de {{total}}"
+  },
+  "questionCard": {
+    "selected": "{{count}}/{{max}} seleccionado(s)"
+  },
+  "processing": {
+    "title": "Análisis en curso...",
+    "subtitle": "Calculando tu perfil capilar"
+  },
+  "error": {
+    "processing": "Se ha producido un error durante el procesamiento. Por favor, inténtalo de nuevo."
+  },
+  "photoUpload": {
+    "title": "Análisis de fotos",
+    "subtitle": "Añade fotos de tu cabello para un diagnóstico más preciso (opcional).",
+    "aiNote": "La IA analizará tus fotos y refinará el resultado del cuestionario.",
+    "overview": "Vista general",
+    "closeup": "Primer plano",
+    "add": "Añadir",
+    "analyze": "Analizar {{count}} foto",
+    "analyzePlural": "Analizar {{count}} fotos",
+    "skip": "Omitir este paso"
+  },
+  "result": {
+    "title": "Tu diagnóstico",
+    "dominantH": "Tu cabello necesita principalmente hidratación. Le falta agua y flexibilidad.",
+    "dominantN": "Tu cabello necesita principalmente nutrición. Le faltan lípidos y protección.",
+    "dominantR": "Tu cabello necesita principalmente reconstrucción. La fibra capilar está debilitada.",
+    "generateSchedule": "Generar mi cronograma",
+    "retake": "Repetir diagnóstico"
+  },
+  "bridges": {
+    "Q09": "Mencionas la rotura. Comprobemos la elasticidad de tu cabello:",
+    "Q15": "Con un tratamiento químico, es importante conocer tu historial:",
+    "Q17": "El uso frecuente de calor puede afectar el grosor del cabello:",
+    "Q08": "Tu perfil es un poco complejo. Comprobemos la porosidad:",
+    "Q10": "Hablemos de tu rutina actual:",
+    "Q16": "Tienes una porosidad alta. Hagamos una prueba más precisa:"
+  },
+  "questions": {
+    "Q01": {
+      "question": "¿Cuál es tu tipo de cabello?",
+      "subtitle": "Basado en la clasificación internacional",
+      "options": {
+        "straight": {
+          "text": "Liso (1A-1C)",
+          "description": "Cabello recto, sin volumen"
+        },
+        "wavy": {
+          "text": "Ondulado (2A-2C)",
+          "description": "Cabello con ligeras ondas"
+        },
+        "curly": {
+          "text": "Rizado (3A-3C)",
+          "description": "Rizos bien definidos"
+        },
+        "coily": {
+          "text": "Muy rizado/Afro (4A-4C)",
+          "description": "Rizos muy apretados o en espiral"
+        }
+      }
+    },
+    "Q02": {
+      "question": "¿Te has hecho coloración, decoloración o alisado químico?",
+      "options": {
+        "no": {
+          "text": "No, cabello natural"
+        },
+        "coloring_lt_3_months": {
+          "text": "Sí, coloración hace menos de 3 meses"
+        },
+        "coloring_gte_3_months": {
+          "text": "Sí, coloración hace más de 3 meses"
+        },
+        "bleach": {
+          "text": "Sí, decoloración (mechas o completa)"
+        },
+        "chemical_straightening": {
+          "text": "Sí, alisado químico (permanente o progresivo)"
+        }
+      }
+    },
+    "Q03": {
+      "question": "¿Cómo describirías tu cabello actualmente?",
+      "subtitle": "Puedes elegir varias opciones",
+      "options": {
+        "dry": {
+          "text": "Seco y sin brillo"
+        },
+        "oily": {
+          "text": "Graso (especialmente en las raíces)"
+        },
+        "dull": {
+          "text": "Sin brillo"
+        },
+        "breakage_fragile": {
+          "text": "Quebradizo y frágil"
+        },
+        "frizz": {
+          "text": "Con mucho encrespamiento"
+        },
+        "tangled": {
+          "text": "Se enreda fácilmente"
+        },
+        "split_ends": {
+          "text": "Puntas abiertas"
+        },
+        "healthy": {
+          "text": "Sano"
+        }
+      }
+    },
+    "Q04": {
+      "question": "¿Con qué frecuencia lavas tu cabello?",
+      "options": {
+        "1x": {
+          "text": "Una vez a la semana"
+        },
+        "2x": {
+          "text": "Dos veces a la semana"
+        },
+        "3x": {
+          "text": "3 veces a la semana"
+        },
+        "more_than_3x_week": {
+          "text": "Más de 3 veces a la semana"
+        }
+      }
+    },
+    "Q05": {
+      "question": "¿Cuál es la longitud de tu cabello?",
+      "options": {
+        "short": {
+          "text": "Corto (por encima de los hombros)"
+        },
+        "medium": {
+          "text": "Medio (hasta los hombros)"
+        },
+        "long": {
+          "text": "Largo (por debajo de los hombros)"
+        },
+        "very_long": {
+          "text": "Muy largo (por debajo del pecho)"
+        }
+      }
+    },
+    "Q06": {
+      "question": "¿Usas frecuentemente herramientas de calor?",
+      "subtitle": "Secador, plancha, rizador",
+      "options": {
+        "never": {
+          "text": "Nunca o raramente"
+        },
+        "occasional": {
+          "text": "1-2 veces por semana"
+        },
+        "frequent": {
+          "text": "3-4 veces por semana"
+        },
+        "daily": {
+          "text": "Todos los días"
+        }
+      }
+    },
+    "Q07": {
+      "question": "¿Estás frecuentemente expuesta al sol, al mar o al cloro?",
+      "options": {
+        "no": {
+          "text": "No, raramente"
+        },
+        "sun_occasional": {
+          "text": "Sí, sol ocasional"
+        },
+        "pool_frequent": {
+          "text": "Sí, piscina con cloro frecuentemente"
+        },
+        "beach_frequent": {
+          "text": "Sí, mar y sol frecuentemente"
+        }
+      }
+    },
+    "Q08": {
+      "question": "¿Cómo reacciona tu cabello al agua?",
+      "subtitle": "Prueba de porosidad simple",
+      "options": {
+        "repels": {
+          "text": "El agua resbala, difícil de mojar",
+          "description": "Porosidad baja - cutícula cerrada"
+        },
+        "absorbs_normal": {
+          "text": "Se moja normalmente",
+          "description": "Porosidad media - cutícula ligeramente abierta"
+        },
+        "absorbs_fast": {
+          "text": "Absorbe el agua rápidamente, se seca rápido",
+          "description": "Porosidad alta - cutícula muy abierta"
+        }
+      }
+    },
+    "Q09": {
+      "question": "Si estiras un mechón mojado, ¿qué ocurre?",
+      "subtitle": "Prueba de elasticidad",
+      "options": {
+        "stretches_returns": {
+          "text": "Se estira y vuelve a su forma",
+          "description": "Buena elasticidad"
+        },
+        "stretches_little": {
+          "text": "Se estira poco, bastante rígido",
+          "description": "Falta de hidratación"
+        },
+        "breaks": {
+          "text": "Se rompe fácilmente",
+          "description": "Falta de proteínas"
+        }
+      }
+    },
+    "Q10": {
+      "question": "¿Cuál es tu rutina capilar actual?",
+      "options": {
+        "basic": {
+          "text": "Solo champú"
+        },
+        "conditioner_only": {
+          "text": "Champú + acondicionador"
+        },
+        "mask_occasional": {
+          "text": "Champú + mascarilla ocasional"
+        },
+        "complete": {
+          "text": "Rutina completa (champú, mascarilla, leave-in)"
+        }
+      }
+    },
+    "Q11": {
+      "question": "¿Cómo describirías el volumen de tu cabello?",
+      "options": {
+        "fine_low_density": {
+          "text": "Fino y escaso"
+        },
+        "medium": {
+          "text": "Grosor medio"
+        },
+        "thick_high_density": {
+          "text": "Grueso y denso"
+        }
+      }
+    },
+    "Q12": {
+      "question": "¿Cuánto tiempo tarda tu cabello en secarse de forma natural?",
+      "options": {
+        "fast": {
+          "text": "Menos de 1 hora (se seca muy rápido)",
+          "description": "Porosidad alta o cabello muy fino"
+        },
+        "normal": {
+          "text": "1-3 horas"
+        },
+        "slow": {
+          "text": "Más de 3 horas (permanece húmedo mucho tiempo)",
+          "description": "Porosidad baja o cabello muy grueso"
+        }
+      }
+    },
+    "Q13": {
+      "question": "¿Cómo reacciona tu cabello a los productos ricos (aceites, mascarillas)?",
+      "options": {
+        "absorbs_well": {
+          "text": "Absorbe bien, queda suave"
+        },
+        "gets_weighed_down": {
+          "text": "Se vuelve pesado y graso",
+          "description": "Porosidad baja, los productos se acumulan"
+        },
+        "no_effect": {
+          "text": "Poco efecto visible",
+          "description": "Porosidad alta, los productos no penetran suficiente"
+        }
+      }
+    },
+    "Q14": {
+      "question": "¿Cuál es tu objetivo principal?",
+      "options": {
+        "shine": {
+          "text": "Tener más brillo"
+        },
+        "frizz_control": {
+          "text": "Controlar el encrespamiento"
+        },
+        "less_breakage": {
+          "text": "Reducir la rotura"
+        },
+        "growth": {
+          "text": "Favorecer el crecimiento"
+        },
+        "curl_definition": {
+          "text": "Definir los rizos"
+        },
+        "maintenance": {
+          "text": "Mantener en buen estado"
+        }
+      }
+    },
+    "Q15": {
+      "question": "¿Te has realizado algún tratamiento capilar profesional?",
+      "subtitle": "Keratina, botox capilar, cauterización...",
+      "options": {
+        "no": {
+          "text": "No, nunca"
+        },
+        "keratin_recent": {
+          "text": "Sí, keratina hace menos de 6 meses"
+        },
+        "botox_recent": {
+          "text": "Sí, botox capilar recientemente"
+        },
+        "other_old": {
+          "text": "Sí, pero hace más de 6 meses"
+        }
+      }
+    },
+    "Q16": {
+      "question": "Prueba del vaso de agua: coloca un mechón en un vaso. ¿Qué ocurre?",
+      "subtitle": "Prueba de porosidad profesional",
+      "options": {
+        "floats": {
+          "text": "Flota en la superficie",
+          "description": "Porosidad muy baja"
+        },
+        "middle": {
+          "text": "Se queda en el medio",
+          "description": "Porosidad media"
+        },
+        "sinks": {
+          "text": "Se hunde rápidamente",
+          "description": "Porosidad muy alta"
+        }
+      }
+    },
+    "Q17": {
+      "question": "¿Cuál es el grosor de tus cabellos individuales?",
+      "subtitle": "Compara con un hilo de coser",
+      "options": {
+        "fine": {
+          "text": "Más fino que un hilo (difícil de sentir)"
+        },
+        "medium": {
+          "text": "Similar a un hilo"
+        },
+        "thick": {
+          "text": "Más grueso que un hilo"
+        }
+      }
+    },
+    "Q18": {
+      "question": "¿Cuál es la densidad de tu cabello?",
+      "subtitle": "Haz una cola de caballo y mide la circunferencia",
+      "options": {
+        "low": {
+          "text": "Baja (menos de 5 cm de circunferencia)"
+        },
+        "medium": {
+          "text": "Media (5-10 cm)"
+        },
+        "high": {
+          "text": "Alta (más de 10 cm)"
+        }
+      }
+    },
+    "Q19": {
+      "question": "¿Tu cuero cabelludo es sensible?",
+      "options": {
+        "no": {
+          "text": "No, ninguna sensibilidad"
+        },
+        "oily": {
+          "text": "Sí, graso y con caspa"
+        },
+        "dry": {
+          "text": "Sí, seco y con picazón"
+        },
+        "sensitive": {
+          "text": "Sí, se irrita fácilmente"
+        }
+      }
+    },
+    "Q20": {
+      "question": "¿Tu cabello cambia según las estaciones?",
+      "options": {
+        "summer_dry": {
+          "text": "Más seco en verano"
+        },
+        "winter_static": {
+          "text": "Más estático en invierno"
+        },
+        "humidity_frizz": {
+          "text": "Más encrespamiento con tiempo húmedo"
+        },
+        "no_change": {
+          "text": "No, permanece constante"
+        }
+      }
+    }
+  }
+}

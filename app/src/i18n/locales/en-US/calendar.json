@@ -1,0 +1,35 @@
+{
+  "title": "My Schedule",
+  "sessionCount": "{{count}} sessions over 4 weeks",
+  "week": "Week {{number}}",
+  "loading": "Loading your calendar...",
+  "create": {
+    "title": "Create your schedule",
+    "subtitle": "Choose your care days to generate your personalized calendar.",
+    "daysLabel": "Care days",
+    "daysHint": "Select 2 to 4 days per week",
+    "startDate": "Start date",
+    "generating": "Generating...",
+    "generate": "Generate my schedule"
+  },
+  "empty": {
+    "title": "Calendar",
+    "description": "Complete your diagnostic first to get your personalized hair care schedule.",
+    "button": "Take the diagnostic"
+  },
+  "sync": {
+    "mobile": "Add to calendar",
+    "android": "Download calendar",
+    "desktop": "Sync with Google Calendar"
+  },
+  "download": {
+    "desktop": "Download .ics",
+    "toast": "File downloaded!"
+  },
+  "errors": {
+    "loadFailed": "Unable to load your schedule.",
+    "downloadFailed": "Error downloading the .ics file",
+    "syncFailed": "Error syncing calendar",
+    "generateFailed": "Unable to create the schedule."
+  }
+}

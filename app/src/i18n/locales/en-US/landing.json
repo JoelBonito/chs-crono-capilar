@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title1": "Your hair care routine,",
+    "title2": "elevated by AI",
+    "subtitle": "CronoCapilar creates a personalized schedule for healthy, radiant hair.",
+    "cta": "Get started",
+    "login": "Sign in"
+  },
+  "features": {
+    "diagnostic": {
+      "title": "AI Diagnostic",
+      "description": "Analyze your hair type with our artificial intelligence."
+    },
+    "schedule": {
+      "title": "Personalized schedule",
+      "description": "An H/N/R calendar tailored to your hair care needs."
+    },
+    "alerts": {
+      "title": "Smart alerts",
+      "description": "SMS reminders so you never miss a care session."
+    }
+  },
+  "footer": {
+    "copyright": "© 2026 CronoCapilar - H.A.M LUXURY HAIR COSMETICS",
+    "legal": "Legal notice",
+    "privacy": "Privacy",
+    "cgu": "Terms"
+  }
+}

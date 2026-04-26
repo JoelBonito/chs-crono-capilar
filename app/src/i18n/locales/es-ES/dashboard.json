@@ -1,0 +1,33 @@
+{
+  "greeting": "Hola, {{name}}",
+  "subtexts": {
+    "welcome": "Bienvenida a tu espacio capilar personalizado.",
+    "diagnosticReady": "Tu diagnóstico está listo. ¡Crea tu cronograma!",
+    "nextTreatment": "Tu próximo cuidado está programado para el {{date}}.",
+    "completed": "Tu cronograma está completo. ¡Felicidades!"
+  },
+  "startDiagnostic": {
+    "title": "Comienza tu diagnóstico",
+    "description": "Analiza tu tipo de cabello para obtener un cronograma personalizado.",
+    "button": "Iniciar diagnóstico"
+  },
+  "createSchedule": {
+    "title": "¡Tu diagnóstico está listo!",
+    "description": "Crea tu cronograma personalizado basado en tus necesidades capilares.",
+    "button": "Crear tu cronograma"
+  },
+  "profile": {
+    "title": "Tu perfil",
+    "details": "Ver detalles"
+  },
+  "nextTreatment": {
+    "label": "Próximo cuidado",
+    "week": "Semana {{current}}/{{total}}",
+    "remaining": "{{count}} cuidado restante",
+    "remainingPlural": "{{count}} cuidados restantes"
+  },
+  "scheduleCompleted": {
+    "title": "¡Cronograma completado!",
+    "description": "Has completado todos tus cuidados. ¡Enhorabuena!"
+  }
+}

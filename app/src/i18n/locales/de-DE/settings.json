@@ -1,0 +1,45 @@
+{
+  "title": "Einstellungen",
+  "profile": {
+    "section": "Profil",
+    "firstNamePlaceholder": "Vorname",
+    "lastNamePlaceholder": "Nachname",
+    "phonePlaceholder": "+49 151 12345678",
+    "phoneEmpty": "Nicht angegeben",
+    "smsReminders": "SMS-Erinnerungen",
+    "smsActive": "Aktiv",
+    "smsInactive": "Inaktiv",
+    "smsAriaLabel": "SMS-Erinnerungen aktivieren",
+    "saveSuccess": "Profil erfolgreich aktualisiert.",
+    "saveError": "Profil konnte nicht aktualisiert werden."
+  },
+  "language": {
+    "section": "Sprache",
+    "fr": "Français",
+    "pt": "Português (BR)",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "legal": {
+    "section": "Rechtliche Hinweise",
+    "cgu": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "legal": "Impressum"
+  },
+  "account": {
+    "section": "Konto",
+    "signOut": "Abmelden",
+    "deleteAccount": "Mein Konto löschen"
+  },
+  "deleteDialog": {
+    "title": "Konto löschen",
+    "description": "Diese Aktion ist unwiderruflich. Alle Ihre Daten werden gemäß DSGVO (Artikel 17) gelöscht.",
+    "deleteError": "Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
+  },
+  "footer": {
+    "version": "CronoCapilar v1.0",
+    "author": "Mit Sorgfalt erstellt von CHS Paris",
+    "copyright": "2026 Cosmetic Hair Shop"
+  }
+}

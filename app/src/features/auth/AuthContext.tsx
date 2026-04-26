@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   useCallback,
   type ReactNode,
@@ -34,6 +35,7 @@ interface AuthContextValue {
     lastName: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -62,35 +64,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    // AUTH-01: use a per-callback `active` flag to prevent stale async updates
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      let active = true;
       setFirebaseUser(fbUser);
       if (fbUser) {
-        const profile = await fetchUserProfile(fbUser.uid);
-        setUser(profile);
+        fetchUserProfile(fbUser.uid).then((profile) => {
+          if (active && mountedRef.current) {
+            setUser(profile);
+            setLoading(false);
+          }
+        });
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
+      // Invalidate this callback's async chain on next auth event
+      return () => { active = false; };
     });
     return unsubscribe;
   }, []);
 
+  // AUTH-02 + AUTH-03: single fetchUserProfile call; onAuthStateChanged sets user state
   const signInWithGoogle = useCallback(async () => {
-    console.log("[Auth] Starting Google sign-in...");
-
     try {
-      console.log("[Auth] Opening popup...");
       const result = await signInWithPopup(auth, googleProvider);
-      console.log("[Auth] Popup successful, user:", result.user.email);
-
       const fbUser = result.user;
       const existing = await fetchUserProfile(fbUser.uid);
-      console.log("[Auth] Existing profile:", existing ? "found" : "not found");
 
       if (!existing) {
-        console.log("[Auth] Creating new user profile...");
         await setDoc(doc(db, "users", fbUser.uid), {
           email: fbUser.email,
           firstName: fbUser.displayName?.split(" ")[0] ?? "",
@@ -102,14 +114,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
-        console.log("[Auth] Profile created");
       }
-
-      const profile = await fetchUserProfile(fbUser.uid);
-      setUser(profile);
-      console.log("[Auth] Sign-in complete");
+      // onAuthStateChanged is the single source of truth for setUser
     } catch (error) {
-      console.error("[Auth] Sign-in error:", error);
+      if (import.meta.env.DEV) console.log("[Auth] Google sign-in error:", error);
       throw error;
     }
   }, []);
@@ -118,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signInWithEmailAndPassword(auth, email, password);
   }, []);
 
+  // AUTH-03: removed setUser call — onAuthStateChanged handles it
   const signUpWithEmail = useCallback(
     async (email: string, password: string, firstName: string, lastName: string) => {
       const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -133,8 +142,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      const profile = await fetchUserProfile(result.user.uid);
-      setUser(profile);
     },
     [],
   );
@@ -143,6 +150,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(auth);
     setUser(null);
   }, []);
+
+  // SETTINGS-01: expose refreshProfile for post-save sync
+  const refreshProfile = useCallback(async () => {
+    if (!firebaseUser) return;
+    const profile = await fetchUserProfile(firebaseUser.uid);
+    if (mountedRef.current) setUser(profile);
+  }, [firebaseUser]);
 
   return (
     <AuthContext.Provider
@@ -154,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithEmail,
         signUpWithEmail,
         signOut,
+        refreshProfile,
       }}
     >
       {children}

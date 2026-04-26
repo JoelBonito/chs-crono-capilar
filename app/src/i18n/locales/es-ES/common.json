@@ -1,0 +1,7 @@
+{
+  "nav": { "home": "Inicio", "diagnostic": "Diagnóstico", "calendar": "Calendario", "settings": "Configuración" },
+  "treatments": { "H": "Hidratación", "N": "Nutrición", "R": "Reconstrucción" },
+  "days": { "short": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"] },
+  "buttons": { "cancel": "Cancelar", "save": "Guardar", "saving": "Guardando...", "delete": "Eliminar", "deleting": "Eliminando...", "back": "Volver", "next": "Siguiente", "skip": "Omitir", "finish": "Finalizar", "close": "Cerrar", "edit": "Editar", "or": "o" },
+  "dominant": "DOMINANTE"
+}

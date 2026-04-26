@@ -204,8 +204,12 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
   let event: Stripe.Event;
   try {
-    // Firebase Functions v2 provides the raw body on req.body when content-type isn't JSON
-    const rawBody = (req as unknown as { rawBody: Buffer }).rawBody ?? req.body;
+    const rawBody = (req as unknown as { rawBody: Buffer }).rawBody;
+    if (!rawBody) {
+      logError("webhook/missing-rawbody", new Error("rawBody missing — Stripe signature cannot be verified"));
+      res.status(400).json({ error: "Invalid webhook payload" });
+      return;
+    }
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
@@ -257,13 +261,17 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session): Promise<vo
   const subscriptionId = session.subscription as string;
   if (!subscriptionId) return;
 
+  const stripe = getStripe();
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
   await db.collection("subscriptions").doc(subscriptionId).set({
     id: subscriptionId,
     userId: uid,
     stripeCustomerId: session.customer as string,
     status: "active",
-    priceId: getPremiumPriceId(),
-    currentPeriodStart: Timestamp.now(),
+    priceId: subscription.items.data[0]?.price.id ?? getPremiumPriceId(),
+    currentPeriodStart: Timestamp.fromMillis(subscription.current_period_start * 1000),
+    currentPeriodEnd: Timestamp.fromMillis(subscription.current_period_end * 1000),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });

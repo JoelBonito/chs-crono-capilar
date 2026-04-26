@@ -1,0 +1,35 @@
+{
+  "title": "Mein Zeitplan",
+  "sessionCount": "{{count}} Sitzungen über 4 Wochen",
+  "week": "Woche {{number}}",
+  "loading": "Kalender wird geladen...",
+  "create": {
+    "title": "Zeitplan erstellen",
+    "subtitle": "Wählen Sie Ihre Pflegetage aus, um Ihren personalisierten Kalender zu erstellen.",
+    "daysLabel": "Pflegetage",
+    "daysHint": "Wählen Sie 2 bis 4 Tage pro Woche",
+    "startDate": "Startdatum",
+    "generating": "Wird erstellt...",
+    "generate": "Meinen Zeitplan erstellen"
+  },
+  "empty": {
+    "title": "Kalender",
+    "description": "Schließen Sie zuerst Ihre Diagnose ab, um Ihren personalisierten Haarpflegezeitplan zu erhalten.",
+    "button": "Diagnose starten"
+  },
+  "sync": {
+    "mobile": "Zum Kalender hinzufügen",
+    "android": "Kalender herunterladen",
+    "desktop": "Mit Google Kalender synchronisieren"
+  },
+  "download": {
+    "desktop": ".ics herunterladen",
+    "toast": "Datei heruntergeladen!"
+  },
+  "errors": {
+    "loadFailed": "Ihr Zeitplan konnte nicht geladen werden.",
+    "downloadFailed": "Fehler beim Herunterladen der .ics-Datei",
+    "syncFailed": "Fehler beim Synchronisieren des Kalenders",
+    "generateFailed": "Der Zeitplan konnte nicht erstellt werden."
+  }
+}

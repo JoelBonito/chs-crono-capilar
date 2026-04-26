@@ -16,7 +16,10 @@
   "language": {
     "section": "Langue",
     "fr": "Français",
-    "pt": "Português (BR)"
+    "pt": "Português (BR)",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
   },
   "legal": {
     "section": "Informations légales",

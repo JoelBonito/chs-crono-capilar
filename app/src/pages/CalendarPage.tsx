@@ -68,6 +68,8 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Schedule configuration state
@@ -156,9 +158,6 @@ export default function CalendarPage() {
     }
   }
 
-  const [syncing, setSyncing] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
-
   const device = useMemo(() => getDeviceInfo(), []);
 
   const dismissToast = useCallback(() => setToastVisible(false), []);
@@ -228,7 +227,9 @@ export default function CalendarPage() {
     );
   }
 
-  if (!schedule || events.length === 0) {
+  // CALENDAR-01: only redirect to creator when there is no schedule at all;
+  // an existing schedule with zero events should still show the calendar view
+  if (!schedule) {
     // Case A: Has diagnosticId from navigation -- show schedule configuration
     if (navDiagnosticId) {
       return (
@@ -344,13 +345,17 @@ export default function CalendarPage() {
     );
   }
 
-  // Group events by week
-  const eventsByWeek = events.reduce<Record<number, CalendarEvent[]>>((acc, event) => {
-    const week = event.weekNumber;
-    if (!acc[week]) acc[week] = [];
-    acc[week].push(event);
-    return acc;
-  }, {});
+  // PERF-04: memoize grouping to avoid recomputing on every render
+  const eventsByWeek = useMemo(
+    () =>
+      events.reduce<Record<number, CalendarEvent[]>>((acc, event) => {
+        const week = event.weekNumber;
+        if (!acc[week]) acc[week] = [];
+        acc[week].push(event);
+        return acc;
+      }, {}),
+    [events],
+  );
 
   return (
     <div className="px-4 pb-24 pt-8">

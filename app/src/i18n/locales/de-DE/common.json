@@ -1,0 +1,7 @@
+{
+  "nav": { "home": "Startseite", "diagnostic": "Diagnose", "calendar": "Kalender", "settings": "Einstellungen" },
+  "treatments": { "H": "Hydration", "N": "Ernährung", "R": "Reparatur" },
+  "days": { "short": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"] },
+  "buttons": { "cancel": "Abbrechen", "save": "Speichern", "saving": "Speichern...", "delete": "Löschen", "deleting": "Löschen...", "back": "Zurück", "next": "Weiter", "skip": "Überspringen", "finish": "Fertigstellen", "close": "Schließen", "edit": "Bearbeiten", "or": "oder" },
+  "dominant": "DOMINANT"
+}

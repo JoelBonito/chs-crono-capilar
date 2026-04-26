@@ -42,7 +42,7 @@ function buildFunctionsBaseUrl(): string {
 // -- Component --
 
 export default function Settings() {
-  const { user, firebaseUser, signOut } = useAuth();
+  const { user, firebaseUser, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const { t, i18n: i18nInstance } = useTranslation(["settings", "common"]);
 
@@ -111,6 +111,7 @@ export default function Settings() {
         optInSMS,
         updatedAt: serverTimestamp(),
       });
+      await refreshProfile();
       setSuccess(t("settings:profile.saveSuccess"));
       setEditing(false);
       setTimeout(() => setSuccess(null), 3000);
@@ -119,7 +120,7 @@ export default function Settings() {
     } finally {
       setSaving(false);
     }
-  }, [firebaseUser, firstName, lastName, phone, optInSMS, t]);
+  }, [firebaseUser, firstName, lastName, phone, optInSMS, t, refreshProfile]);
 
   const handleDeleteAccount = useCallback(async () => {
     if (!firebaseUser) return;
@@ -324,7 +325,7 @@ export default function Settings() {
                 size="sm"
                 className="flex-1 gap-1.5"
                 onClick={handleSave}
-                disabled={saving || (!firstName.trim() && !lastName.trim())}
+                disabled={saving || !firstName.trim() || !lastName.trim()}
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -344,10 +345,17 @@ export default function Settings() {
           {t("settings:language.section")}
         </h2>
         <div className="mt-2 divide-y divide-gray-100 rounded-sm border border-gray-200">
-          {(["fr-FR", "pt-BR"] as const).map((locale) => {
+          {(
+            [
+              { locale: "fr-FR", flag: "\u{1F1EB}\u{1F1F7}", labelKey: "settings:language.fr" },
+              { locale: "pt-BR", flag: "\u{1F1E7}\u{1F1F7}", labelKey: "settings:language.pt" },
+              { locale: "en-US", flag: "\u{1F1EC}\u{1F1E7}", labelKey: "settings:language.en" },
+              { locale: "es-ES", flag: "\u{1F1EA}\u{1F1F8}", labelKey: "settings:language.es" },
+              { locale: "de-DE", flag: "\u{1F1E9}\u{1F1EA}", labelKey: "settings:language.de" },
+            ] as const
+          ).map(({ locale, flag, labelKey }) => {
             const isActive = i18nInstance.language === locale;
-            const flag = locale === "fr-FR" ? "\u{1F1EB}\u{1F1F7}" : "\u{1F1E7}\u{1F1F7}";
-            const label = locale === "fr-FR" ? t("settings:language.fr") : t("settings:language.pt");
+            const label = t(labelKey);
             return (
               <button
                 key={locale}
